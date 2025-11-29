@@ -1,0 +1,3073 @@
+/* =========================
+   BERANDA / SPLASH
+   ========================= */
+
+   .BERANDA-SPLASH {
+    background-color: #3f2305;
+    display: grid;
+    justify-items: center;
+    align-items: start;
+    width: 100vw;
+  }
+
+  .BERANDA-SPLASH .group-wrapper {
+    background-color: #3f2305;
+    width: 1440px;
+    height: 1024px;
+    display: flex;
+    padding: 0 40px;
+    align-items: flex-start;
+  }
+
+  .BERANDA-SPLASH .group {
+    width: 1360px;
+    margin-top: 37px;
+    display: flex;
+  }
+
+  .BERANDA-SPLASH .div {
+    width: 1360px;
+    height: 950px;
+    position: relative;
+  }
+
+  .BERANDA-SPLASH .frame-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1360px;
+    height: 950px;
+    display: flex;
+  }
+
+  .BERANDA-SPLASH .frame {
+    height: 950px;
+    position: relative;
+    background-color: #f3ece2;
+    overflow: hidden;
+    width: 1360px;
+    border-radius: 16px;
+  }
+
+  .BERANDA-SPLASH .logo {
+    position: absolute;
+    top: 270px;
+    left: calc(50.00% - 271px);
+    width: 543px;
+    height: 410px;
+    object-fit: cover;
+  }
+
+  .BERANDA-SPLASH .cookies {
+    position: absolute;
+    top: 162px;
+    left: 1033px;
+    width: 166px;
+    height: 172px;
+  }
+
+  .BERANDA-SPLASH .pretzel {
+    position: absolute;
+    top: 208px;
+    left: 136px;
+    width: 192px;
+    height: 126px;
+  }
+
+  .BERANDA-SPLASH .img {
+    position: absolute;
+    top: 500px;
+    left: 1089px;
+    width: 154px;
+    height: 138px;
+  }
+
+  .BERANDA-SPLASH .cookies-2 {
+    position: absolute;
+    top: 756px;
+    left: 901px;
+    width: 132px;
+    height: 123px;
+  }
+
+  .BERANDA-SPLASH .cake {
+    position: absolute;
+    top: 611px;
+    left: 136px;
+    width: 195px;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .BERANDA-SPLASH .tombol {
+    display: flex;
+    width: 136px;
+    height: 46px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    position: absolute;
+    top: 818px;
+    right: 612px;
+    background-color: #3f2305;
+    border-radius: 40px;
+  }
+
+  .BERANDA-SPLASH .text-wrapper {
+    position: relative;
+    width: fit-content;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 19px;
+    letter-spacing: 0;
+    line-height: 17.1px;
+    white-space: nowrap;
+  }
+
+  .BERANDA-SPLASH .frame-2 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 102px;
+    display: flex;
+    justify-content: space-between;
+    background-color: #e5e0d1;
+    width: 1360px;
+    border-radius: 16px;
+  }
+
+  .BERANDA-SPLASH .group-2 {
+    margin-top: 15.5px;
+    width: 94.2px;
+    height: 71.1px;
+    position: relative;
+    margin-left: 50px;
+    background-image: url(assets/img/logo-lastbite.png);
+    background-size: cover;
+    background-position: 50% 50%;
+  }
+
+  .BERANDA-SPLASH .div-wrapper {
+    display: flex;
+    margin-top: 28px;
+    width: 136px;
+    height: 46px;
+    position: relative;
+    margin-right: 54px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    background-color: #3f2305;
+    border-radius: 40px;
+  }
+
+  /* =========================
+     ABOUT US
+     ========================= */
+
+  .ABOUT-US {
+    background-color: #3f2305;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 0;
+  }
+
+  .ABOUT-US .group {
+    margin-top: 37px;
+    width: 100%;
+    max-width: 1360px;
+    height: 950px;
+    position: relative;
+  }
+
+  .ABOUT-US .frame {
+    height: 950px;
+    background-color: #f3ece2;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1360px;
+    border-radius: 16px;
+  }
+
+  .ABOUT-US .image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1360px;
+    height: 950px;
+    aspect-ratio: 1.38;
+  }
+
+  .ABOUT-US .tombol {
+    display: flex;
+    width: 136px;
+    height: 46px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    position: absolute;
+    top: 818px;
+    right: 612px;
+    background-color: #3f2305;
+    border-radius: 40px;
+  }
+
+  .ABOUT-US .text-wrapper {
+    position: relative;
+    width: fit-content;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 19px;
+    letter-spacing: 0;
+    line-height: 17.1px;
+    white-space: nowrap;
+  }
+
+  .ABOUT-US .div {
+    position: absolute;
+    top: 441px;
+    left: calc(50.00% - 447px);
+    width: 894px;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #3b3b3b;
+    font-size: 36px;
+    text-align: center;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+
+  .ABOUT-US .text-wrapper-2 {
+    position: absolute;
+    top: 258px;
+    left: calc(50.00% - 383px);
+    width: 767px;
+    height: 53px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Inter-Bold", Helvetica;
+    font-weight: 700;
+    color: #3f2305;
+    font-size: 60px;
+    text-align: center;
+    letter-spacing: -3.60px;
+    line-height: 35px;
+  }
+
+  .ABOUT-US .frame-2 {
+    height: 102px;
+    display: flex;
+    justify-content: space-between;
+    background-color: #e5e0d1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1360px;
+    border-radius: 16px;
+  }
+
+  .ABOUT-US .group-2 {
+    margin-top: 15.5px;
+    width: 90px;
+    height: 71.1px;
+    position: relative;
+    margin-left: 50px;
+    background-image: url(assets/img/logo-lastbite.png);
+    background-size: cover;
+    background-position: 50% 50%;
+  }
+
+  .ABOUT-US .div-wrapper {
+    display: flex;
+    margin-top: 28px;
+    width: 136px;
+    height: 46px;
+    position: relative;
+    margin-right: 54px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    background-color: #3f2305;
+    border-radius: 40px;
+  }
+
+  /* =========================
+     INTRO EDUKASI
+     ========================= */
+
+  .INTRO-EDUKASI {
+    background-color: #3f2305;
+    width: 100%;
+    min-width: 1440px;
+    min-height: 1024px;
+    display: flex;
+    justify-content: center;   /* <– kartu di tengah */
+ }
+
+  .INTRO-EDUKASI .group {
+    margin-top: 37px;
+    width: 1360px;
+    height: 950px;
+    margin-left: 0;
+    position: relative;
+ }
+
+  .INTRO-EDUKASI .frame {
+    height: 950px;
+    background-color: #f3ece2;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1360px;
+    border-radius: 16px;
+  }
+
+  .INTRO-EDUKASI .div {
+    position: absolute;
+    top: 227px;
+    left: 86px;
+    width: 947px;
+    height: 223px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .INTRO-EDUKASI .text-wrapper {
+    width: 816px;
+    height: 53px;
+    font-family: "Inter-Bold", Helvetica;
+    font-weight: 700;
+    color: #3f2305;
+    font-size: 60px;
+    letter-spacing: -3.60px;
+    line-height: 35px;
+  }
+
+  .INTRO-EDUKASI .text-wrapper-2 {
+    width: 941px;
+    height: 53px;
+    font-family: "Inter-Bold", Helvetica;
+    font-weight: 700;
+    color: #3f2305;
+    font-size: 60px;
+    letter-spacing: -3.60px;
+    line-height: 35px;
+  }
+
+  .INTRO-EDUKASI .group-2 {
+    position: absolute;
+    top: 482px;
+    left: 86px;
+    width: 903px;
+    height: 295px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .INTRO-EDUKASI .padahal-sebagian {
+    width: 899px;
+    height: 108px;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #3b3b3b;
+    font-size: 30px;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+
+  .INTRO-EDUKASI .dengan-lastbite-kamu {
+    width: 810px;
+    height: 155px;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #3b3b3b;
+    font-size: 30px;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+
+  .INTRO-EDUKASI .tombol {
+    display: flex;
+    width: 136px;
+    height: 46px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    position: absolute;
+    top: 818px;
+    right: 612px;
+    background-color: #3f2305;
+    border-radius: 40px;
+  }
+
+  .INTRO-EDUKASI .text-wrapper-3 {
+    position: relative;
+    width: fit-content;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 19px;
+    letter-spacing: 0;
+    line-height: 17.1px;
+    white-space: nowrap;
+  }
+
+  .INTRO-EDUKASI .image-removebg {
+    position: absolute;
+    top: 117px;
+    left: 864px;
+    width: 496px;
+    height: 787px;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+
+  .INTRO-EDUKASI .frame-2 {
+    height: 102px;
+    display: flex;
+    justify-content: space-between;
+    background-color: #e5e0d1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1360px;
+    border-radius: 16px;
+  }
+
+  .INTRO-EDUKASI .group-3 {
+    margin-top: 15.5px;
+    width: 90px;
+    height: 71.1px;
+    position: relative;
+    margin-left: 50px;
+    background-image: url(assets/img/logo-lastbite.png);
+    background-size: cover;
+    background-position: 50% 50%;
+  }
+
+  .INTRO-EDUKASI .div-wrapper {
+    display: flex;
+    margin-top: 28px;
+    width: 136px;
+    height: 46px;
+    position: relative;
+    margin-right: 54px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    background-color: #3f2305;
+    border-radius: 40px;
+  }
+
+  /* =========================
+     FITUR LASTBITE
+     ========================= */
+
+  .FITUR-LASTBITE {
+    background-color: #3f2305;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 0;
+  }
+
+  .FITUR-LASTBITE .group {
+    margin-top: 37px;
+    width: 100%;
+    max-width: 1360px;
+    height: 950px;
+    position: relative;
+  }
+
+  .FITUR-LASTBITE .frame {
+    height: 950px;
+    background-color: #f3ece2;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1360px;
+    border-radius: 16px;
+  }
+
+  .FITUR-LASTBITE .tombol {
+    display: flex;
+    width: 136px;
+    height: 46px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    position: absolute;
+    top: 838px;
+    right: 612px;
+    background-color: #3f2305;
+    border-radius: 40px;
+  }
+
+  .FITUR-LASTBITE .text-wrapper {
+    position: relative;
+    width: fit-content;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 19px;
+    letter-spacing: 0;
+    line-height: 17.1px;
+    white-space: nowrap;
+  }
+
+  .FITUR-LASTBITE .div {
+    position: absolute;
+    top: 170px;
+    left: calc(50.00% - 194px);
+    width: 388px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Inter-Bold", Helvetica;
+    font-weight: 700;
+    color: #543a14;
+    font-size: 60px;
+    text-align: center;
+    letter-spacing: -3.60px;
+    line-height: 35px;
+  }
+
+  .FITUR-LASTBITE .frame-fitur {
+    left: 17px;
+    width: 310px;
+    position: absolute;
+    top: 277px;
+    height: 501px;
+  }
+
+  .FITUR-LASTBITE .a {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 308px;
+    gap: 50px;
+    height: 501px;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .FITUR-LASTBITE .streamline-freehand {
+    margin-left: 111px;
+    width: 95px;
+    height: 95px;
+    margin-top: 50px;
+    aspect-ratio: 1;
+  }
+
+  .FITUR-LASTBITE .text-wrapper-2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 40px;
+    width: 250px;
+    height: 88px;
+    font-family: "Inter-Bold", Helvetica;
+    font-weight: 700;
+    color: #3f2305;
+    font-size: 26px;
+    text-align: center;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+
+  .FITUR-LASTBITE .p {
+    position: absolute;
+    top: 318px;
+    left: 44px;
+    width: 235px;
+    height: 115px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #3b3b3b;
+    font-size: 20px;
+    text-align: center;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+
+  .FITUR-LASTBITE .a-wrapper {
+    left: 355px;
+    width: 308px;
+    display: flex;
+    position: absolute;
+    top: 277px;
+    height: 501px;
+  }
+
+  .FITUR-LASTBITE .a-2 {
+    width: 307.83px;
+    height: 501px;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .FITUR-LASTBITE .mdi-shop-location {
+    margin-left: 102px;
+    width: 112px;
+    height: 112px;
+    margin-top: 49px;
+    aspect-ratio: 1;
+  }
+
+  .FITUR-LASTBITE .text-wrapper-3 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 33px;
+    width: 250px;
+    height: 65px;
+    margin-top: 45px;
+    font-family: "Inter-Bold", Helvetica;
+    font-weight: 700;
+    color: #3f2305;
+    font-size: 26px;
+    text-align: center;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+
+  .FITUR-LASTBITE .text-wrapper-4 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 38px;
+    width: 241px;
+    height: 110px;
+    margin-top: 33px;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #3b3b3b;
+    font-size: 20px;
+    text-align: center;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+
+  .FITUR-LASTBITE .div-wrapper {
+    left: 693px;
+    width: 308px;
+    display: flex;
+    position: absolute;
+    top: 277px;
+    height: 501px;
+  }
+
+  .FITUR-LASTBITE .img {
+    margin-left: 107px;
+    width: 117px;
+    height: 117px;
+    margin-top: 45px;
+    aspect-ratio: 1;
+  }
+
+  .FITUR-LASTBITE .text-wrapper-5 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 32px;
+    width: 266px;
+    height: 98px;
+    margin-top: 28px;
+    font-family: "Inter-Bold", Helvetica;
+    font-weight: 700;
+    color: #3f2305;
+    font-size: 26px;
+    text-align: center;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+
+  .FITUR-LASTBITE .text-wrapper-6 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 38px;
+    width: 241px;
+    height: 110px;
+    margin-top: 16px;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #3b3b3b;
+    font-size: 20px;
+    text-align: center;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+
+  .FITUR-LASTBITE .frame-fitur-2 {
+    left: 1030px;
+    width: 308px;
+    display: flex;
+    position: absolute;
+    top: 277px;
+    height: 501px;
+  }
+
+  .FITUR-LASTBITE .a-3 {
+    width: 307.83px;
+    gap: 23px;
+    height: 501px;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .FITUR-LASTBITE .tdesign-money {
+    margin-left: 101px;
+    width: 128px;
+    height: 128px;
+    margin-top: 39px;
+    aspect-ratio: 1;
+  }
+
+  .FITUR-LASTBITE .harga-sebelum {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 27px;
+    width: 263px;
+    height: 98px;
+    font-family: "Inter-Bold", Helvetica;
+    font-weight: 700;
+    color: #3f2305;
+    font-size: 26px;
+    text-align: center;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+
+  .FITUR-LASTBITE .text-wrapper-7 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 26px;
+    width: 265px;
+    height: 110px;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #3b3b3b;
+    font-size: 20px;
+    text-align: center;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+
+  .FITUR-LASTBITE .frame-2 {
+    height: 102px;
+    display: flex;
+    justify-content: space-between;
+    background-color: #e5e0d1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1360px;
+    border-radius: 16px;
+  }
+
+  .FITUR-LASTBITE .group-2 {
+    margin-top: 15.5px;
+    width: 94.2px;
+    height: 71.1px;
+    position: relative;
+    margin-left: 50px;
+    background-image: url(assets/img/logo-lastbite.png);
+    background-size: cover;
+    background-position: 50% 50%;
+  }
+
+  .FITUR-LASTBITE .tombol-2 {
+    display: flex;
+    margin-top: 28px;
+    width: 136px;
+    height: 46px;
+    position: relative;
+    margin-right: 54px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    background-color: #3f2305;
+    border-radius: 40px;
+  }
+
+  /* =========================
+     PILIH ROLE
+     ========================= */
+
+  .PILIH-ROLE {
+    background-color: #3f2305;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 0;
+  }
+
+  .PILIH-ROLE .group {
+    margin-top: 37px;
+    width: 100%;
+    max-width: 1360px;
+    height: 950px;
+    position: relative;
+  }
+
+  .PILIH-ROLE .frame {
+    height: 950px;
+    background-color: #f3ece2;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1360px;
+    border-radius: 16px;
+  }
+
+  .PILIH-ROLE .tombol {
+    display: flex;
+    width: 136px;
+    height: 46px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    position: absolute;
+    top: 818px;
+    right: 612px;
+    background-color: #3f2305;
+    border-radius: 40px;
+  }
+
+  .PILIH-ROLE .text-wrapper {
+    position: relative;
+    width: fit-content;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 19px;
+    letter-spacing: 0;
+    line-height: 17.1px;
+    white-space: nowrap;
+  }
+
+  .PILIH-ROLE .div {
+    position: absolute;
+    top: 173px;
+    left: calc(50.0% - 310px);
+    width: 577px;
+    font-family: "Inter-Bold", Helvetica;
+    font-weight: 700;
+    color: #533914;
+    font-size: 64px;
+    text-align: center;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+
+  .PILIH-ROLE .a {
+    left: 296px;
+    gap: 36px;
+    position: absolute;
+    top: 323px;
+    width: 316px;
+    height: 422px;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .PILIH-ROLE .image-removebg {
+    margin-left: 32px;
+    width: 253px;
+    height: 272px;
+    margin-top: 30px;
+    aspect-ratio: 0.93;
+    object-fit: cover;
+  }
+
+  .PILIH-ROLE .text-wrapper-2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 88px;
+    width: 141px;
+    height: 31px;
+    font-family: "Inter-Bold", Helvetica;
+    font-weight: 700;
+    color: #3f2305;
+    font-size: 26px;
+    text-align: center;
+    letter-spacing: 0;
+    line-height: normal;
+    white-space: nowrap;
+  }
+
+  .PILIH-ROLE .a-2 {
+    left: 748px;
+    gap: 41px;
+    position: absolute;
+    top: 323px;
+    width: 316px;
+    height: 422px;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .PILIH-ROLE .img {
+    margin-left: 16px;
+    width: 285px;
+    height: 267px;
+    margin-top: 30px;
+    aspect-ratio: 1.07;
+    object-fit: cover;
+  }
+
+  .PILIH-ROLE .frame-2 {
+    height: 102px;
+    display: flex;
+    justify-content: space-between;
+    background-color: #e5e0d1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1360px;
+    border-radius: 16px;
+  }
+
+  .PILIH-ROLE .group-2 {
+    margin-top: 15.5px;
+    width: 94.2px;
+    height: 71.1px;
+    position: relative;
+    margin-left: 50px;
+    background-image: url(assets/img/logo-lastbite.png);
+    background-size: cover;
+    background-position: 50% 50%;
+  }
+
+  .PILIH-ROLE .div-wrapper {
+    display: flex;
+    margin-top: 28px;
+    width: 136px;
+    height: 46px;
+    position: relative;
+    margin-right: 54px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    background-color: #3f2305;
+    border-radius: 40px;
+  }
+
+ /* =========================
+   LOGIN PENJUAL
+   ========================= */
+
+.LOGIN-PENJUAL {
+    background-color: #f5f5f5;
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* gambar hero di kiri */
+  .LOGIN-PENJUAL .group {
+    position: absolute;
+    top: 139px;
+    left: 0;
+    width: 465px;
+    height: 885px;
+  }
+
+  .LOGIN-PENJUAL .div {
+    position: absolute;
+    top: 25px;
+    left: 54px;
+    background-size: cover;
+    background-position: 50% 50%;
+  }
+
+  /* NAVBAR ATAS */
+  .LOGIN-PENJUAL .navbar {
+    position: absolute;
+    top: 40px;
+    left: 580px;
+    width: 785px;
+    height: 42px;
+    display: flex;
+    gap: 54px;
+  }
+
+  .LOGIN-PENJUAL .text-wrapper,
+  .LOGIN-PENJUAL .text-wrapper-2 {
+    margin-top: 3px;
+    opacity: 0.7;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #2c2c2c;
+    font-size: 26px;
+    text-align: center;
+    letter-spacing: -1.56px;
+    line-height: 35px;
+  }
+
+  .LOGIN-PENJUAL .text-wrapper {
+    width: 96px;   /* Home */
+  }
+
+  .LOGIN-PENJUAL .text-wrapper-2 {
+    width: 126px;  /* Fitur, Role, About Us */
+  }
+
+  .LOGIN-PENJUAL .profile {
+    width: 149px;
+    height: 42px;
+    position: relative;
+  }
+
+  .LOGIN-PENJUAL .text-wrapper-3 {
+    position: absolute;
+    top: 3px;
+    left: 0;
+    width: 126px;
+    opacity: 0.7;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #2c2c2c;
+    font-size: 26px;
+    text-align: center;
+    letter-spacing: -1.56px;
+    line-height: 35px;
+  }
+
+  .LOGIN-PENJUAL .gg-profile {
+    position: absolute;
+    top: 0;
+    left: 105px;
+    width: 42px;
+    height: 42px;
+    aspect-ratio: 1;
+  }
+
+  /* FORM LOGIN (KANAN) */
+  .LOGIN-PENJUAL .group-2 {
+    position: absolute;
+    top: 178px;
+    left: 711px;
+    width: 579px;
+    height: 757px;
+    display: flex;
+    flex-direction: column;
+}
+
+  /* Judul "Log In" */
+  .LOGIN-PENJUAL .text-wrapper-4 {
+    font-family: "Inter-Bold", Helvetica;
+    font-weight: 700;
+    color: #3f2305;
+    font-size: 50px;
+    text-align: left;
+    margin-bottom: 6px;
+  }
+
+  /* Baris "Don’t have an account?  Sign Up" */
+  .LOGIN-PENJUAL .group-3 {
+    display: flex;
+    gap: 4px;
+    font-size: 18px;
+    margin-bottom: 32px;
+  }
+
+  .LOGIN-PENJUAL .text-wrapper-5 {
+    opacity: 0.6;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #3b3b3b;
+  }
+
+  .LOGIN-PENJUAL .text-wrapper-6 {
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #4285f4;
+    cursor: pointer;
+  }
+
+  .LOGIN-PENJUAL .group-3 a {
+    color: #4285f4;
+    text-decoration: none;
+  }
+
+  /* Kartu input email & password */
+  .LOGIN-PENJUAL .frame {
+    margin-top: 40px;
+    margin-left: 0;                 /* biar center ikuti group-2 */
+    width: 700px;                   /* lebar seperti Figma */
+    height: 80px;                   /* tinggi sedikit lebih ramping */
+    display: flex;
+    align-items: center;
+    background-color: #e5e0d1;
+    border-radius: 16px;
+  }
+
+  .LOGIN-PENJUAL .frame-2 {
+    margin-top: 16px;
+    margin-left: 0;
+    width: 700px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #e5e0d1;
+    border-radius: 16px;
+  }
+
+  /* Di password ada icon mata di kanan */
+  .LOGIN-PENJUAL .frame-2 {
+    justify-content: space-between;
+  }
+
+  /* input di dalam kartu */
+  .LOGIN-PENJUAL .frame input,
+  .LOGIN-PENJUAL .frame-2 input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-size: 18px;
+    color: #3b3b3b;
+    padding-left: 8px;
+  }
+
+  .LOGIN-PENJUAL .frame input::placeholder,
+  .LOGIN-PENJUAL .frame-2 input::placeholder {
+    color: #7a7a7a;
+    opacity: 0.9;
+  }
+
+  /* icon mata */
+  .LOGIN-PENJUAL .el-eye-close {
+    width: 32px;
+    height: 32px;
+    margin-left: 12px;
+    cursor: pointer;
+  }
+
+  .LOGIN-PENJUAL .vector {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Tombol LOG IN */
+  .LOGIN-PENJUAL .button {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    width: 100%;
+    height: 46px;
+    margin-top: 24px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 9px 16px;
+    background-color: #4285f4;
+    border-radius: 15px;
+    cursor: pointer;
+  }
+
+  .LOGIN-PENJUAL .text-wrapper-9 {
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 18px;
+  }
+
+  /* "Forgot your password?" + garis + tombol Google */
+  .LOGIN-PENJUAL .group-4 {
+    width: 100%;
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .LOGIN-PENJUAL .text-wrapper-10 {
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #3b3b3b;
+    font-size: 18px;
+    margin-bottom: 18px;
+  }
+
+  .LOGIN-PENJUAL .text-wrapper-10 a {
+    color: #4285f4;
+    text-decoration: none;
+  }
+
+  /* garis kiri – teks – garis kanan */
+  .LOGIN-PENJUAL .group-5 {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.8;
+    margin-bottom: 22px;
+  }
+
+  .LOGIN-PENJUAL .divider,
+  .LOGIN-PENJUAL .divider-2 {
+    flex: 1;
+    height: 1px;
+    background-color: #2c2c2c;
+  }
+
+  .LOGIN-PENJUAL .text-wrapper-11 {
+    font-family: "Inter-Regular", Helvetica;
+    font-size: 16px;
+    color: #2c2c2c;
+    text-align: center;
+  }
+
+  /* tombol Google */
+  .LOGIN-PENJUAL .label-wrapper {
+    all: unset;
+    box-sizing: border-box;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #b5b5b542;
+    border-radius: 15px;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+
+  .LOGIN-PENJUAL .label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .LOGIN-PENJUAL .google {
+    width: 24px;
+    height: 24px;
+  }
+
+  .LOGIN-PENJUAL .google .img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .LOGIN-PENJUAL .text-wrapper-12 {
+    font-family: "Inter-Medium", Helvetica;
+    font-weight: 500;
+    color: #000000;
+    font-size: 18px;
+  }
+
+  /* Teks terms & privacy */
+  .LOGIN-PENJUAL .by-clicking-continue {
+    width: 100%;
+    font-family: "Inter-Regular", Helvetica;
+    font-size: 14px;
+    text-align: center;
+    line-height: 22px;
+    color: #828282;
+    margin-top: 10px;
+  }
+
+  .LOGIN-PENJUAL .by-clicking-continue .text-wrapper-13 {
+    color: #000000;
+  }
+
+ /* =========================
+   LOGIN PEMBELI
+   ========================= */
+
+.LOGIN-PEMBELI {
+    background-color: #f5f5f5;
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* gambar hero kiri */
+  .LOGIN-PEMBELI .group {
+    position: absolute;
+    top: 139px;
+    left: 0;
+    width: 465px;
+    height: 885px;
+  }
+
+  .LOGIN-PEMBELI .div {
+    position: absolute;
+    top: 25px;
+    left: 54px;
+    background-image: url(assets/img/logo-lastbite.png);
+    background-size: cover;
+    background-position: 50% 50%;
+  }
+
+  /* NAVBAR */
+  .LOGIN-PEMBELI .navbar {
+    position: absolute;
+    top: 40px;
+    left: 580px;
+    width: 785px;
+    height: 42px;
+    display: flex;
+    gap: 54px;
+  }
+
+  .LOGIN-PEMBELI .text-wrapper,
+  .LOGIN-PEMBELI .text-wrapper-2 {
+    margin-top: 3px;
+    opacity: 0.7;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #2c2c2c;
+    font-size: 26px;
+    text-align: center;
+    letter-spacing: -1.56px;
+    line-height: 35px;
+  }
+
+  .LOGIN-PEMBELI .text-wrapper {
+    width: 96px;
+  }
+
+  .LOGIN-PEMBELI .text-wrapper-2 {
+    width: 126px;
+  }
+
+  .LOGIN-PEMBELI .profile {
+    width: 149px;
+    height: 42px;
+    position: relative;
+  }
+
+  .LOGIN-PEMBELI .text-wrapper-3 {
+    position: absolute;
+    top: 3px;
+    left: 0;
+    width: 126px;
+    opacity: 0.7;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #2c2c2c;
+    font-size: 26px;
+    text-align: center;
+    letter-spacing: -1.56px;
+    line-height: 35px;
+  }
+
+  .LOGIN-PEMBELI .gg-profile {
+    position: absolute;
+    top: 0;
+    left: 105px;
+    width: 42px;
+    height: 42px;
+    aspect-ratio: 1;
+  }
+
+  /* FORM LOGIN (KANAN) */
+  .LOGIN-PEMBELI .group-2 {
+    position: absolute;
+    top: 178px;
+    left: 711px;
+    width: 579px;
+    height: 757px;
+    display: flex;
+    flex-direction: column;
+}
+
+  /* Judul "Log In" */
+  .LOGIN-PEMBELI .text-wrapper-4 {
+    font-family: "Inter-Bold", Helvetica;
+    font-weight: 700;
+    color: #3f2305;
+    font-size: 50px;
+    text-align: left;
+    margin-bottom: 6px;
+  }
+
+  /* "Don’t have an account? Sign Up" */
+  .LOGIN-PEMBELI .group-3 {
+    display: flex;
+    gap: 4px;
+    font-size: 18px;
+    margin-bottom: 32px;
+  }
+
+  .LOGIN-PEMBELI .text-wrapper-5 {
+    opacity: 0.6;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #3b3b3b;
+  }
+
+  .LOGIN-PEMBELI .text-wrapper-6 {
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #4285f4;
+    cursor: pointer;
+  }
+
+  .LOGIN-PEMBELI .group-3 a {
+    color: #4285f4;
+    text-decoration: none;
+  }
+
+  /* Input email & password */
+  .LOGIN-PEMBELI .frame {
+    margin-top: 40px;
+    margin-left: 0;                 /* biar center ikuti group-2 */
+    width: 700px;                   /* lebar seperti Figma */
+    height: 80px;                   /* tinggi sedikit lebih ramping */
+    display: flex;
+    align-items: center;
+    background-color: #e5e0d1;
+    border-radius: 16px;
+  }
+
+  .LOGIN-PEMBELI .frame-2 {
+    margin-top: 16px;
+    margin-left: 0;
+    width: 700px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #e5e0d1;
+    border-radius: 16px;
+  }
+
+  .LOGIN-PEMBELI .frame-2 {
+    justify-content: space-between;
+  }
+
+  .LOGIN-PEMBELI .frame input,
+  .LOGIN-PEMBELI .frame-2 input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-size: 18px;
+    color: #3b3b3b;
+    padding-left: 8px;
+  }
+
+  .LOGIN-PEMBELI .frame input::placeholder,
+  .LOGIN-PEMBELI .frame-2 input::placeholder {
+    color: #7a7a7a;
+    opacity: 0.9;
+  }
+
+  .LOGIN-PEMBELI .el-eye-close {
+    width: 32px;
+    height: 32px;
+    margin-left: 12px;
+    cursor: pointer;
+  }
+
+  .LOGIN-PEMBELI .vector {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Tombol LOG IN */
+  .LOGIN-PEMBELI .button {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    width: 100%;
+    height: 46px;
+    margin-top: 24px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 9px 16px;
+    background-color: #4285f4;
+    border-radius: 15px;
+    cursor: pointer;
+  }
+
+  .LOGIN-PEMBELI .text-wrapper-9 {
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 18px;
+  }
+
+  /* Bagian bawah sama seperti penjual */
+  .LOGIN-PEMBELI .group-4 {
+    width: 100%;
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .LOGIN-PEMBELI .text-wrapper-10 {
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #3b3b3b;
+    font-size: 18px;
+    margin-bottom: 18px;
+  }
+
+  .LOGIN-PEMBELI .text-wrapper-10 a {
+    color: #4285f4;
+    text-decoration: none;
+  }
+
+  .LOGIN-PEMBELI .group-5 {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.8;
+    margin-bottom: 22px;
+  }
+
+  .LOGIN-PEMBELI .divider,
+  .LOGIN-PEMBELI .divider-2 {
+    flex: 1;
+    height: 1px;
+    background-color: #2c2c2c;
+  }
+
+  .LOGIN-PEMBELI .text-wrapper-11 {
+    font-family: "Inter-Regular", Helvetica;
+    font-size: 16px;
+    color: #2c2c2c;
+    text-align: center;
+  }
+
+  .LOGIN-PEMBELI .label-wrapper {
+    all: unset;
+    box-sizing: border-box;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #b5b5b542;
+    border-radius: 15px;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+
+  .LOGIN-PEMBELI .label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .LOGIN-PEMBELI .google {
+    width: 24px;
+    height: 24px;
+  }
+
+  .LOGIN-PEMBELI .google .img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .LOGIN-PEMBELI .text-wrapper-12 {
+    font-family: "Inter-Medium", Helvetica;
+    font-weight: 500;
+    color: #000000;
+    font-size: 18px;
+  }
+
+  .LOGIN-PEMBELI .by-clicking-continue {
+    width: 100%;
+    font-family: "Inter-Regular", Helvetica;
+    font-size: 14px;
+    text-align: center;
+    line-height: 22px;
+    color: #828282;
+    margin-top: 10px;
+  }
+
+  .LOGIN-PEMBELI .by-clicking-continue .text-wrapper-13 {
+    color: #000000;
+  }
+
+
+  /* =========================
+     SIGN UP PENJUAL
+     ========================= */
+
+     .SIGN-UP-PENJUAL {
+        background-color: #f5f5f5;
+        width: 100%;
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+    }
+
+
+  .SIGN-UP-PENJUAL .group {
+    position: absolute;
+    top: 139px;
+    left: 0;
+    width: 465px;
+    height: 885px;
+  }
+
+  .SIGN-UP-PENJUAL .div {
+    position: absolute;
+    top: 25px;
+    left: 54px;
+    width: 94px;
+    height: 71px;
+    background-image: url(assets/img/logo-lastbite.png);
+    background-size: cover;
+    background-position: 50% 50%;
+  }
+
+  .SIGN-UP-PENJUAL .navbar {
+    position: absolute;
+    top: 40px;
+    left: 580px;
+    width: 785px;
+    height: 42px;
+    display: flex;
+    gap: 54px;
+  }
+
+  .SIGN-UP-PENJUAL .text-wrapper {
+    margin-top: 3px;
+    width: 96px;
+    height: 35px;
+    opacity: 0.7;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #2c2c2c;
+    font-size: 26px;
+    text-align: center;
+    letter-spacing: -1.56px;
+    line-height: 35px;
+  }
+
+  .SIGN-UP-PENJUAL .text-wrapper2 {
+    margin-top: 3px;
+    width: 126px;
+    height: 35px;
+    opacity: 0.7;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #2c2c2c;
+    font-size: 26px;
+    text-align: center;
+    letter-spacing: -1.56px;
+    line-height: 35px;
+  }
+
+  .SIGN-UP-PENJUAL .profile {
+    width: 149px;
+    height: 42px;
+    position: relative;
+  }
+
+  .SIGN-UP-PENJUAL .text-wrapper3 {
+    position: absolute;
+    top: 3px;
+    left: 0;
+    width: 126px;
+    opacity: 0.7;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #2c2c2c;
+    font-size: 26px;
+    letter-spacing: -1.56px;
+    line-height: 35px;
+  }
+
+  .SIGN-UP-PENJUAL .gg-profile {
+    position: absolute;
+    top: 0;
+    left: 105px;
+    width: 42px;
+    height: 42px;
+    aspect-ratio: 1;
+  }
+
+  .SIGN-UP-PENJUAL .group-2 {
+    position: absolute;
+    top: 178px;
+    left: calc(50% + 8px);
+    width: 566px;
+    height: 676px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .SIGN-UP-PENJUAL .text-wrapper4 {
+    font-family: "Sora-Bold", Helvetica;
+    font-weight: 700;
+    color: #3f2305;
+    font-size: 50px;
+    margin-bottom: 18px;
+  }
+
+  .SIGN-UP-PENJUAL .frame {
+    width: 562px;
+    height: 100px;
+    margin-top: 18px;
+    display: flex;
+    background-color: #e5e0d1;
+    border-radius: 16px;
+  }
+
+  .SIGN-UP-PENJUAL .text-wrapper5 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 159px;
+    height: 25px;
+    margin-left: 30px;
+    margin-top: 38px;
+    opacity: 0.6;
+    font-family: "Figtree-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #3b3b3b;
+    font-size: 22px;
+    white-space: nowrap;
+  }
+
+  .SIGN-UP-PENJUAL .div-wrapper {
+    width: 562px;
+    height: 100px;
+    margin-top: 18px;
+    display: flex;
+    background-color: #e5e0d1;
+    border-radius: 16px;
+  }
+
+  .SIGN-UP-PENJUAL .text-wrapper6 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 159px;
+    height: 25px;
+    margin-left: 30px;
+    margin-top: 38px;
+    opacity: 0.6;
+    font-family: "Figtree-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #3b3b3b;
+    font-size: 22px;
+    white-space: nowrap;
+  }
+
+  .SIGN-UP-PENJUAL .button {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    margin-left: 4px;
+    width: 558px;
+    height: 46px;
+    position: relative;
+    margin-top: 32px;
+    align-items: center;
+    justify-content: center;
+    padding: 0px 16px;
+    background-color: #4285f4;
+    border-radius: 15px;
+    cursor: pointer;
+  }
+
+  .SIGN-UP-PENJUAL .text-wrapper7 {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    font-family: "Sora-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 18px;
+    line-height: 25.2px;
+    white-space: nowrap;
+  }
+
+  .SIGN-UP-PENJUAL .by-clicking-continue {
+    margin-left: 61px;
+    width: 440px;
+    height: 48px;
+    margin-top: 30px;
+    font-family: "Inter-Regular", Helvetica;
+    font-weight: 400;
+    color: transparent;
+    font-size: 16px;
+    text-align: center;
+    line-height: 24px;
+  }
+
+  .SIGN-UP-PENJUAL .span {
+    color: #828282;
+  }
+
+  .SIGN-UP-PENJUAL .text-wrapper8 {
+    color: #000000;
+  }
+
+  .SIGN-UP-PENJUAL .frame-2 {
+    display: flex;
+    margin-left: 117px;
+    width: 328px;
+    height: 44px;
+    position: relative;
+    margin-top: 48px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .SIGN-UP-PENJUAL .frame-3 {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    position: relative;
+  }
+
+  .SIGN-UP-PENJUAL .text-wrapper9 {
+    position: relative;
+    width: fit-content;
+    margin-top: -1px;
+    font-family: "Inter-Medium", Helvetica;
+    font-weight: 500;
+    color: #2e2e2e;
+    font-size: 16px;
+    line-height: 24px;
+    white-space: nowrap;
+  }
+
+  .SIGN-UP-PENJUAL .frame-4 {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    position: relative;
+    margin-left: -16px;
+  }
+
+  .SIGN-UP-PENJUAL .text-wrapper10 {
+    position: relative;
+    width: fit-content;
+    margin-top: -1px;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #4285f4;
+    font-size: 16px;
+    text-align: center;
+    line-height: 24px;
+    white-space: nowrap;
+  }
+
+  /* =========================
+     SIGN UP PEMBELI
+     (SAMA STRUKTUR DENGAN PENJUAL)
+     ========================= */
+
+     .SIGN-UP-PEMBELI {
+        background-color: #f5f5f5;
+        width: 100%;
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+    }
+
+  .SIGN-UP-PEMBELI .group {
+    position: absolute;
+    top: 139px;
+    left: 0;
+    width: 465px;
+    height: 885px;
+  }
+
+  .SIGN-UP-PEMBELI .div {
+    position: absolute;
+    top: 25px;
+    left: 54px;
+    width: 94px;
+    height: 71px;
+    background-image: url(assets/img/logo-lastbite.png);
+    background-size: cover;
+    background-position: 50% 50%;
+  }
+
+  .SIGN-UP-PEMBELI .navbar {
+    position: absolute;
+    top: 40px;
+    left: 580px;
+    width: 785px;
+    height: 42px;
+    display: flex;
+    gap: 54px;
+  }
+
+  .SIGN-UP-PEMBELI .text-wrapper {
+    margin-top: 3px;
+    width: 96px;
+    height: 35px;
+    opacity: 0.7;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #2c2c2c;
+    font-size: 26px;
+    text-align: center;
+    letter-spacing: -1.56px;
+    line-height: 35px;
+  }
+
+  .SIGN-UP-PEMBELI .text-wrapper2 {
+    margin-top: 3px;
+    width: 126px;
+    height: 35px;
+    opacity: 0.7;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #2c2c2c;
+    font-size: 26px;
+    text-align: center;
+    letter-spacing: -1.56px;
+    line-height: 35px;
+  }
+
+  .SIGN-UP-PEMBELI .profile {
+    width: 149px;
+    height: 42px;
+    position: relative;
+  }
+
+  .SIGN-UP-PEMBELI .text-wrapper3 {
+    position: absolute;
+    top: 3px;
+    left: 0;
+    width: 126px;
+    opacity: 0.7;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #2c2c2c;
+    font-size: 26px;
+    letter-spacing: -1.56px;
+    line-height: 35px;
+  }
+
+  .SIGN-UP-PEMBELI .gg-profile {
+    position: absolute;
+    top: 0;
+    left: 105px;
+    width: 42px;
+    height: 42px;
+    aspect-ratio: 1;
+  }
+
+  .SIGN-UP-PEMBELI .group-2 {
+    position: absolute;
+    top: 178px;
+    left: calc(50% + 8px);
+    width: 566px;
+    height: 676px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .SIGN-UP-PEMBELI .text-wrapper4 {
+    font-family: "Sora-Bold", Helvetica;
+    font-weight: 700;
+    color: #3f2305;
+    font-size: 50px;
+    margin-bottom: 18px;
+  }
+
+  .SIGN-UP-PEMBELI .frame {
+    width: 562px;
+    height: 100px;
+    margin-top: 18px;
+    display: flex;
+    background-color: #e5e0d1;
+    border-radius: 16px;
+  }
+
+  .SIGN-UP-PEMBELI .text-wrapper5 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 159px;
+    height: 25px;
+    margin-left: 30px;
+    margin-top: 38px;
+    opacity: 0.6;
+    font-family: "Figtree-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #3b3b3b;
+    font-size: 22px;
+    white-space: nowrap;
+  }
+
+  .SIGN-UP-PEMBELI .div-wrapper {
+    width: 562px;
+    height: 100px;
+    margin-top: 18px;
+    display: flex;
+    background-color: #e5e0d1;
+    border-radius: 16px;
+  }
+
+  .SIGN-UP-PEMBELI .text-wrapper6 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 159px;
+    height: 25px;
+    margin-left: 30px;
+    margin-top: 38px;
+    opacity: 0.6;
+    font-family: "Figtree-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #3b3b3b;
+    font-size: 22px;
+    white-space: nowrap;
+  }
+
+  .SIGN-UP-PEMBELI .button {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    margin-left: 4px;
+    width: 558px;
+    height: 46px;
+    position: relative;
+    margin-top: 32px;
+    align-items: center;
+    justify-content: center;
+    padding: 0px 16px;
+    background-color: #4285f4;
+    border-radius: 15px;
+    cursor: pointer;
+  }
+
+  .SIGN-UP-PEMBELI .text-wrapper7 {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    font-family: "Sora-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 18px;
+    line-height: 25.2px;
+    white-space: nowrap;
+  }
+
+  .SIGN-UP-PEMBELI .by-clicking-continue {
+    margin-left: 61px;
+    width: 440px;
+    height: 48px;
+    margin-top: 30px;
+    font-family: "Inter-Regular", Helvetica;
+    font-weight: 400;
+    color: transparent;
+    font-size: 16px;
+    text-align: center;
+    line-height: 24px;
+  }
+
+  .SIGN-UP-PEMBELI .span {
+    color: #828282;
+  }
+
+  .SIGN-UP-PEMBELI .text-wrapper8 {
+    color: #000000;
+  }
+
+  .SIGN-UP-PEMBELI .frame-2 {
+    display: flex;
+    margin-left: 117px;
+    width: 328px;
+    height: 44px;
+    position: relative;
+    margin-top: 48px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .SIGN-UP-PEMBELI .frame-3 {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    position: relative;
+  }
+
+  .SIGN-UP-PEMBELI .text-wrapper9 {
+    position: relative;
+    width: fit-content;
+    margin-top: -1px;
+    font-family: "Inter-Medium", Helvetica;
+    font-weight: 500;
+    color: #2e2e2e;
+    font-size: 16px;
+    line-height: 24px;
+    white-space: nowrap;
+  }
+
+  .SIGN-UP-PEMBELI .frame-4 {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    position: relative;
+    margin-left: -16px;
+  }
+
+  .SIGN-UP-PEMBELI .text-wrapper10 {
+    position: relative;
+    width: fit-content;
+    margin-top: -1px;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #4285f4;
+    font-size: 16px;
+    text-align: center;
+    line-height: 24px;
+    white-space: nowrap;
+  }
+
+  /* =========================
+     RESET PASSWORD (UMUM: PENJUAL & PEMBELI)
+     ========================= */
+
+  .RESET-PASSWORD {
+    background-color: #f5f5f5;
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  .RESET-PASSWORD .group {
+    position: absolute;
+    top: 139px;
+    left: 0;
+    width: 465px;
+    height: 885px;
+  }
+
+  .RESET-PASSWORD .div {
+    position: absolute;
+    top: 25px;
+    left: 54px;
+    width: 94px;
+    height: 71px;
+    background-image: url(assets/img/logo-lastbite.png);
+    background-size: cover;
+    background-position: 50% 50%;
+  }
+
+  .RESET-PASSWORD .navbar {
+    position: absolute;
+    top: 40px;
+    left: 580px;
+    width: 785px;
+    height: 42px;
+    display: flex;
+    gap: 54px;
+  }
+
+  .RESET-PASSWORD .text-wrapper {
+    background-color: #f5f5f5;
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+  .RESET-PASSWORD .text-wrapper-2 {
+    margin-top: 3px;
+    width: 126px;
+    height: 35px;
+    opacity: 0.7;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #2c2c2c;
+    font-size: 26px;
+    text-align: center;
+    letter-spacing: -1.56px;
+    line-height: 35px;
+  }
+
+  .RESET-PASSWORD .profile {
+    width: 149px;
+    height: 42px;
+    position: relative;
+  }
+
+  .RESET-PASSWORD .text-wrapper-3 {
+    position: absolute;
+    top: 3px;
+    left: 0;
+    width: 126px;
+    opacity: 0.7;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #2c2c2c;
+    font-size: 26px;
+    text-align: center;
+    letter-spacing: -1.56px;
+    line-height: 35px;
+  }
+
+  .RESET-PASSWORD .gg-profile {
+    position: absolute;
+    top: 0;
+    left: 105px;
+    width: 42px;
+    height: 42px;
+    aspect-ratio: 1;
+  }
+
+  .RESET-PASSWORD .group-2 {
+    position: absolute;
+    top: 268px;
+    left: calc(50% - 46px);
+    width: 603px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Judul "Reset Password" */
+  .RESET-PASSWORD .text-wrapper-4 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 417px;
+    height: 63px;
+    font-family: "Sora-Bold", Helvetica;
+    font-weight: 700;
+    color: #3f2305;
+    font-size: 50px;
+    text-align: center;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+
+  /* Card input password pertama */
+  .RESET-PASSWORD .frame {
+    margin-top: 59px;
+    margin-left: 3px;
+    width: 562px;
+    height: 100px;
+    display: flex;
+    justify-content: space-between;
+    background-color: #e5e0d1;
+    border-radius: 16px;
+  }
+
+  .RESET-PASSWORD .text-wrapper-5 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 38px;
+    width: 159px;
+    height: 25px;
+    position: relative;
+    margin-left: 30px;
+    opacity: 0.6;
+    font-family: "Figtree-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #3b3b3b;
+    font-size: 22px;
+    line-height: normal;
+    white-space: nowrap;
+  }
+
+  .RESET-PASSWORD .el-eye-close {
+    margin-top: 32px;
+    width: 38px;
+    height: 36px;
+    position: relative;
+    margin-right: 30px;
+  }
+
+  .RESET-PASSWORD .vector {
+    position: absolute;
+    width: 100%;
+    height: 85%;
+    top: 7.5%;
+    left: 0;
+  }
+
+  /* Card input konfirmasi password */
+  .RESET-PASSWORD .frame-2 {
+    margin-top: 20px;
+    margin-left: 3px;
+    width: 562px;
+    height: 100px;
+    display: flex;
+    justify-content: space-between;
+    background-color: #e5e0d1;
+    border-radius: 16px;
+  }
+
+  .RESET-PASSWORD .text-wrapper-6 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 38px;
+    width: 194px;
+    height: 25px;
+    position: relative;
+    margin-left: 30px;
+    opacity: 0.6;
+    font-family: "Figtree-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #3b3b3b;
+    font-size: 22px;
+    letter-spacing: 0;
+    line-height: normal;
+    white-space: nowrap;
+  }
+
+  /* Tombol Submit */
+  .RESET-PASSWORD .button {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    margin-left: 3px;
+    width: 562px;
+    height: 46px;
+    position: relative;
+    margin-top: 59px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0px 16px;
+    background-color: #4285f4;
+    border-radius: 15px;
+    cursor: pointer;
+  }
+
+  .RESET-PASSWORD .text-wrapper-7 {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    font-family: "Sora-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 18px;
+    letter-spacing: 0;
+    line-height: 25.2px;
+    white-space: nowrap;
+  }
+
+  /* =========================
+     FORGOT PASSWORD (PENJUAL & PEMBELI)
+     ========================= */
+
+  .FORGOT-PASSWORD {
+    background-color: #f5f5f5;
+    width: 100%;
+    min-width: 1440px;
+    min-height: 1024px;
+    position: relative;
+  }
+
+  .FORGOT-PASSWORD .group {
+    position: absolute;
+    top: 139px;
+    left: 0;
+    width: 465px;
+    height: 885px;
+  }
+
+  .FORGOT-PASSWORD .div {
+    position: absolute;
+    top: 25px;
+    left: 54px;
+    width: 94px;
+    height: 71px;
+    background-image: url(assets/img/logo-lastbite.png);
+    background-size: cover;
+    background-position: 50% 50%;
+  }
+
+  .FORGOT-PASSWORD .navbar {
+    position: absolute;
+    top: 40px;
+    left: 580px;
+    width: 785px;
+    height: 42px;
+    display: flex;
+    gap: 54px;
+  }
+
+  .FORGOT-PASSWORD .text-wrapper {
+    margin-top: 3px;
+    width: 96px;
+    height: 35px;
+    opacity: 0.7;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #2c2c2c;
+    font-size: 26px;
+    text-align: center;
+    letter-spacing: -1.56px;
+    line-height: 35px;
+  }
+
+  .FORGOT-PASSWORD .text-wrapper-2 {
+    margin-top: 3px;
+    width: 126px;
+    height: 35px;
+    opacity: 0.7;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #2c2c2c;
+    font-size: 26px;
+    text-align: center;
+    letter-spacing: -1.56px;
+    line-height: 35px;
+  }
+
+  .FORGOT-PASSWORD .profile {
+    width: 149px;
+    height: 42px;
+    position: relative;
+  }
+
+  .FORGOT-PASSWORD .text-wrapper-3 {
+    position: absolute;
+    top: 3px;
+    left: 0;
+    width: 126px;
+    opacity: 0.7;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #2c2c2c;
+    font-size: 26px;
+    text-align: center;
+    letter-spacing: -1.56px;
+    line-height: 35px;
+  }
+
+  .FORGOT-PASSWORD .gg-profile {
+    position: absolute;
+    top: 0;
+    left: 105px;
+    width: 42px;
+    height: 42px;
+    aspect-ratio: 1;
+  }
+
+  .FORGOT-PASSWORD .group-2 {
+    position: absolute;
+    top: 268px;
+    left: calc(50% - 46px);
+    width: 603px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .FORGOT-PASSWORD .text-wrapper-4 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 417px;
+    height: 63px;
+    font-family: "Sora-Bold", Helvetica;
+    font-weight: 700;
+    color: #3f2305;
+    font-size: 42px;
+    text-align: center;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+
+  .FORGOT-PASSWORD .dont-worry-it {
+    margin-top: 28px;
+    width: 440px;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #3b3b3b;
+    font-size: 20px;
+    letter-spacing: 0;
+    line-height: 30px;
+  }
+
+  .FORGOT-PASSWORD .frame {
+    margin-top: 40px;
+    margin-left: 3px;
+    width: 562px;
+    height: 100px;
+    display: flex;
+    background-color: #e5e0d1;
+    border-radius: 16px;
+  }
+
+  .FORGOT-PASSWORD .text-wrapper-5 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 38px;
+    width: 159px;
+    height: 25px;
+    position: relative;
+    margin-left: 30px;
+    opacity: 0.6;
+    font-family: "Figtree-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #3b3b3b;
+    font-size: 22px;
+    letter-spacing: 0;
+    line-height: normal;
+    white-space: nowrap;
+  }
+
+  .FORGOT-PASSWORD .button {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    margin-left: 3px;
+    width: 562px;
+    height: 46px;
+    position: relative;
+    margin-top: 36px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0px 16px;
+    background-color: #4285f4;
+    border-radius: 15px;
+    cursor: pointer;
+  }
+
+  .FORGOT-PASSWORD .text-wrapper-6 {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    font-family: "Sora-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 18px;
+    letter-spacing: 0;
+    line-height: 25.2px;
+    white-space: nowrap;
+  }
+
+  /* =========================
+     OTP (PENJUAL & PEMBELI)
+     ========================= */
+
+  .OTP {
+    background-color: #f5f5f5;
+    width: 100%;
+    min-width: 1440px;
+    min-height: 1024px;
+    position: relative;
+  }
+
+  /* gambar hero di kiri */
+  .OTP .group {
+    position: absolute;
+    top: 139px;
+    left: 0;
+    width: 465px;
+    height: 885px;
+  }
+
+  /* logo kiri atas */
+  .OTP .div {
+    position: absolute;
+    top: 25px;
+    left: 54px;
+    width: 94px;
+    height: 71px;
+    background-image: url(assets/img/logo-lastbite.png);
+    background-size: cover;
+    background-position: 50% 50%;
+  }
+
+  /* NAVBAR ATAS */
+  .OTP .navbar {
+    position: absolute;
+    top: 40px;
+    left: 580px;
+    width: 785px;
+    height: 42px;
+    display: flex;
+    gap: 54px;
+  }
+
+  .OTP .text-wrapper,
+  .OTP .text-wrapper-2,
+  .OTP .text-wrapper-3 {
+    margin-top: 3px;
+    height: 35px;
+    opacity: 0.7;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #2c2c2c;
+    font-size: 26px;
+    text-align: center;
+    letter-spacing: -1.56px;
+    line-height: 35px;
+  }
+
+  .OTP .text-wrapper {
+    width: 96px;
+  }
+
+  .OTP .text-wrapper-2 {
+    width: 126px;
+  }
+
+  .OTP .profile {
+    width: 149px;
+    height: 42px;
+    position: relative;
+  }
+
+  .OTP .text-wrapper-3 {
+    position: absolute;
+    top: 3px;
+    left: 0;
+    width: 126px;
+  }
+
+  .OTP .gg-profile {
+    position: absolute;
+    top: 0;
+    left: 105px;
+    width: 42px;
+    height: 42px;
+    aspect-ratio: 1;
+  }
+
+  /* KONTEN OTP */
+  .OTP .group-2 {
+    position: absolute;
+    top: 295px;
+    left: calc(50% - 17px);
+    width: 603px;
+    height: 429px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .OTP .text-wrapper-4 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: -4px;
+    height: 63px;
+    width: 599px;
+    align-self: center;
+    font-family: "Sora-Bold", Helvetica;
+    font-weight: 700;
+    color: #3f2305;
+    font-size: 42px;
+    text-align: center;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+
+  .OTP .p {
+    margin-left: 98px;
+    width: 431px;
+    height: 20px;
+    margin-top: 42px;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #2e2e2e;
+    font-size: 20px;
+    text-align: center;
+    letter-spacing: 0;
+    line-height: 30px;
+    white-space: nowrap;
+  }
+
+  /* kotak 4 digit OTP */
+  .OTP .group-3 {
+    margin-left: 111px;
+    width: 390px;
+    margin-top: 80px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .OTP .frame {
+    width: 90px;
+    height: 100px;
+    background-color: #e5e0d1;
+    border-radius: 16px;
+    font-family: "Inter-Bold", Helvetica;
+    font-size: 34px;
+    color: #3f2305;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* tombol submit */
+  .OTP .button {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    margin-left: 111px;
+    width: 390px;
+    height: 46px;
+    margin-top: 78px;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 16px;
+    background-color: #4285f4;
+    border-radius: 15px;
+    cursor: pointer;
+  }
+
+  .OTP .text-wrapper-5 {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    font-family: "Sora-SemiBold", Helvetica;
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 18px;
+    letter-spacing: 0;
+    line-height: 25.2px;
+    white-space: nowrap;
+  }
+
+
+.logo-small {
+    position: absolute;
+    top: 20px;
+    left: 40px;
+    width: 70px;       /* kamu bisa kecilkan jadi 70px kalau mau */
+    height: auto;
+    object-fit: contain;
+    z-index: 10;
+}
+
+/* Container utama */
+.RESET-PASSWORD {
+    background-color: #f5f5f5;
+    width: 100%;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Logo Kecil */
+.logo-small {
+    position: absolute;
+    top: 20px;
+    left: 40px;
+    width: 70px;
+    height: auto;
+}
+
+/* Judul Reset */
+.title-reset {
+    font-size: 32px;
+    color: #4a2900;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Input Wrapper */
+.RESET-PASSWORD .input-wrapper {
+    width: 480px;
+    height: 65px;
+    background-color: #e5e0d1;
+    border-radius: 12px;
+    padding: 0 20px;
+    margin: 15px auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Input Style */
+.RESET-PASSWORD input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    padding-left: 5px;
+}
+
+.RESET-PASSWORD input:focus {
+    outline: none;
+}
+
+/* Icon mata */
+.icon-eye {
+    width: 24px;
+    height: 24px;
+    opacity: 0.6;
+    cursor: pointer;
+}
+
+/* Submit Button */
+.RESET-PASSWORD .button {
+    width: 480px;
+    height: 55px;
+    margin: 25px auto;
+    border-radius: 10px;
+    background-color: #3d8bfd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+}
+
+.RESET-PASSWORD .text-btn {
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* =========================
+   INPUT UMUM DI KARTU AUTH
+   ========================= */
+
+   .auth-input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 0 24px;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-size: 18px;
+    color: #3b3b3b;
+  }
+
+  .auth-input::placeholder {
+    color: #7a7a7a;
+    opacity: 0.9;
+  }
+
+  /* Supaya container beige (frame / div-wrapper) tetap jadi card rapi */
+  .LOGIN-PENJUAL .frame,
+  .LOGIN-PENJUAL .frame-2,
+  .LOGIN-PEMBELI .frame,
+  .LOGIN-PEMBELI .frame-2,
+  .SIGN-UP-PENJUAL .frame,
+  .SIGN-UP-PENJUAL .div-wrapper,
+  .FORGOT-PASSWORD .frame,
+  .RESET-PASSWORD .frame,
+  .RESET-PASSWORD .frame-2 {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Baris "Don’t have an account?  Sign Up" sejajar dengan judul */
+  .LOGIN-PENJUAL .group-3,
+  .LOGIN-PEMBELI .group-3 {
+        margin-top: 5px;
+        text-align: left;
+        margin-left: 0;
+        font-size: 18px;
+        padding-left: 25px !important;
+    }
+
+
+  .LOGIN-PENJUAL .group-3 .text-wrapper-5,
+  .LOGIN-PEMBELI .group-3 .text-wrapper-5 {
+    opacity: 0.6;
+  }
+
+  .LOGIN-PENJUAL .group-3 .text-wrapper-6,
+  .LOGIN-PEMBELI .group-3 .text-wrapper-6 {
+    color: #4285f4;
+  }
+
+  /* Input kotak OTP */
+  .OTP .otp-input {
+    text-align: center;
+    font-size: 32px;
+    font-family: "Inter-Bold", Helvetica;
+    color: #3f2305;
+  }
+
+  /* ====================================
+   PERAPIHAN LOGIN PENJUAL & PEMBELI
+   (OVERRIDE)
+   ==================================== */
+
+/* Susunan kolom form di kanan */
+.LOGIN-PENJUAL .group-2,
+.LOGIN-PEMBELI .group-2 {
+    position: absolute;
+    top: 178px;
+    left: 740px;          /* 711px = persis Figma, 730px = sedikit lebih ke kanan */
+    transform: none;      /* penting: jangan center lagi */
+    width: 579px;         /* balikin ke width desain */
+    height: 757px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Judul "Log In" supaya rata kiri dan tidak pakai margin minus */
+.LOGIN-PENJUAL .text-wrapper-4,
+.LOGIN-PEMBELI .text-wrapper-4 {
+    margin: 0 0 6px 0;
+    width: auto;
+    align-self: flex-start;
+    display: block;
+    text-align: left;
+}
+
+/* Baris "Don't have an account?  Sign Up" jadi satu baris rapi */
+.LOGIN-PENJUAL .group-3,
+.LOGIN-PEMBELI .group-3 {
+    position: static;
+    margin: 0 0 24px 0;
+    width: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: 4px;
+    text-align: left;
+}
+
+/* Warna & hover link Sign Up */
+.LOGIN-PENJUAL .group-3 .text-wrapper-6,
+.LOGIN-PEMBELI .group-3 .text-wrapper-6 {
+    color: #4285f4;
+    cursor: pointer;
+}
+
+/* Kartu input email & password penjual – teks agak ke dalam */
+.LOGIN-PENJUAL .frame,
+.LOGIN-PENJUAL .frame-2 {
+    align-items: center;
+    padding: 0 24px;
+}
+
+/* Kalau sudah pakai <input> */
+.LOGIN-PENJUAL .frame input,
+.LOGIN-PENJUAL .frame-2 input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 16px;
+    padding-left: 8px;
+}
+
+/* Kalau masih pakai div teks (placeholder) – geser sedikit ke kanan */
+.LOGIN-PENJUAL .frame .text-wrapper-7,
+.LOGIN-PENJUAL .frame-2 .text-wrapper-8 {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-start;
+    padding-left: 24px;
+}
+
+/* Untuk pembeli – geser teks placeholder ke kanan juga */
+.LOGIN-PEMBELI .frame,
+.LOGIN-PEMBELI .frame-2 {
+    align-items: center;
+    padding: 0 24px;
+}
+
+.LOGIN-PEMBELI .text-wrapper-7,
+.LOGIN-PEMBELI .text-wrapper-8 {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-start;
+    padding-left: 24px;
+}
+
+.LOGIN-PENJUAL .navbar,
+.LOGIN-PEMBELI .navbar {
+    left: 640px;   /* kalau mau lebih kanan lagi, coba 650–660 */
+}
+
+/* =========================================
+   LOGO LOGIN – SAMA UNTUK PENJUAL & PEMBELI
+   ========================================= */
+   .LOGIN-PENJUAL .div,
+   .LOGIN-PEMBELI .div {
+       position: absolute;
+       top: 25px;
+       left: 54px;
+       width: 94px;        /* ukuran logo FIX */
+       height: 71px;
+   }
+
+   .LOGIN-PENJUAL .div img,
+   .LOGIN-PEMBELI .div img {
+       width: 100%;
+       height: 100%;
+       object-fit: contain;
+   }

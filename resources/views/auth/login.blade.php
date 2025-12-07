@@ -372,7 +372,7 @@
                         <input type="checkbox" id="remember" name="remember">
                         <label for="remember">Remember me</label>
                     </div>
-                    <a href="{{ route('password.request') }}" class="forgot-link">
+                    <a href="{{ route('forgot-password') }}" class="forgot-link">
                         Forgot Password?
                     </a>
                 </div>
@@ -383,13 +383,18 @@
                     <span class="divider-text">New to LastBite?</span>
                 </div>
 
-                <a href="{{ route('register', ['role' => $selectedRole ?? 'pembeli']) }}" class="btn btn-primary">
+                @php
+                    // Ambil role dari query parameter atau default ke 'buyer'
+                    $selectedRole = request()->query('role', 'buyer');
+                @endphp
+
+                <a href="{{ route('register', ['role' => $selectedRole]) }}" class="btn btn-primary">
                     Create New Account
                 </a>
 
                 <div class="register-link">
                     Don't have an account?
-                    <a href="{{ route('register', ['role' => $selectedRole ?? 'pembeli']) }}">
+                    <a href="{{ route('register', ['role' => $selectedRole]) }}">
                         Sign up here
                     </a>
                 </div>

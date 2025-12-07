@@ -1,67 +1,66 @@
+<?php
+
+namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Auth\Events\PasswordReset;
 use App\Models\User;
 
 class ForgotPasswordController extends Controller
 {
-    // STEP 1 — Generate OTP dan pindah ke halaman OTP
-    public function sendOtp(Request $request)
+    // Tampilkan form lupa password
+    public function showForgotPasswordForm()
     {
-        $request->validate([
-            'email' => 'required|email'
-        ]);
-
-        // Simpan email
-        Session::put('reset_email', $request->email);
-
-        // Generate OTP (4 digit)
-        $otp = rand(1000, 9999);
-        Session::put('otp', $otp);
-
-        // Sementara tampilkan OTP di log (kalau mau kirim email juga bisa)
-        \Log::info("OTP: " . $otp);
-
-        return redirect()->route('otp');
+        return view('auth.forgot-password');
     }
 
-    // STEP 2 — Verifikasi OTP
-    public function verifyOtp(Request $request)
+    // Kirim link reset password
+    public function sendResetLink(Request $request)
     {
-        $request->validate([
-            'otp' => 'required'
-        ]);
+        $request->validate(['email' => 'required|email']);
 
-        if ($request->otp != Session::get('otp')) {
-            return back()->withErrors(['otp' => 'OTP salah']);
-        }
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
 
-        // Jika benar → lanjut ke reset password
-        return redirect()->route('password.reset');
+        return $status === Password::RESET_LINK_SENT
+            ? back()->with(['status' => __($status)])
+            : back()->withErrors(['email' => __($status)]);
     }
 
-    // STEP 3 — Simpan password baru
+    // Tampilkan form reset password
+    public function showResetPasswordForm($token)
+    {
+        return view('auth.reset-password', ['token' => $token]);
+    }
+
+    // Proses reset password
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'password' => 'required|min:6|confirmed'
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:8|confirmed',
         ]);
 
-        $email = Session::get('reset_email');
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->setRememberToken(Str::random(60));
 
-        $user = User::where('email', $email)->first();
+                $user->save();
 
-        if (!$user) {
-            return back()->withErrors(['email' => 'User tidak ditemukan']);
-        }
+                event(new PasswordReset($user));
+            }
+        );
 
-        $user->password = Hash::make($request->password);
-        $user->save();
-
-        // Hapus session
-        Session::forget('reset_email');
-        Session::forget('otp');
-
-        return redirect('/login-penjual')->with('success', 'Password berhasil direset');
+        return $status === Password::PASSWORD_RESET
+            ? redirect()->route('login')->with('status', __($status))
+            : back()->withErrors(['email' => [__($status)]]);
     }
 }

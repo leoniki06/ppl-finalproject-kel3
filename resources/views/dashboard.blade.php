@@ -1426,8 +1426,12 @@
 <body>
     <!-- ========== HEADER ========== -->
     <div class="navbar-container" id="navbarContainer">
-        <img class="logo" src="{{ asset('images/LOGO%20LASTBITE.png') }}" alt="Last Bite" onclick="scrollToTop()" />
+        <!-- Logo - Redirect to Dashboard -->
+        <a href="{{ route('dashboard') }}" style="text-decoration: none;">
+            <img class="logo" src="{{ asset('images/LOGO LASTBITE.png') }}" alt="Last Bite" />
+        </a>
 
+        <!-- Catalog Dropdown -->
         <div class="nav-item dropdown">
             <button class="catalog-btn" data-bs-toggle="dropdown" aria-expanded="false">
                 <div class="catalog-text">Catalog</div>
@@ -1439,28 +1443,15 @@
                 <li>
                     <h6 class="dropdown-header">Food Categories</h6>
                 </li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('bakery')"><i
-                            class="fas fa-bread-slice"></i>Bakery & Bread</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('dairy')"><i
-                            class="fas fa-wine-bottle"></i>Dairy & Beverages</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('fruits')"><i
-                            class="fas fa-apple-alt"></i>Fruits & Vegetables</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('meat')"><i
-                            class="fas fa-drumstick-bite"></i>Meat & Fish</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('eggs')"><i
-                            class="fas fa-egg"></i>Eggs & Dairy Products</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('snacks')"><i
-                            class="fas fa-cookie"></i>Snacks</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('frozen')"><i
-                            class="fas fa-ice-cream"></i>Frozen Food</a></li>
-                <li>
-                    <hr class="dropdown-divider">
-                </li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('all')"><i
-                            class="fas fa-list"></i>View All Categories</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fas fa-bread-slice"></i>Bakery & Bread</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fas fa-wine-bottle"></i>Dairy & Beverages</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fas fa-apple-alt"></i>Fruits & Vegetables</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fas fa-drumstick-bite"></i>Meat & Fish</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fas fa-egg"></i>Eggs & Dairy Products</a></li>
             </ul>
         </div>
 
+        <!-- Search -->
         <div class="search-container">
             <input type="text" class="search-input" placeholder="Search for food items..." id="searchInput" />
             <div class="search-icon-container" onclick="performSearch()">
@@ -1468,31 +1459,48 @@
             </div>
         </div>
 
-        <button class="cart-btn" onclick="openCart()">
-            <div class="cart-text">Cart</div>
-            <div class="cart-icon">
-                <i class="fas fa-shopping-cart"></i>
-                <span class="cart-badge" id="cartCount">0</span>
-            </div>
-        </button>
+        <!-- Cart - Redirect to Cart Page -->
+        <a href="{{ route('cart.index') }}" style="text-decoration: none;">
+            <button class="cart-btn">
+                <div class="cart-text">Cart</div>
+                <div class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-badge" id="cartCount">0</span>
+                </div>
+            </button>
+        </a>
 
+        <!-- Profile Dropdown -->
         <div class="nav-item dropdown">
             <button class="profile-btn" data-bs-toggle="dropdown" aria-expanded="false">
                 <div class="profile-avatar">
-                    <i class="fas fa-user"></i>
+                    @php
+                        $user = auth()->user();
+                        $initial = $user ? strtoupper(substr($user->name, 0, 1)) : 'G';
+                    @endphp
+                    {{ $initial }}
                 </div>
                 <div class="profile-text">Profile</div>
             </button>
             <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#"><i class="fas fa-user-circle"></i>My Profile</a></li>
-                <li><a class="dropdown-item" href="#"><i class="fas fa-history"></i>Order History</a></li>
-                <li><a class="dropdown-item" href="#"><i class="fas fa-heart"></i>Favorites</a></li>
-                <li><a class="dropdown-item" href="#"><i class="fas fa-cog"></i>Settings</a></li>
+                <li><a class="dropdown-item" href="{{ route('profile') }}"><i class="fas fa-user-circle"></i>My
+                        Profile</a></li>
+                <li><a class="dropdown-item" href="{{ route('profile.orders') }}"><i class="fas fa-history"></i>Order
+                        History</a></li>
+                <li><a class="dropdown-item" href="{{ route('favorites') }}"><i class="fas fa-heart"></i>Favorites</a>
+                </li>
                 <li>
                     <hr class="dropdown-divider">
                 </li>
-                <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i
-                            class="fas fa-sign-out-alt"></i>Logout</a></li>
+                <li>
+                    <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="dropdown-item text-danger"
+                            style="border: none; background: none; width: 100%; text-align: left; cursor: pointer;">
+                            <i class="fas fa-sign-out-alt"></i>Logout
+                        </button>
+                    </form>
+                </li>
             </ul>
         </div>
     </div>

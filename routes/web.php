@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\FavoritesController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\ProductController;
 
 
 // ==================== PUBLIC ROUTES ====================
@@ -61,4 +62,23 @@ Route::middleware(['checkauth'])->group(function () {
     // Di dalam middleware group atau sesuai kebutuhan:
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::get('/favorites', [FavoritesController::class, 'index'])->name('favorites');
+
+// ==================== PRODUCT ====================
+// Dashboard route
+Route::get('/', [ProductController::class, 'dashboard'])->name('dashboard');
+Route::get('/dashboard', [ProductController::class, 'dashboard'])->name('dashboard.index');
+
+// Product detail route
+Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.show');
+
+
+// routes/web.php
+Route::get('/checkout', function () {
+    // Redirect ke cart page dulu jika belum ada checkout
+    return redirect()->route('cart.index');
+})->name('cart.checkout');
+
+// Atau langsung ke cart page
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+
 });

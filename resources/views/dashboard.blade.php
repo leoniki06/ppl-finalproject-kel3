@@ -1516,7 +1516,93 @@
         <div class="swiper-container">
             <div class="swiper" id="flashSaleSwiper">
                 <div class="swiper-wrapper" id="flashSaleProducts">
-                    <!-- Flash sale products will be loaded by JavaScript -->
+                    @if (isset($flashSaleProducts) && $flashSaleProducts->count() > 0)
+                        @foreach ($flashSaleProducts as $product)
+                            <div class="swiper-slide">
+                                <div class="product-card"
+                                    onclick="window.location.href='{{ route('product.show', $product->id) }}'">
+                                    <span class="flash-badge">Flash Sale</span>
+                                    <div class="product-image-container">
+                                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}"
+                                            class="product-image">
+                                    </div>
+                                    <div class="product-info">
+                                        <div class="product-brand">
+                                            <i class="fas fa-store"></i>
+                                            {{ $product->brand }}
+                                        </div>
+                                        <h3 class="product-name">{{ $product->name }}</h3>
+                                        <span class="product-category">{{ ucfirst($product->category) }}</span>
+                                        <div class="product-rating">
+                                            <div class="stars">
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    @if ($i <= floor($product->rating))
+                                                        <i class="fas fa-star"></i>
+                                                    @elseif($i - 0.5 <= $product->rating)
+                                                        <i class="fas fa-star-half-alt"></i>
+                                                    @else
+                                                        <i class="far fa-star"></i>
+                                                    @endif
+                                                @endfor
+                                            </div>
+                                            <span
+                                                class="rating-count">({{ number_format($product->rating_count) }})</span>
+                                        </div>
+                                        <div class="product-price">
+                                            <div class="price-container">
+                                                <span
+                                                    class="current-price">Rp{{ number_format($product->price, 0, ',', '.') }}</span>
+                                                <div>
+                                                    <span
+                                                        class="original-price">Rp{{ number_format($product->original_price, 0, ',', '.') }}</span>
+                                                    <span
+                                                        class="discount-percent">-{{ $product->discount_percent }}%</span>
+                                                </div>
+                                            </div>
+                                            <button class="add-to-cart-btn"
+                                                onclick="addToCart({{ $product->id }}, '{{ $product->name }}', {{ $product->price }}); event.stopPropagation()">
+                                                <i class="fas fa-shopping-cart"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    @else
+                        <!-- Fallback jika tidak ada produk -->
+                        <div class="swiper-slide">
+                            <div class="product-card">
+                                <span class="flash-badge">Coming Soon</span>
+                                <div class="product-image-container">
+                                    <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+                                        alt="No Products" class="product-image">
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-brand">
+                                        <i class="fas fa-store"></i>
+                                        LastBite
+                                    </div>
+                                    <h3 class="product-name">More Flash Sale Products Coming Soon!</h3>
+                                    <span class="product-category">Stay Tuned</span>
+                                    <div class="product-rating">
+                                        <div class="stars">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star-half-alt"></i>
+                                        </div>
+                                        <span class="rating-count">(0)</span>
+                                    </div>
+                                    <div class="product-price">
+                                        <div class="price-container">
+                                            <span class="current-price">Check Back Later</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
                 <!-- Add Navigation -->
                 <div class="swiper-button-next"></div>
@@ -1540,53 +1626,68 @@
             </div>
         </div>
 
-        <div class="category-filter-container">
-            <div class="category-filter" id="categoryFilter">
-                <!-- Category buttons will be generated by JavaScript -->
-            </div>
-        </div>
-
         <div class="content-container">
             <div class="recommended-grid" id="recommendedGrid">
-                <!-- Recommended products will be loaded by JavaScript -->
+                @foreach ($recommendedProducts as $product)
+                    <div class="product-card"
+                        onclick="window.location.href='{{ route('product.show', $product->id) }}'">
+                        @if ($product->is_flash_sale)
+                            <span class="flash-badge">Flash Sale</span>
+                        @else
+                            <span class="recommended-badge">Recommended</span>
+                        @endif
+                        <div class="product-image-container">
+                            <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="product-image">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-brand">
+                                <i class="fas fa-store"></i>
+                                {{ $product->brand }}
+                            </div>
+                            <h3 class="product-name">{{ $product->name }}</h3>
+                            <span class="product-category">{{ ucfirst($product->category) }}</span>
+                            <div class="product-rating">
+                                <div class="stars">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= floor($product->rating))
+                                            <i class="fas fa-star"></i>
+                                        @elseif($i - 0.5 <= $product->rating)
+                                            <i class="fas fa-star-half-alt"></i>
+                                        @else
+                                            <i class="far fa-star"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <span class="rating-count">({{ number_format($product->rating_count) }})</span>
+                            </div>
+                            <div class="product-price">
+                                <div class="price-container">
+                                    <span
+                                        class="current-price">Rp{{ number_format($product->price, 0, ',', '.') }}</span>
+                                    <div>
+                                        <span
+                                            class="original-price">Rp{{ number_format($product->original_price, 0, ',', '.') }}</span>
+                                        <span class="discount-percent">-{{ $product->discount_percent }}%</span>
+                                    </div>
+                                </div>
+                                <button class="add-to-cart-btn"
+                                    onclick="addToCart({{ $product->id }}, '{{ $product->name }}', {{ $product->price }}); event.stopPropagation()">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
             </div>
         </div>
     </section>
 
     <script>
         // ========== DASHBOARD JAVASCRIPT ==========
-        // Data
-        const heroSlides = [{
-                image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
-                tagline: 'Reducing Food Waste, One Bite at a Time',
-                title: 'Wasting Food?',
-                subtitle: 'LastBite Here',
-                description: 'Fresh food at amazing prices while saving the planet'
-            },
-            {
-                image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
-                tagline: 'Limited Time Offer!',
-                title: 'Big Food Sale',
-                subtitle: 'Up to 50% OFF!',
-                description: 'Redefine your everyday meals with fresh ingredients'
-            },
-            {
-                image: 'https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
-                tagline: 'Fresh & Healthy',
-                title: 'Organic Collection',
-                subtitle: 'Farm to Table',
-                description: 'Quality produce delivered to your doorstep'
-            },
-            {
-                image: 'https://images.unsplash.com/photo-1604503468505-1d2d6a9a6c8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
-                tagline: 'Premium Quality',
-                title: 'Daily Essentials',
-                subtitle: 'Best Prices Guaranteed',
-                description: 'Everything you need for delicious home-cooked meals'
-            }
-        ];
+        // Data hero slides dari controller
+        const heroSlides = @json($heroSlides ?? []);
 
-        // Categories tanpa "Eggs & Dairy"
+        // Categories data
         const categories = [{
                 id: "bakery",
                 name: "Bakery & Bread",
@@ -1613,277 +1714,7 @@
             }
         ];
 
-        // Database produk lengkap untuk rekomendasi otomatis
-        const productDatabase = [
-            // Bakery Products
-            {
-                id: 101,
-                name: "Artisan Sourdough Bread",
-                brand: "Heritage Bakery",
-                image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                price: 25000,
-                originalPrice: 40000,
-                rating: 4.7,
-                ratingCount: 3200,
-                category: "bakery",
-                discount: 38
-            },
-            {
-                id: 102,
-                name: "Whole Grain Baguette",
-                brand: "Paris Bakery",
-                image: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                price: 18000,
-                originalPrice: 28000,
-                rating: 4.5,
-                ratingCount: 2100,
-                category: "bakery",
-                discount: 36
-            },
-            {
-                id: 103,
-                name: "Cinnamon Roll 4 pcs",
-                brand: "Sweet Bakery",
-                image: "https://images.unsplash.com/photo-1555507036-ab794f27d2e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                price: 32000,
-                originalPrice: 45000,
-                rating: 4.8,
-                ratingCount: 3800,
-                category: "bakery",
-                discount: 29
-            },
-            {
-                id: 104,
-                name: "Multigrain Bread Loaf",
-                brand: "Health Bakery",
-                image: "https://images.unsplash.com/photo-1608198093002-ad4e005484ec?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                price: 22000,
-                originalPrice: 35000,
-                rating: 4.4,
-                ratingCount: 1800,
-                category: "bakery",
-                discount: 37
-            },
-
-            // Dairy Products (tanpa telur)
-            {
-                id: 201,
-                name: "Fresh Milk 1L Premium",
-                brand: "Greenfields",
-                image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                price: 28000,
-                originalPrice: 38000,
-                rating: 4.6,
-                ratingCount: 4200,
-                category: "dairy",
-                discount: 26
-            },
-            {
-                id: 202,
-                name: "Greek Yogurt 500g",
-                brand: "Healthy Choice",
-                image: "https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                price: 22000,
-                originalPrice: 32000,
-                rating: 4.7,
-                ratingCount: 3100,
-                category: "dairy",
-                discount: 31
-            },
-            {
-                id: 203,
-                name: "Cheddar Cheese 200g",
-                brand: "Dairy King",
-                image: "https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                price: 35000,
-                originalPrice: 48000,
-                rating: 4.5,
-                ratingCount: 2400,
-                category: "dairy",
-                discount: 27
-            },
-            {
-                id: 204,
-                name: "Fresh Orange Juice 1L",
-                brand: "Sunshine Drinks",
-                image: "https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                price: 24000,
-                originalPrice: 34000,
-                rating: 4.6,
-                ratingCount: 2300,
-                category: "dairy",
-                discount: 29
-            },
-
-            // Fruits & Vegetables
-            {
-                id: 301,
-                name: "Organic Apples 1kg",
-                brand: "Farm Fresh",
-                image: "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                price: 32000,
-                originalPrice: 48000,
-                rating: 4.8,
-                ratingCount: 5200,
-                category: "fruits",
-                discount: 33
-            },
-            {
-                id: 302,
-                name: "Bananas Organic Bunch",
-                brand: "Tropical Fruits",
-                image: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                price: 15000,
-                originalPrice: 22000,
-                rating: 4.6,
-                ratingCount: 4100,
-                category: "fruits",
-                discount: 32
-            },
-            {
-                id: 303,
-                name: "Organic Tomatoes 500g",
-                brand: "Garden Fresh",
-                image: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                price: 12000,
-                originalPrice: 18000,
-                rating: 4.4,
-                ratingCount: 1500,
-                category: "fruits",
-                discount: 33
-            },
-            {
-                id: 304,
-                name: "Fresh Carrots 1kg",
-                brand: "Organic Farm",
-                image: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                price: 10000,
-                originalPrice: 15000,
-                rating: 4.6,
-                ratingCount: 1900,
-                category: "fruits",
-                discount: 33
-            },
-
-            // Meat & Fish
-            {
-                id: 401,
-                name: "Chicken Breast 500g",
-                brand: "Best Chicken",
-                image: "https://images.unsplash.com/photo-1604503468505-1d2d6a9a6c8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                price: 38000,
-                originalPrice: 52000,
-                rating: 4.6,
-                ratingCount: 3800,
-                category: "meat",
-                discount: 27
-            },
-            {
-                id: 402,
-                name: "Salmon Fillet 300g Fresh",
-                brand: "Ocean Fresh",
-                image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                price: 58000,
-                originalPrice: 78000,
-                rating: 4.8,
-                ratingCount: 4800,
-                category: "meat",
-                discount: 26
-            },
-            {
-                id: 403,
-                name: "Whole Chicken 1.2kg",
-                brand: "Farm Fresh",
-                image: "https://images.unsplash.com/photo-1604503468505-1d2d6a9a6c8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                price: 48000,
-                originalPrice: 65000,
-                rating: 4.5,
-                ratingCount: 2900,
-                category: "meat",
-                discount: 26
-            },
-            {
-                id: 404,
-                name: "Beef Steak 400g Premium",
-                brand: "Prime Beef",
-                image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                price: 68000,
-                originalPrice: 90000,
-                rating: 4.9,
-                ratingCount: 3500,
-                category: "meat",
-                discount: 24
-            }
-        ];
-
-        // Flash Sale Products (tetap sama)
-        const flashSaleProducts = [{
-                id: 1,
-                name: "Roti Sisir - Fresh Artisan Bread",
-                brand: "Holland Bakery",
-                image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                price: 20000,
-                originalPrice: 35000,
-                rating: 4.5,
-                ratingCount: 3000,
-                category: "bakery",
-                type: "flash",
-                discount: 43
-            },
-            {
-                id: 2,
-                name: "Fresh Milk - 1L Premium",
-                brand: "Greenfields",
-                image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                price: 25000,
-                originalPrice: 32000,
-                rating: 4.7,
-                ratingCount: 4200,
-                category: "dairy",
-                type: "flash",
-                discount: 22
-            },
-            {
-                id: 3,
-                name: "Organic Apples - 1kg Pack",
-                brand: "Farm Fresh",
-                image: "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                price: 30000,
-                originalPrice: 45000,
-                rating: 4.8,
-                ratingCount: 5200,
-                category: "fruits",
-                type: "flash",
-                discount: 33
-            },
-            {
-                id: 4,
-                name: "Chicken Breast - 500g",
-                brand: "Best Chicken",
-                image: "https://images.unsplash.com/photo-1604503468505-1d2d6a9a6c8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                price: 35000,
-                originalPrice: 48000,
-                rating: 4.6,
-                ratingCount: 3800,
-                category: "meat",
-                type: "flash",
-                discount: 27
-            },
-            {
-                id: 5,
-                name: "Croissant - 4 pcs Assorted",
-                brand: "Paris Bakery",
-                image: "https://images.unsplash.com/photo-1555507036-ab794f27d2e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-                price: 28000,
-                originalPrice: 40000,
-                rating: 4.4,
-                ratingCount: 2900,
-                category: "bakery",
-                type: "flash",
-                discount: 30
-            }
-        ];
-
+        // Default images untuk fallback
         const defaultImages = {
             bakery: "https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
             dairy: "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
@@ -1902,16 +1733,25 @@
         // Variables
         let currentSlide = 0;
         let flashSaleSwiper = null;
-        let recommendedProducts = [];
-        let recommendedRefreshInterval = null;
+
+        // ========== FUNGSI UTAMA ==========
 
         // Hero Slideshow
         function initializeHeroSlideshow() {
             const heroBanner = document.getElementById('heroBanner');
             const heroDots = document.getElementById('heroDots');
 
+            // Jika tidak ada hero slides, gunakan default
+            const slidesToUse = heroSlides.length > 0 ? heroSlides : [{
+                image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+                tagline: 'Reducing Food Waste, One Bite at a Time',
+                title: 'Welcome to LastBite',
+                subtitle: 'Fresh Food, Lower Prices',
+                description: 'Save money while saving the planet from food waste'
+            }];
+
             // Create slides
-            heroSlides.forEach((slide, index) => {
+            slidesToUse.forEach((slide, index) => {
                 const slideDiv = document.createElement('div');
                 slideDiv.className = `hero-slide ${index === 0 ? 'active' : ''}`;
                 slideDiv.style.backgroundImage = `url('${slide.image}')`;
@@ -1932,7 +1772,7 @@
 
             // Auto-change slides every 5 seconds
             setInterval(() => {
-                goToSlide((currentSlide + 1) % heroSlides.length);
+                goToSlide((currentSlide + 1) % slidesToUse.length);
             }, 5000);
 
             updateHeroContent(0);
@@ -1952,17 +1792,25 @@
         }
 
         function updateHeroContent(index) {
-            const slide = heroSlides[index];
+            const slidesToUse = heroSlides.length > 0 ? heroSlides : [{
+                image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+                tagline: 'Reducing Food Waste, One Bite at a Time',
+                title: 'Welcome to LastBite',
+                subtitle: 'Fresh Food, Lower Prices',
+                description: 'Save money while saving the planet from food waste'
+            }];
+
+            const slide = slidesToUse[index];
             const heroContent = document.querySelector('.hero-content');
 
             if (heroContent) {
                 heroContent.innerHTML = `
-                    <div class="hero-tagline">${slide.tagline}</div>
-                    <h1 class="hero-title">${slide.title}</h1>
-                    <div class="hero-subtitle">${slide.subtitle}</div>
-                    <p class="hero-description">${slide.description}</p>
-                    <a href="#flash-sale" class="hero-cta">Shop Flash Sale</a>
-                `;
+                <div class="hero-tagline">${slide.tagline}</div>
+                <h1 class="hero-title">${slide.title}</h1>
+                <div class="hero-subtitle">${slide.subtitle}</div>
+                <p class="hero-description">${slide.description}</p>
+                <a href="#flash-sale" class="hero-cta">Shop Now</a>
+            `;
             }
         }
 
@@ -1970,246 +1818,13 @@
         function renderCategories() {
             const categoriesGrid = document.getElementById('categoriesGrid');
             categoriesGrid.innerHTML = categories.map(category => `
-                <div class="category-item" data-category="${category.id}" onclick="filterByCategory('${category.id}')">
-                    <div class="category-circle">
-                        <i class="${category.icon} category-icon"></i>
-                    </div>
-                    <span class="category-name">${category.name}</span>
+            <div class="category-item" data-category="${category.id}" onclick="filterByCategory('${category.id}')">
+                <div class="category-circle">
+                    <i class="${category.icon} category-icon"></i>
                 </div>
-            `).join('');
-        }
-
-        // Product Functions
-        function formatPrice(price) {
-            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        }
-
-        function formatNumber(num) {
-            if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
-            return num.toString();
-        }
-
-        function generateStars(rating) {
-            let stars = '';
-            const fullStars = Math.floor(rating);
-            const hasHalfStar = rating % 1 >= 0.5;
-
-            for (let i = 0; i < fullStars; i++) stars += '<i class="fas fa-star"></i>';
-            if (hasHalfStar) stars += '<i class="fas fa-star-half-alt"></i>';
-
-            const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-            for (let i = 0; i < emptyStars; i++) stars += '<i class="far fa-star"></i>';
-
-            return stars;
-        }
-
-        function getProductImage(product) {
-            if (!product.image || product.image.trim() === '') {
-                return defaultImages[product.category] ||
-                    'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80';
-            }
-            return product.image;
-        }
-
-        function renderProductCard(product, isFlashSale = false) {
-            const stars = generateStars(product.rating);
-            const discountPercent = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
-            const productImage = getProductImage(product);
-
-            return `
-                <div class="product-card" onclick="showProductDetails(${product.id})">
-                    ${isFlashSale ?
-                        '<span class="flash-badge">Flash Sale</span>' :
-                        '<span class="recommended-badge">Recommended</span>'
-                    }
-                    <div class="product-image-container">
-                        <img src="${productImage}" alt="${product.name}" class="product-image">
-                        <div class="product-actions">
-                            <button class="favorite-btn" onclick="toggleFavorite(${product.id}, this); event.stopPropagation()">
-                                <i class="far fa-star"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-brand">
-                            <i class="fas fa-store"></i>
-                            ${product.brand}
-                        </div>
-                        <h3 class="product-name">${product.name}</h3>
-                        <span class="product-category">${categoryNames[product.category]}</span>
-                        <div class="product-rating">
-                            <div class="stars">${stars}</div>
-                            <span class="rating-count">(${formatNumber(product.ratingCount)})</span>
-                        </div>
-                        <div class="product-price">
-                            <div class="price-container">
-                                <span class="current-price">Rp${formatPrice(product.price)}</span>
-                                <div>
-                                    <span class="original-price">Rp${formatPrice(product.originalPrice)}</span>
-                                    <span class="discount-percent">-${discountPercent}%</span>
-                                </div>
-                            </div>
-                            <button class="add-to-cart-btn" onclick="addToCart(${product.id}, '${product.name}', ${product.price}); event.stopPropagation()">
-                                <i class="fas fa-shopping-cart"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // Flash Sale
-        function renderFlashSale() {
-            const container = document.getElementById('flashSaleProducts');
-            const dotsContainer = document.getElementById('flashSaleDots');
-
-            container.innerHTML = flashSaleProducts.map(product => `
-                <div class="swiper-slide">
-                    ${renderProductCard(product, true)}
-                </div>
-            `).join('');
-
-            // Create dots for flash sale
-            dotsContainer.innerHTML = '';
-            const numSlides = flashSaleProducts.length;
-            for (let i = 0; i < numSlides; i++) {
-                const dot = document.createElement('div');
-                dot.className = `flash-sale-dot ${i === 0 ? 'active' : ''}`;
-                dot.dataset.index = i;
-                dot.addEventListener('click', () => {
-                    flashSaleSwiper.slideTo(i);
-                });
-                dotsContainer.appendChild(dot);
-            }
-
-            initializeFlashSaleSwiper();
-        }
-
-        function initializeFlashSaleSwiper() {
-            if (flashSaleSwiper) {
-                flashSaleSwiper.destroy();
-            }
-
-            flashSaleSwiper = new Swiper('#flashSaleSwiper', {
-                slidesPerView: 1,
-                spaceBetween: 20,
-                loop: true,
-                autoplay: {
-                    delay: 3000,
-                    disableOnInteraction: false,
-                },
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-                breakpoints: {
-                    640: {
-                        slidesPerView: 2,
-                        spaceBetween: 20,
-                    },
-                    768: {
-                        slidesPerView: 3,
-                        spaceBetween: 25,
-                    },
-                    1024: {
-                        slidesPerView: 4,
-                        spaceBetween: 30,
-                    },
-                },
-                on: {
-                    slideChange: function() {
-                        const dots = document.querySelectorAll('.flash-sale-dot');
-                        const activeIndex = this.realIndex;
-
-                        dots.forEach((dot, index) => {
-                            if (index === activeIndex) {
-                                dot.classList.add('active');
-                            } else {
-                                dot.classList.remove('active');
-                            }
-                        });
-                    }
-                }
-            });
-        }
-
-        // Fungsi untuk generate rekomendasi produk secara acak
-        function generateRecommendedProducts() {
-            // Ambil 12 produk secara acak dari database
-            const shuffled = [...productDatabase].sort(() => 0.5 - Math.random());
-            recommendedProducts = shuffled.slice(0, 12);
-
-            // Tambahkan timestamp untuk tracking
-            recommendedProducts.forEach((product, index) => {
-                product.generatedAt = new Date().toISOString();
-                product.recommendationId = Date.now() + index;
-            });
-
-            return recommendedProducts;
-        }
-
-        // Fungsi untuk refresh rekomendasi setiap 5 menit
-        function startRecommendedRefresh() {
-            // Refresh pertama kali
-            refreshRecommendedProducts();
-
-            // Set interval setiap 5 menit (300000 ms)
-            recommendedRefreshInterval = setInterval(() => {
-                refreshRecommendedProducts();
-                showNotification("Recommended products updated! 🍽️", "success");
-            }, 300000); // 5 menit = 300000 milidetik
-        }
-
-        function refreshRecommendedProducts() {
-            generateRecommendedProducts();
-            renderRecommendedProducts('all');
-        }
-
-        // Recommended Products
-        function renderCategoryFilter() {
-            const categories = ["all", ...new Set(recommendedProducts.map(p => p.category))];
-            const container = document.getElementById('categoryFilter');
-
-            container.innerHTML = categories.map(category => `
-                <button class="category-btn ${category === 'all' ? 'active' : ''}"
-                        data-category="${category}"
-                        onclick="filterRecommendedProducts('${category}')">
-                    ${categoryNames[category] || category}
-                </button>
-            `).join('');
-        }
-
-        function renderRecommendedProducts(filterCategory = 'all') {
-            const container = document.getElementById('recommendedGrid');
-            let filteredProducts = recommendedProducts;
-
-            if (filterCategory !== 'all') {
-                filteredProducts = recommendedProducts.filter(p => p.category === filterCategory);
-            }
-
-            container.innerHTML = filteredProducts.map(product =>
-                renderProductCard(product, false)
-            ).join('');
-
-            // Update active button
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.category === filterCategory) {
-                    btn.classList.add('active');
-                }
-            });
-        }
-
-        function filterRecommendedProducts(category) {
-            renderRecommendedProducts(category);
-            showNotification(`Showing ${categoryNames[category] || category}`, 'info');
-        }
-
-        function filterByCategory(category) {
-            filterRecommendedProducts(category);
-            document.getElementById('recommended-foods').scrollIntoView({
-                behavior: 'smooth'
-            });
+                <span class="category-name">${category.name}</span>
+            </div>
+        `).join('');
         }
 
         // Cart Functions
@@ -2258,35 +1873,92 @@
             }
         }
 
-        // Other Functions
-        function toggleFavorite(productId, button) {
-            button.classList.toggle('active');
-            if (button.classList.contains('active')) {
-                showNotification('Added to favorites!', 'success');
+        function filterByCategory(category) {
+            showNotification(`Filtering by ${categoryNames[category] || category}`, 'info');
+            document.getElementById('recommended-foods').scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+
+        // Flash Sale Swiper
+        function initializeFlashSaleSwiper() {
+            if (flashSaleSwiper) {
+                flashSaleSwiper.destroy();
+            }
+
+            const productCount = document.querySelectorAll('#flashSaleProducts .swiper-slide').length;
+
+            // Only initialize swiper if there are multiple products
+            if (productCount > 1) {
+                flashSaleSwiper = new Swiper('#flashSaleSwiper', {
+                    slidesPerView: 1,
+                    spaceBetween: 20,
+                    loop: true,
+                    autoplay: {
+                        delay: 3000,
+                        disableOnInteraction: false,
+                    },
+                    navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev',
+                    },
+                    breakpoints: {
+                        640: {
+                            slidesPerView: 2,
+                            spaceBetween: 20,
+                        },
+                        768: {
+                            slidesPerView: 3,
+                            spaceBetween: 25,
+                        },
+                        1024: {
+                            slidesPerView: 4,
+                            spaceBetween: 30,
+                        },
+                    },
+                    on: {
+                        slideChange: function() {
+                            const dots = document.querySelectorAll('.flash-sale-dot');
+                            const activeIndex = this.realIndex;
+
+                            dots.forEach((dot, index) => {
+                                if (index === activeIndex) {
+                                    dot.classList.add('active');
+                                } else {
+                                    dot.classList.remove('active');
+                                }
+                            });
+                        }
+                    }
+                });
+
+                // Create dots for flash sale
+                createFlashSaleDots(productCount);
             } else {
-                showNotification('Removed from favorites', 'info');
+                // Hide navigation if only 1 product
+                document.querySelector('.swiper-button-next').style.display = 'none';
+                document.querySelector('.swiper-button-prev').style.display = 'none';
             }
         }
 
-        function showProductDetails(productId) {
-            // Cari produk dari semua sumber
-            let product = [...flashSaleProducts, ...recommendedProducts].find(p => p.id === productId);
+        function createFlashSaleDots(numSlides) {
+            const dotsContainer = document.getElementById('flashSaleDots');
+            dotsContainer.innerHTML = '';
 
-            if (!product) {
-                // Cari dari database jika tidak ditemukan
-                product = productDatabase.find(p => p.id === productId);
-            }
-
-            if (product) {
-                showNotification(`Viewing details for ${product.name}`, 'info');
-                // Simpan produk yang sedang dilihat untuk halaman detail
-                localStorage.setItem('lastbite_viewing_product', JSON.stringify(product));
-                // Redirect ke halaman detail produk (bisa diimplementasikan nanti)
-                // window.location.href = `/product/${productId}`;
+            for (let i = 0; i < numSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = `flash-sale-dot ${i === 0 ? 'active' : ''}`;
+                dot.dataset.index = i;
+                dot.addEventListener('click', () => {
+                    if (flashSaleSwiper) {
+                        flashSaleSwiper.slideTo(i);
+                    }
+                });
+                dotsContainer.appendChild(dot);
             }
         }
 
-        // Countdown Timer - Global 24-hour timer
+        // Countdown Timer
         function updateCountdownTimer() {
             const timerElement = document.getElementById('countdownTimer');
 
@@ -2335,35 +2007,47 @@
             }, 1000);
         }
 
+        // Notification function
+        function showNotification(message, type = 'success') {
+            // Remove existing notification
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+            <span>${message}</span>
+        `;
+
+            // Add to body
+            document.body.appendChild(notification);
+
+            // Show notification
+            setTimeout(() => notification.classList.add('show'), 100);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 400);
+            }, 3000);
+        }
+
         // Initialize Dashboard
         function initializeDashboard() {
             initializeHeroSlideshow();
             renderCategories();
-            renderFlashSale();
-
-            // Generate dan render rekomendasi produk
-            generateRecommendedProducts();
-            renderCategoryFilter();
-            renderRecommendedProducts();
-
-            // Mulai refresh otomatis setiap 5 menit
-            startRecommendedRefresh();
-
+            initializeFlashSaleSwiper();
             updateCountdownTimer();
             updateCartCount();
 
-            console.log('Dashboard initialized');
-            console.log(`Loaded ${recommendedProducts.length} recommended products (will refresh every 5 minutes)`);
-            console.log(`Loaded ${flashSaleProducts.length} flash sale products`);
-            console.log('Flash sale timer synchronized globally');
+            console.log('Dashboard initialized successfully');
+            console.log('Flash sale products:', document.querySelectorAll('#flashSaleProducts .swiper-slide').length);
+            console.log('Recommended products:', document.querySelectorAll('#recommendedGrid .product-card').length);
         }
-
-        // Clean up interval saat halaman ditutup
-        window.addEventListener('beforeunload', () => {
-            if (recommendedRefreshInterval) {
-                clearInterval(recommendedRefreshInterval);
-            }
-        });
 
         // Initialize when DOM is loaded
         if (document.readyState === 'loading') {

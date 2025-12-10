@@ -439,11 +439,11 @@
                             Email Address <span class="required">*</span>
                         </label>
                         <input type="email" id="email" name="email" class="form-input"
-                            value="{{ old('email') }}" placeholder="Enter your business email" required>
+                            value="{{ old('email') }}" placeholder="Enter your email" required>
                     </div>
 
-                    <!-- Company Based -->
-                    <div class="form-group">
+                    <!-- Company Based (only for penjual) -->
+                    <div class="form-group" id="company-based-group" style="display: none;">
                         <label for="company_based" class="form-label">
                             Company Location
                         </label>
@@ -451,14 +451,14 @@
                             value="{{ old('company_based') }}" placeholder="Where is your company based?">
                     </div>
 
-                    <!-- Industry -->
-                    <div class="form-group">
+                    <!-- Industry (only for penjual) -->
+                    <div class="form-group" id="industry-group" style="display: none;">
                         <label for="industry" class="form-label">
                             Industry
                         </label>
                         <select id="industry" name="industry" class="form-select">
                             <option value="">Please select an industry</option>
-                            @foreach ($industries as $industry)
+                            @foreach ($industries ?? config('lastbite.industries', []) as $industry)
                                 <option value="{{ $industry }}"
                                     {{ old('industry') == $industry ? 'selected' : '' }}>
                                     {{ $industry }}
@@ -534,7 +534,32 @@
     <script>
         // Set role saat option diklik
         function setRole(role) {
-            document.getElementById('selected-role').value = role;
+            const selectedRoleInput = document.getElementById('selected-role');
+            selectedRoleInput.value = role;
+
+            // Tampilkan/sembunyikan field khusus penjual
+            const companyGroup = document.getElementById('company-based-group');
+            const industryGroup = document.getElementById('industry-group');
+
+            if (role === 'penjual') {
+                if (companyGroup) companyGroup.style.display = 'block';
+                if (industryGroup) industryGroup.style.display = 'block';
+
+                // Buat required jika penjual
+                const companyInput = document.getElementById('company_based');
+                const industrySelect = document.getElementById('industry');
+                if (companyInput) companyInput.required = true;
+                if (industrySelect) industrySelect.required = true;
+            } else {
+                if (companyGroup) companyGroup.style.display = 'none';
+                if (industryGroup) industryGroup.style.display = 'none';
+
+                // Hapus required jika pembeli
+                const companyInput = document.getElementById('company_based');
+                const industrySelect = document.getElementById('industry');
+                if (companyInput) companyInput.required = false;
+                if (industrySelect) industrySelect.required = false;
+            }
         }
 
         // Toggle password visibility
@@ -555,19 +580,22 @@
         document.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);
             const roleFromUrl = urlParams.get('role');
+            const selectedRole = "{{ $selectedRole ?? 'pembeli' }}";
 
-            if (roleFromUrl) {
-                setRole(roleFromUrl);
-                const radioButton = document.querySelector(`input[value="${roleFromUrl}"]`);
-                if (radioButton) {
-                    radioButton.checked = true;
-                }
-            }
+            // Set role awal
+            setRole(selectedRole);
 
             // Auto-focus pada nama field
             const nameField = document.getElementById('name');
             if (nameField && !nameField.value) {
                 nameField.focus();
+            }
+
+            // Setup initial state berdasarkan role yang dipilih
+            const initialRole = roleFromUrl || selectedRole;
+            const radioButton = document.querySelector(`input[value="${initialRole}"]`);
+            if (radioButton) {
+                radioButton.checked = true;
             }
         });
     </script>

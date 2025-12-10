@@ -238,4 +238,6 @@ class ProfileController extends Controller
         $orders = collect();
         return view('profile.orders', compact('orders'));
     }
+
+    
 }

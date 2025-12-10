@@ -6,6 +6,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\FavoritesController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+
 
 // ==================== PUBLIC ROUTES ====================
 Route::get('/', function () {
@@ -29,9 +31,10 @@ Route::get('/role', function () {
 })->name('role');
 
 // ==================== SIMPLE FORGOT PASSWORD ROUTE ====================
-Route::get('/forgot-password', function () {
-    return view('auth.forgot-password');
-})->name('forgot-password');
+// Forgot Password - Simple Email Only
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showForm'])->name('password.request');
+Route::post('/forgot-password/check-email', [ForgotPasswordController::class, 'checkEmail'])->name('password.check');
+Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'resetPassword'])->name('password.reset');
 
 // ==================== AUTH ROUTES (NO MIDDLEWARE) ====================
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

@@ -1541,6 +1541,32 @@
                         showNotification('Terjadi kesalahan saat menghapus foto', 'error');
                     });
             }
+
+            // Setelah upload foto berhasil, dispatch event
+            if (data.success && data.avatar_url) {
+                // Dispatch event untuk memberitahu halaman lain
+                const avatarUpdatedEvent = new CustomEvent('avatarUpdated', {
+                    detail: {
+                        avatar_url: data.avatar_url
+                    }
+                });
+                window.dispatchEvent(avatarUpdatedEvent);
+
+                // Juga update localStorage untuk sinkronisasi
+                localStorage.setItem('last_avatar_update', new Date().getTime());
+                localStorage.setItem('last_avatar_url', data.avatar_url);
+            }
+
+            // Setelah hapus foto berhasil, dispatch event
+            if (data.success) {
+                // Dispatch event untuk memberitahu halaman lain
+                const avatarDeletedEvent = new Event('avatarDeleted');
+                window.dispatchEvent(avatarDeletedEvent);
+
+                // Clear localStorage
+                localStorage.removeItem('last_avatar_update');
+                localStorage.removeItem('last_avatar_url');
+            }
         }
 
         function togglePasswordSection() {

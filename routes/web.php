@@ -82,3 +82,8 @@ Route::get('/checkout', function () {
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 
 });
+
+// Route untuk halaman keranjang
+Route::get('/cart', function () {
+    return view('cart.index');
+})->name('cart.index');

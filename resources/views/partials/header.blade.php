@@ -459,13 +459,15 @@
         </div>
 
         <!-- CART BUTTON -->
-        <button class="cart-btn" onclick="openCart()">
-            <div class="cart-text">Cart</div>
-            <div class="cart-icon">
-                <i class="fas fa-shopping-cart"></i>
-                <span class="cart-badge" id="cartCount">0</span>
-            </div>
-        </button>
+        <a href="/cart" style="text-decoration: none; display: inline-block;">
+            <button class="cart-btn" type="button">
+                <div class="cart-text">Cart</div>
+                <div class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-badge" id="cartCount">0</span>
+                </div>
+            </button>
+        </a>
 
         <!-- PROFILE DROPDOWN -->
         <div class="nav-item dropdown">
@@ -614,9 +616,8 @@
         // CART FUNCTIONALITY
         // ====================
         function openCart() {
-            showNotification('Opening shopping cart', 'info');
-            // Navigate to cart page (to be implemented)
-            console.log('Opening cart page');
+            // Redirect ke halaman cart
+            window.location.href = "/cart";
         }
 
         function updateCartCount() {

@@ -14,385 +14,1027 @@
 </head>
 
 <body>
-    <!-- =========================================== -->
-    <!-- HEADER SECTION -->
-    <!-- =========================================== -->
-    <style>
-        /* ========== HEADER STYLES ========== */
-        :root {
-            --primary-color: #3F2305;
-            --primary-light: #6E3F0C;
-            --primary-dark: #2A1703;
-            --accent-color: #FF9F1C;
-            --danger-color: #FF4757;
-            --success-color: #2ECC71;
-            --text-dark: #2C2C2C;
-            --text-light: #7A7A7A;
-            --bg-light: #F9F5F0;
-            --white: #FFFFFF;
-            --shadow-light: 0 4px 20px rgba(63, 35, 5, 0.08);
-            --shadow-medium: 0 6px 25px rgba(63, 35, 5, 0.12);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+<!-- =========================================== -->
+<!-- HEADER SECTION -->
+<!-- =========================================== -->
+<style>
+    /* ========== HEADER STYLES ========== */
+    :root {
+        --primary-color: #3F2305;
+        --primary-light: #6E3F0C;
+        --primary-dark: #2A1703;
+        --accent-color: #FF9F1C;
+        --danger-color: #FF4757;
+        --success-color: #2ECC71;
+        --text-dark: #2C2C2C;
+        --text-light: #7A7A7A;
+        --bg-light: #F9F5F0;
+        --white: #FFFFFF;
+        --shadow-light: 0 4px 20px rgba(63, 35, 5, 0.08);
+        --shadow-medium: 0 6px 25px rgba(63, 35, 5, 0.12);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-        * {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        body {
-            background: var(--bg-light);
-            color: var(--text-dark);
-            min-height: 100vh;
-            scroll-behavior: smooth;
-        }
+    body {
+        background: var(--bg-light);
+        color: var(--text-dark);
+        min-height: 100vh;
+        scroll-behavior: smooth;
+    }
 
+    .navbar-container {
+        width: 90%;
+        max-width: 1500px;
+        justify-content: space-between;
+        align-items: center;
+        display: flex;
+        background: var(--white);
+        padding: 15px 40px;
+        border-radius: 12px;
+        box-shadow: var(--shadow-medium);
+        position: sticky;
+        top: 20px;
+        z-index: 1000;
+        margin: 20px auto;
+        transition: var(--transition);
+    }
+
+    .navbar-scrolled {
+        padding: 12px 30px;
+        box-shadow: 0 8px 30px rgba(63, 35, 5, 0.12);
+    }
+
+    .logo {
+        width: 100px;
+        height: auto;
+        object-fit: contain;
+        cursor: pointer;
+        transition: var(--transition);
+        filter: drop-shadow(0 2px 4px rgba(63, 35, 5, 0.1));
+    }
+
+    .logo:hover {
+        transform: scale(1.05);
+    }
+
+    .catalog-btn {
+        min-width: 130px;
+        height: 44px;
+        padding: 0 18px;
+        border-radius: 30px;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        display: flex;
+        background: var(--white);
+        border: 1.5px solid var(--primary-color);
+        cursor: pointer;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .catalog-btn:hover {
+        background: var(--primary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(63, 35, 5, 0.15);
+    }
+
+    .catalog-btn:hover .catalog-text,
+    .catalog-btn:hover .catalog-icon {
+        color: var(--white);
+    }
+
+    .catalog-text {
+        color: var(--primary-color);
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+        transition: var(--transition);
+    }
+
+    .catalog-icon {
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-color);
+        transition: var(--transition);
+    }
+
+    /* ========== SEARCH AND FILTER STYLES ========== */
+    .search-wrapper {
+        position: relative;
+        width: 420px;
+    }
+
+    .search-container {
+        width: 100%;
+        height: 48px;
+        padding-left: 20px;
+        padding-right: 8px;
+        background: var(--white);
+        border-radius: 30px;
+        justify-content: space-between;
+        align-items: center;
+        display: flex;
+        transition: var(--transition);
+        position: relative;
+        border: 1.5px solid rgba(63, 35, 5, 0.15);
+        box-shadow: 0 2px 8px rgba(63, 35, 5, 0.05);
+        z-index: 1001;
+    }
+
+    .search-container:focus-within {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(63, 35, 5, 0.15);
+    }
+
+    .search-container.active {
+        border-radius: 15px 15px 0 0;
+    }
+
+    .search-input {
+        color: var(--text-dark);
+        font-size: 15px;
+        font-weight: 500;
+        background: transparent;
+        border: none;
+        outline: none;
+        flex: 1;
+        padding: 0 10px;
+    }
+
+    .search-input::placeholder {
+        color: var(--text-light);
+        font-weight: 400;
+    }
+
+    .search-icon-container {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .search-icon-container:hover {
+        background: var(--primary-dark);
+        transform: scale(1.05);
+    }
+
+    .search-icon {
+        color: var(--white);
+        font-size: 16px;
+    }
+
+    /* Filter Button */
+    .filter-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--white);
+        border: 1.5px solid rgba(63, 35, 5, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition);
+        margin-left: 8px;
+        color: var(--primary-color);
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+        background: var(--primary-color);
+        color: var(--white);
+        border-color: var(--primary-color);
+        transform: scale(1.05);
+    }
+
+    /* Search History Dropdown */
+    .search-history-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--white);
+        border-radius: 0 0 15px 15px;
+        box-shadow: var(--shadow-medium);
+        max-height: 300px;
+        overflow-y: auto;
+        display: none;
+        z-index: 1000;
+        border: 1.5px solid rgba(63, 35, 5, 0.15);
+        border-top: none;
+    }
+
+    .search-history-dropdown.active {
+        display: block;
+    }
+
+    .search-history-header {
+        padding: 12px 20px;
+        border-bottom: 1px solid rgba(63, 35, 5, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .search-history-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--primary-color);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .clear-history-btn {
+        background: none;
+        border: none;
+        color: var(--text-light);
+        font-size: 12px;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: var(--transition);
+    }
+
+    .clear-history-btn:hover {
+        color: var(--danger-color);
+        background: rgba(255, 71, 87, 0.1);
+    }
+
+    .search-history-list {
+        list-style: none;
+    }
+
+    .search-history-item {
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        transition: var(--transition);
+        border-bottom: 1px solid rgba(63, 35, 5, 0.05);
+    }
+
+    .search-history-item:hover {
+        background: rgba(63, 35, 5, 0.05);
+    }
+
+    .search-history-item:last-child {
+        border-bottom: none;
+    }
+
+    .search-history-text {
+        color: var(--text-dark);
+        font-size: 14px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .search-history-text i {
+        color: var(--primary-light);
+        font-size: 12px;
+    }
+
+    .search-history-time {
+        color: var(--text-light);
+        font-size: 12px;
+    }
+
+    .search-history-empty {
+        padding: 20px;
+        text-align: center;
+        color: var(--text-light);
+        font-size: 14px;
+        display: none;
+    }
+
+    /* Filter Modal */
+    .filter-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        padding: 20px;
+    }
+
+    .filter-modal.active {
+        display: flex;
+    }
+
+    .filter-content {
+        background: var(--white);
+        border-radius: 20px;
+        max-width: 800px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: var(--shadow-medium);
+    }
+
+    .filter-header {
+        padding: 25px 30px;
+        border-bottom: 1px solid rgba(63, 35, 5, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .filter-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .filter-title i {
+        color: var(--accent-color);
+    }
+
+    .filter-close {
+        background: none;
+        border: none;
+        color: var(--text-light);
+        font-size: 24px;
+        cursor: pointer;
+        transition: var(--transition);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .filter-close:hover {
+        background: rgba(63, 35, 5, 0.1);
+        color: var(--primary-color);
+    }
+
+    .filter-body {
+        padding: 30px;
+    }
+
+    .filter-section {
+        margin-bottom: 30px;
+    }
+
+    .filter-section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .filter-section-title i {
+        color: var(--accent-color);
+    }
+
+    .filter-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .filter-option {
+        padding: 10px 20px;
+        background: var(--bg-light);
+        border: 1.5px solid rgba(63, 35, 5, 0.1);
+        border-radius: 25px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-dark);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .filter-option:hover {
+        border-color: var(--primary-color);
+        background: var(--white);
+    }
+
+    .filter-option.active {
+        background: var(--primary-color);
+        color: var(--white);
+        border-color: var(--primary-color);
+    }
+
+    .filter-range {
+        padding: 20px;
+        background: var(--bg-light);
+        border-radius: 15px;
+    }
+
+    .filter-range-values {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+
+    .filter-range-value {
+        font-size: 14px;
+        color: var(--text-dark);
+        font-weight: 500;
+    }
+
+    .filter-range-slider {
+        width: 100%;
+        height: 6px;
+        background: rgba(63, 35, 5, 0.1);
+        border-radius: 3px;
+        outline: none;
+        -webkit-appearance: none;
+    }
+
+    .filter-range-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        cursor: pointer;
+        border: 3px solid var(--white);
+        box-shadow: 0 2px 5px rgba(63, 35, 5, 0.2);
+    }
+
+    /* Distance Filter Specific */
+    .distance-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
+    }
+
+    .distance-option {
+        padding: 15px;
+        background: var(--bg-light);
+        border: 1.5px solid rgba(63, 35, 5, 0.1);
+        border-radius: 12px;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .distance-option:hover {
+        border-color: var(--primary-color);
+        background: var(--white);
+    }
+
+    .distance-option.active {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .distance-value {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 5px;
+    }
+
+    .distance-option.active .distance-value {
+        color: var(--white);
+    }
+
+    .distance-label {
+        font-size: 12px;
+        color: var(--text-light);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .distance-option.active .distance-label {
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    /* Rating Filter */
+    .rating-options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .rating-option {
+        padding: 12px 20px;
+        background: var(--bg-light);
+        border: 1.5px solid rgba(63, 35, 5, 0.1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .rating-option:hover {
+        border-color: var(--primary-color);
+        background: var(--white);
+    }
+
+    .rating-option.active {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .rating-stars {
+        display: flex;
+        gap: 2px;
+    }
+
+    .rating-star {
+        color: #FFD700;
+        font-size: 16px;
+    }
+
+    .rating-option.active .rating-star {
+        color: var(--white);
+    }
+
+    .rating-text {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-dark);
+    }
+
+    .rating-option.active .rating-text {
+        color: var(--white);
+    }
+
+    .rating-count {
+        margin-left: auto;
+        font-size: 12px;
+        color: var(--text-light);
+        background: var(--white);
+        padding: 2px 8px;
+        border-radius: 10px;
+    }
+
+    .rating-option.active .rating-count {
+        background: rgba(255, 255, 255, 0.2);
+        color: var(--white);
+    }
+
+    .filter-footer {
+        padding: 20px 30px;
+        border-top: 1px solid rgba(63, 35, 5, 0.1);
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+    }
+
+    .filter-reset {
+        padding: 12px 30px;
+        background: var(--white);
+        border: 1.5px solid rgba(63, 35, 5, 0.15);
+        border-radius: 25px;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text-dark);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .filter-reset:hover {
+        border-color: var(--danger-color);
+        color: var(--danger-color);
+        background: rgba(255, 71, 87, 0.05);
+    }
+
+    .filter-apply {
+        padding: 12px 40px;
+        background: var(--primary-color);
+        border: none;
+        border-radius: 25px;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--white);
+        cursor: pointer;
+        transition: var(--transition);
+        flex: 1;
+    }
+
+    .filter-apply:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(63, 35, 5, 0.2);
+    }
+
+    /* ========== NAVBAR LAYOUT FIXES ========== */
+    .navbar-left-section {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .navbar-center-section {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .navbar-right-section {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .cart-btn {
+        min-width: 120px;
+        height: 48px;
+        padding: 0 20px;
+        border-radius: 30px;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        display: flex;
+        background: var(--primary-color);
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cart-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(63, 35, 5, 0.2);
+    }
+
+    .cart-text {
+        color: var(--white);
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+    }
+
+    .cart-icon {
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        position: relative;
+    }
+
+    .cart-badge {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        background: var(--accent-color);
+        color: var(--primary-dark);
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .profile-btn {
+        min-width: 130px;
+        height: 48px;
+        padding: 0 18px;
+        border-radius: 30px;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        display: flex;
+        background: var(--white);
+        border: 1.5px solid rgba(63, 35, 5, 0.15);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .profile-btn:hover {
+        background: var(--bg-light);
+        border-color: var(--primary-light);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(63, 35, 5, 0.08);
+    }
+
+    .profile-avatar {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        box-shadow: 0 2px 5px rgba(63, 35, 5, 0.2);
+    }
+
+    .profile-avatar i {
+        color: var(--white);
+        font-size: 14px;
+    }
+
+    .profile-text {
+        color: var(--primary-color);
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+    }
+
+    .dropdown-menu {
+        border: none;
+        border-radius: 12px;
+        box-shadow: var(--shadow-medium);
+        padding: 0.75rem 0;
+        min-width: 260px;
+        border-top: 3px solid var(--primary-color);
+        margin-top: 10px;
+    }
+
+    .dropdown-header {
+        font-weight: 600;
+        color: var(--primary-color);
+        font-size: 0.85rem;
+        padding: 0.5rem 1.25rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .dropdown-item {
+        border-radius: 8px;
+        padding: 0.75rem 1.25rem;
+        margin: 0.1rem 0.75rem;
+        transition: var(--transition);
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: var(--text-dark);
+        cursor: pointer;
+    }
+
+    .dropdown-item:hover {
+        background: rgba(63, 35, 5, 0.08);
+        color: var(--primary-color);
+        transform: translateX(5px);
+    }
+
+    .dropdown-item i {
+        width: 20px;
+        text-align: center;
+        color: var(--primary-light);
+    }
+
+    @media (max-width: 1300px) {
         .navbar-container {
-            width: 90%;
-            max-width: 1500px;
-            justify-content: space-between;
-            align-items: center;
-            display: flex;
-            background: var(--white);
-            padding: 15px 40px;
-            border-radius: 12px;
-            box-shadow: var(--shadow-medium);
-            position: sticky;
-            top: 20px;
-            z-index: 1000;
-            margin: 20px auto;
-            transition: var(--transition);
+            width: 95%;
+            padding: 15px 25px;
         }
 
-        .navbar-scrolled {
-            padding: 12px 30px;
-            box-shadow: 0 8px 30px rgba(63, 35, 5, 0.12);
+        .search-wrapper {
+            width: 350px;
+        }
+    }
+
+    @media (max-width: 1024px) {
+        .navbar-container {
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 15px;
         }
 
-        .logo {
-            width: 100px;
-            height: auto;
-            object-fit: contain;
-            cursor: pointer;
-            transition: var(--transition);
-            filter: drop-shadow(0 2px 4px rgba(63, 35, 5, 0.1));
-        }
-
-        .logo:hover {
-            transform: scale(1.05);
-        }
-
-        .catalog-btn {
-            min-width: 130px;
-            height: 44px;
-            padding: 0 18px;
-            border-radius: 30px;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            display: flex;
-            background: var(--white);
-            border: 1.5px solid var(--primary-color);
-            cursor: pointer;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .catalog-btn:hover {
-            background: var(--primary-color);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(63, 35, 5, 0.15);
-        }
-
-        .catalog-btn:hover .catalog-text,
-        .catalog-btn:hover .catalog-icon {
-            color: var(--white);
-        }
-
-        .catalog-text {
-            color: var(--primary-color);
-            font-size: 16px;
-            font-weight: 600;
-            letter-spacing: 0.2px;
-            transition: var(--transition);
-        }
-
-        .catalog-icon {
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary-color);
-            transition: var(--transition);
-        }
-
-        .search-container {
-            width: 420px;
-            height: 48px;
-            padding-left: 20px;
-            padding-right: 8px;
-            background: var(--white);
-            border-radius: 30px;
-            justify-content: space-between;
-            align-items: center;
-            display: flex;
-            transition: var(--transition);
-            position: relative;
-            border: 1.5px solid rgba(63, 35, 5, 0.15);
-            box-shadow: 0 2px 8px rgba(63, 35, 5, 0.05);
-        }
-
-        .search-container:focus-within {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(63, 35, 5, 0.15);
-        }
-
-        .search-input {
-            color: var(--text-dark);
-            font-size: 15px;
-            font-weight: 500;
-            background: transparent;
-            border: none;
-            outline: none;
-            flex: 1;
-            padding: 0 10px;
-        }
-
-        .search-input::placeholder {
-            color: var(--text-light);
-            font-weight: 400;
-        }
-
-        .search-icon-container {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .search-icon-container:hover {
-            background: var(--primary-dark);
-            transform: scale(1.05);
-        }
-
-        .search-icon {
-            color: var(--white);
-            font-size: 16px;
-        }
-
-        .cart-btn {
-            min-width: 120px;
-            height: 48px;
-            padding: 0 20px;
-            border-radius: 30px;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            display: flex;
-            background: var(--primary-color);
-            border: none;
-            cursor: pointer;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cart-btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(63, 35, 5, 0.2);
-        }
-
-        .cart-text {
-            color: var(--white);
-            font-size: 16px;
-            font-weight: 600;
-            letter-spacing: 0.2px;
-        }
-
-        .cart-icon {
-            width: 22px;
-            height: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            position: relative;
-        }
-
-        .cart-badge {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            background: var(--accent-color);
-            color: var(--primary-dark);
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 11px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        .profile-btn {
-            min-width: 130px;
-            height: 48px;
-            padding: 0 18px;
-            border-radius: 30px;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            display: flex;
-            background: var(--white);
-            border: 1.5px solid rgba(63, 35, 5, 0.15);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .profile-btn:hover {
-            background: var(--bg-light);
-            border-color: var(--primary-light);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(63, 35, 5, 0.08);
-        }
-
-        .profile-avatar {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            box-shadow: 0 2px 5px rgba(63, 35, 5, 0.2);
-        }
-
-        .profile-avatar i {
-            color: var(--white);
-            font-size: 14px;
-        }
-
-        .profile-text {
-            color: var(--primary-color);
-            font-size: 15px;
-            font-weight: 600;
-            letter-spacing: 0.2px;
-        }
-
-        .dropdown-menu {
-            border: none;
-            border-radius: 12px;
-            box-shadow: var(--shadow-medium);
-            padding: 0.75rem 0;
-            min-width: 260px;
-            border-top: 3px solid var(--primary-color);
+        .search-wrapper {
+            width: 100%;
+            order: 3;
             margin-top: 10px;
         }
 
-        .dropdown-header {
-            font-weight: 600;
-            color: var(--primary-color);
-            font-size: 0.85rem;
-            padding: 0.5rem 1.25rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .catalog-btn,
+        .cart-btn,
+        .profile-btn {
+            flex: 1;
+            min-width: auto;
         }
 
-        .dropdown-item {
-            border-radius: 8px;
-            padding: 0.75rem 1.25rem;
-            margin: 0.1rem 0.75rem;
-            transition: var(--transition);
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            color: var(--text-dark);
-            cursor: pointer;
+        .navbar-left-section,
+        .navbar-center-section,
+        .navbar-right-section {
+            gap: 10px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .navbar-container {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 10px;
         }
 
-        .dropdown-item:hover {
-            background: rgba(63, 35, 5, 0.08);
-            color: var(--primary-color);
-            transform: translateX(5px);
+        .logo {
+            width: 85px;
         }
 
-        .dropdown-item i {
-            width: 20px;
-            text-align: center;
-            color: var(--primary-light);
+        .catalog-text,
+        .cart-text,
+        .profile-text {
+            font-size: 14px;
         }
 
-        @media (max-width: 1300px) {
-            .navbar-container {
-                width: 95%;
-                padding: 15px 25px;
-            }
-
-            .search-container {
-                width: 350px;
-            }
+        .filter-content {
+            max-height: 80vh;
         }
 
-        @media (max-width: 1024px) {
-            .navbar-container {
-                flex-wrap: wrap;
-                gap: 15px;
-                padding: 15px;
-            }
-
-            .search-container {
-                width: 100%;
-                order: 3;
-                margin-top: 10px;
-            }
-
-            .catalog-btn,
-            .cart-btn,
-            .profile-btn {
-                flex: 1;
-                min-width: auto;
-            }
+        .filter-body {
+            padding: 20px;
         }
 
-        @media (max-width: 768px) {
-            .navbar-container {
-                width: 100%;
-                padding: 12px 15px;
-                border-radius: 10px;
-            }
-
-            .logo {
-                width: 85px;
-            }
-
-            .catalog-text,
-            .cart-text,
-            .profile-text {
-                font-size: 14px;
-            }
+        .filter-options {
+            justify-content: center;
         }
-    </style>
 
-    <div class="navbar-container" id="navbarContainer">
-        <!-- Logo - Redirect to Dashboard -->
+        .distance-options {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .navbar-left-section,
+        .navbar-center-section,
+        .navbar-right-section {
+            gap: 8px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .filter-footer {
+            flex-direction: column;
+        }
+
+        .filter-option {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .cart-btn,
+        .profile-btn {
+            min-width: 110px;
+            padding: 0 12px;
+        }
+
+        .cart-text,
+        .profile-text {
+            font-size: 13px;
+        }
+    }
+</style>
+
+<!-- Filter Modal -->
+<div class="filter-modal" id="filterModal">
+    <div class="filter-content">
+        <div class="filter-header">
+            <h2 class="filter-title"><i class="fas fa-filter"></i> Filter Options</h2>
+            <button class="filter-close" id="filterClose">&times;</button>
+        </div>
+
+        <div class="filter-body">
+            <!-- Price Filter -->
+            <div class="filter-section">
+                <h3 class="filter-section-title"><i class="fas fa-tag"></i> Price Range</h3>
+                <div class="filter-range">
+                    <div class="filter-range-values">
+                        <span class="filter-range-value" id="minPriceValue">Rp 0</span>
+                        <span class="filter-range-value" id="maxPriceValue">Rp 100.000</span>
+                    </div>
+                    <input type="range" min="0" max="100000" value="0" class="filter-range-slider" id="minPriceSlider">
+                    <input type="range" min="0" max="100000" value="100000" class="filter-range-slider" id="maxPriceSlider">
+                </div>
+            </div>
+
+            <!-- Rating Filter -->
+            <div class="filter-section">
+                <h3 class="filter-section-title"><i class="fas fa-star"></i> Minimum Rating</h3>
+                <div class="rating-options" id="ratingOptions">
+                    <div class="rating-option" data-rating="4">
+                        <div class="rating-stars">
+                            <i class="fas fa-star rating-star"></i>
+                            <i class="fas fa-star rating-star"></i>
+                            <i class="fas fa-star rating-star"></i>
+                            <i class="fas fa-star rating-star"></i>
+                            <i class="far fa-star rating-star"></i>
+                        </div>
+                        <span class="rating-text">4 Stars & Up</span>
+                        <span class="rating-count">128</span>
+                    </div>
+                    <div class="rating-option" data-rating="3">
+                        <div class="rating-stars">
+                            <i class="fas fa-star rating-star"></i>
+                            <i class="fas fa-star rating-star"></i>
+                            <i class="fas fa-star rating-star"></i>
+                            <i class="far fa-star rating-star"></i>
+                            <i class="far fa-star rating-star"></i>
+                        </div>
+                        <span class="rating-text">3 Stars & Up</span>
+                        <span class="rating-count">256</span>
+                    </div>
+                    <div class="rating-option" data-rating="2">
+                        <div class="rating-stars">
+                            <i class="fas fa-star rating-star"></i>
+                            <i class="fas fa-star rating-star"></i>
+                            <i class="far fa-star rating-star"></i>
+                            <i class="far fa-star rating-star"></i>
+                            <i class="far fa-star rating-star"></i>
+                        </div>
+                        <span class="rating-text">2 Stars & Up</span>
+                        <span class="rating-count">312</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Filter -->
+            <div class="filter-section">
+                <h3 class="filter-section-title"><i class="fas fa-utensils"></i> Food Category</h3>
+                <div class="filter-options" id="categoryOptions">
+                    <button class="filter-option active" data-category="all">All Categories</button>
+                    <button class="filter-option" data-category="bakery">Bakery & Bread</button>
+                    <button class="filter-option" data-category="dairy">Dairy & Beverages</button>
+                    <button class="filter-option" data-category="fruits">Fruits & Vegetables</button>
+                    <button class="filter-option" data-category="meat">Meat & Fish</button>
+                    <button class="filter-option" data-category="eggs">Eggs & Dairy</button>
+                    <button class="filter-option" data-category="ready">Ready-to-Eat</button>
+                    <button class="filter-option" data-category="frozen">Frozen Foods</button>
+                </div>
+            </div>
+
+            <!-- Distance Filter -->
+            <div class="filter-section">
+                <h3 class="filter-section-title"><i class="fas fa-location-dot"></i> Maximum Distance</h3>
+                <div class="distance-options" id="distanceOptions">
+                    <div class="distance-option" data-distance="1">
+                        <div class="distance-value">1 km</div>
+                        <div class="distance-label">Walking</div>
+                    </div>
+                    <div class="distance-option" data-distance="3">
+                        <div class="distance-value">3 km</div>
+                        <div class="distance-label">Short Drive</div>
+                    </div>
+                    <div class="distance-option" data-distance="5">
+                        <div class="distance-value">5 km</div>
+                        <div class="distance-label">Neighborhood</div>
+                    </div>
+                    <div class="distance-option active" data-distance="10">
+                        <div class="distance-value">10 km</div>
+                        <div class="distance-label">City Area</div>
+                    </div>
+                    <div class="distance-option" data-distance="20">
+                        <div class="distance-value">20 km</div>
+                        <div class="distance-label">Any Distance</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="filter-footer">
+            <button class="filter-reset" id="resetFilters">Reset All Filters</button>
+            <button class="filter-apply" id="applyFilters">Apply Filters</button>
+        </div>
+    </div>
+</div>
+
+<div class="navbar-container" id="navbarContainer">
+    <!-- Left Section: Logo -->
+    <div class="navbar-left-section">
         <a href="{{ route('dashboard') }}" style="text-decoration: none;">
             <img class="logo" src="{{ asset('images/LOGO LASTBITE.png') }}" alt="Last Bite" />
         </a>
+    </div>
 
+    <!-- Center Section: Catalog and Search -->
+    <div class="navbar-center-section">
         <!-- Catalog Dropdown -->
         <div class="nav-item dropdown">
             <button class="catalog-btn" data-bs-toggle="dropdown" aria-expanded="false">
@@ -418,14 +1060,2045 @@
             </ul>
         </div>
 
-        <!-- Search -->
-        <div class="search-container">
-            <input type="text" class="search-input" placeholder="Search for food items..." id="searchInput" />
-            <div class="search-icon-container" onclick="performSearch()">
-                <i class="fas fa-search search-icon"></i>
+        <!-- =========================================== -->
+        <!-- INTEGRATED SEARCH WITH HISTORY, FILTER & RESULTS -->
+        <!-- =========================================== -->
+        <style>
+            /* ========== INTEGRATED SEARCH COMPONENT ========== */
+            .search-wrapper {
+                position: relative;
+                width: 300px;
+                margin: 0 10px;
+            }
+
+            .search-container {
+                position: relative;
+                width: 100%;
+                height: 48px;
+                background: var(--white);
+                border-radius: 30px;
+                display: flex;
+                align-items: center;
+                padding: 0 15px;
+                border: 1.5px solid rgba(63, 35, 5, 0.15);
+                box-shadow: 0 2px 8px rgba(63, 35, 5, 0.05);
+                transition: var(--transition);
+            }
+
+            .search-container:focus-within,
+            .search-container.active {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 3px rgba(63, 35, 5, 0.15);
+            }
+
+            .search-container.has-filters {
+                border-color: var(--accent-color);
+            }
+
+            .search-input-wrapper {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .search-icon-left {
+                color: var(--text-light);
+                font-size: 14px;
+            }
+
+            .search-input {
+                flex: 1;
+                height: 100%;
+                border: none;
+                outline: none;
+                background: transparent;
+                font-size: 15px;
+                font-weight: 500;
+                color: var(--text-dark);
+                padding: 0;
+                width: 100%;
+            }
+
+            .search-input::placeholder {
+                color: var(--text-light);
+                font-weight: 400;
+            }
+
+            .search-actions {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .search-action-btn {
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                background: transparent;
+                border: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: var(--transition);
+                color: var(--text-light);
+                position: relative;
+            }
+
+            .search-action-btn:hover {
+                background: rgba(63, 35, 5, 0.08);
+                color: var(--primary-color);
+            }
+
+            .filter-btn {
+                color: var(--primary-color);
+            }
+
+            .filter-btn.active {
+                background: var(--primary-color);
+                color: var(--white);
+            }
+
+            .filter-badge {
+                position: absolute;
+                top: -3px;
+                right: -3px;
+                background: var(--accent-color);
+                color: var(--primary-dark);
+                font-size: 10px;
+                font-weight: 700;
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            }
+
+            .search-btn {
+                background: var(--primary-color);
+                color: var(--white);
+            }
+
+            .search-btn:hover {
+                background: var(--primary-dark);
+                transform: scale(1.05);
+            }
+
+            /* Search Dropdown Panel */
+            .search-dropdown {
+                position: absolute;
+                top: calc(100% + 8px);
+                left: 0;
+                right: 0;
+                background: var(--white);
+                border-radius: 16px;
+                box-shadow: var(--shadow-medium);
+                z-index: 1100;
+                display: none;
+                border: 1px solid rgba(63, 35, 5, 0.1);
+                max-height: 500px;
+                overflow: hidden;
+                animation: slideDown 0.3s ease;
+            }
+
+            @keyframes slideDown {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            .search-dropdown.show {
+                display: block;
+            }
+
+            /* Search Header */
+            .search-header {
+                padding: 15px 20px;
+                border-bottom: 1px solid rgba(63, 35, 5, 0.1);
+                background: var(--bg-light);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .search-title {
+                font-size: 14px;
+                font-weight: 600;
+                color: var(--primary-color);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .search-clear-btn {
+                background: none;
+                border: none;
+                color: var(--text-light);
+                font-size: 13px;
+                cursor: pointer;
+                padding: 4px 8px;
+                border-radius: 4px;
+                transition: var(--transition);
+            }
+
+            .search-clear-btn:hover {
+                color: var(--danger-color);
+                background: rgba(255, 71, 87, 0.1);
+            }
+
+            /* Search Content */
+            .search-content {
+                max-height: 400px;
+                overflow-y: auto;
+                padding: 0;
+            }
+
+            /* Search History Section */
+            .search-history {
+                padding: 15px 20px;
+                border-bottom: 1px solid rgba(63, 35, 5, 0.1);
+            }
+
+            .history-title {
+                font-size: 12px;
+                font-weight: 600;
+                color: var(--primary-color);
+                margin-bottom: 10px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .clear-history-btn {
+                background: none;
+                border: none;
+                color: var(--text-light);
+                font-size: 11px;
+                cursor: pointer;
+                padding: 2px 6px;
+                border-radius: 3px;
+                transition: var(--transition);
+            }
+
+            .clear-history-btn:hover {
+                color: var(--danger-color);
+            }
+
+            .history-list {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .history-item {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 8px 12px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: var(--transition);
+            }
+
+            .history-item:hover {
+                background: rgba(63, 35, 5, 0.05);
+            }
+
+            .history-content {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex: 1;
+            }
+
+            .history-icon {
+                color: var(--text-light);
+                font-size: 12px;
+                width: 16px;
+            }
+
+            .history-text {
+                font-size: 14px;
+                color: var(--text-dark);
+                font-weight: 500;
+            }
+
+            .history-time {
+                font-size: 11px;
+                color: var(--text-light);
+                margin-left: 8px;
+                font-style: italic;
+            }
+
+            .history-remove {
+                background: none;
+                border: none;
+                color: var(--text-light);
+                font-size: 11px;
+                cursor: pointer;
+                padding: 4px;
+                border-radius: 50%;
+                opacity: 0;
+                transition: var(--transition);
+            }
+
+            .history-item:hover .history-remove {
+                opacity: 1;
+            }
+
+            .history-remove:hover {
+                color: var(--danger-color);
+                background: rgba(255, 71, 87, 0.1);
+            }
+
+            .no-history {
+                text-align: center;
+                padding: 20px;
+                color: var(--text-light);
+                font-size: 13px;
+                font-style: italic;
+            }
+
+            /* Filter Section */
+            .filter-section {
+                padding: 20px;
+            }
+
+            .filter-title {
+                font-size: 14px;
+                font-weight: 600;
+                color: var(--primary-color);
+                margin-bottom: 15px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .filter-group {
+                margin-bottom: 20px;
+            }
+
+            .filter-group-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 10px;
+            }
+
+            .filter-group-label {
+                font-size: 13px;
+                font-weight: 600;
+                color: var(--primary-dark);
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .filter-group-label i {
+                font-size: 12px;
+                color: var(--primary-light);
+            }
+
+            .filter-group-value {
+                font-size: 12px;
+                color: var(--accent-color);
+                font-weight: 600;
+            }
+
+            /* Price Range */
+            .price-range-container {
+                padding: 10px 0;
+            }
+
+            .price-range-slider {
+                width: 100%;
+                height: 4px;
+                background: rgba(63, 35, 5, 0.1);
+                border-radius: 2px;
+                position: relative;
+                margin: 15px 0;
+            }
+
+            .price-range-track {
+                position: absolute;
+                height: 100%;
+                background: var(--primary-color);
+                border-radius: 2px;
+                left: 0%;
+                right: 0%;
+            }
+
+            .price-range-handle {
+                position: absolute;
+                width: 18px;
+                height: 18px;
+                background: var(--white);
+                border: 2px solid var(--primary-color);
+                border-radius: 50%;
+                top: 50%;
+                transform: translateY(-50%);
+                cursor: pointer;
+                box-shadow: 0 2px 5px rgba(63, 35, 5, 0.2);
+            }
+
+            .price-range-labels {
+                display: flex;
+                justify-content: space-between;
+                font-size: 11px;
+                color: var(--text-light);
+                margin-top: 5px;
+            }
+
+            /* Rating Filter */
+            .rating-options {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .rating-option {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 8px 12px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: var(--transition);
+                border: 1px solid rgba(63, 35, 5, 0.1);
+            }
+
+            .rating-option:hover {
+                border-color: var(--primary-color);
+                background: rgba(63, 35, 5, 0.05);
+            }
+
+            .rating-option.selected {
+                border-color: var(--primary-color);
+                background: rgba(63, 35, 5, 0.1);
+            }
+
+            .rating-option input {
+                display: none;
+            }
+
+            .rating-stars {
+                display: flex;
+                gap: 2px;
+            }
+
+            .rating-stars i {
+                color: #FFD700;
+                font-size: 12px;
+            }
+
+            .rating-label {
+                font-size: 13px;
+                color: var(--text-dark);
+                margin-left: auto;
+            }
+
+            /* Category Filter */
+            .category-options {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .category-chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 6px 12px;
+                background: var(--bg-light);
+                border: 1px solid rgba(63, 35, 5, 0.1);
+                border-radius: 20px;
+                font-size: 12px;
+                color: var(--text-dark);
+                cursor: pointer;
+                transition: var(--transition);
+                user-select: none;
+            }
+
+            .category-chip:hover {
+                border-color: var(--primary-color);
+                background: rgba(63, 35, 5, 0.05);
+            }
+
+            .category-chip.selected {
+                background: var(--primary-color);
+                color: var(--white);
+                border-color: var(--primary-color);
+            }
+
+            /* Distance Filter */
+            .distance-filter {
+                padding: 10px 0;
+            }
+
+            .distance-slider {
+                width: 100%;
+                height: 4px;
+                background: rgba(63, 35, 5, 0.1);
+                border-radius: 2px;
+                margin: 15px 0;
+                -webkit-appearance: none;
+                appearance: none;
+            }
+
+            .distance-slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 18px;
+                height: 18px;
+                background: var(--white);
+                border: 2px solid var(--primary-color);
+                border-radius: 50%;
+                cursor: pointer;
+                box-shadow: 0 2px 5px rgba(63, 35, 5, 0.2);
+            }
+
+            .distance-slider::-moz-range-thumb {
+                width: 18px;
+                height: 18px;
+                background: var(--white);
+                border: 2px solid var(--primary-color);
+                border-radius: 50%;
+                cursor: pointer;
+                box-shadow: 0 2px 5px rgba(63, 35, 5, 0.2);
+            }
+
+            .distance-value {
+                text-align: center;
+                font-size: 13px;
+                color: var(--primary-color);
+                font-weight: 600;
+                margin-top: 10px;
+            }
+
+            /* Active Filters */
+            .active-filters {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                margin-top: 15px;
+                padding: 15px 0;
+                border-top: 1px solid rgba(63, 35, 5, 0.1);
+            }
+
+            .active-filter-tag {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 4px 10px;
+                background: var(--primary-color);
+                color: var(--white);
+                border-radius: 15px;
+                font-size: 11px;
+                font-weight: 500;
+            }
+
+            .filter-remove {
+                background: none;
+                border: none;
+                color: var(--white);
+                cursor: pointer;
+                padding: 0;
+                font-size: 10px;
+                opacity: 0.8;
+                transition: var(--transition);
+            }
+
+            .filter-remove:hover {
+                opacity: 1;
+            }
+
+            /* Search Footer */
+            .search-footer {
+                padding: 15px 20px;
+                border-top: 1px solid rgba(63, 35, 5, 0.1);
+                background: var(--bg-light);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .filter-count {
+                font-size: 13px;
+                color: var(--primary-color);
+                font-weight: 600;
+            }
+
+            .search-apply-btn {
+                padding: 8px 20px;
+                background: var(--primary-color);
+                color: var(--white);
+                border: none;
+                border-radius: 20px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: var(--transition);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .search-apply-btn:hover {
+                background: var(--primary-dark);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(63, 35, 5, 0.2);
+            }
+
+            /* ========== SEARCH RESULTS DISPLAY ========== */
+            .search-results-container {
+                position: fixed;
+                top: 100px;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: var(--bg-light);
+                z-index: 999;
+                display: none;
+                overflow-y: auto;
+                padding: 20px;
+            }
+
+            .search-results-container.show {
+                display: block;
+                animation: fadeIn 0.3s ease;
+            }
+
+            .search-results-header {
+                max-width: 1500px;
+                margin: 0 auto 30px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-bottom: 20px;
+                border-bottom: 1px solid rgba(63, 35, 5, 0.1);
+            }
+
+            .results-title {
+                font-size: 24px;
+                font-weight: 600;
+                color: var(--primary-color);
+            }
+
+            .results-count {
+                font-size: 14px;
+                color: var(--text-light);
+                margin-left: 10px;
+            }
+
+            .results-summary {
+                font-size: 14px;
+                color: var(--text-dark);
+                background: var(--white);
+                padding: 10px 15px;
+                border-radius: 8px;
+                border: 1px solid rgba(63, 35, 5, 0.1);
+            }
+
+            .close-results-btn {
+                background: none;
+                border: none;
+                color: var(--text-light);
+                font-size: 18px;
+                cursor: pointer;
+                padding: 8px;
+                border-radius: 50%;
+                transition: var(--transition);
+            }
+
+            .close-results-btn:hover {
+                background: rgba(63, 35, 5, 0.1);
+                color: var(--primary-color);
+            }
+
+            .search-results-grid {
+                max-width: 1500px;
+                margin: 0 auto;
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 25px;
+                padding: 20px 0;
+            }
+
+            .product-card {
+                background: var(--white);
+                border-radius: 16px;
+                overflow: hidden;
+                box-shadow: var(--shadow-light);
+                transition: var(--transition);
+                cursor: pointer;
+                border: 1px solid rgba(63, 35, 5, 0.08);
+            }
+
+            .product-card:hover {
+                transform: translateY(-5px);
+                box-shadow: var(--shadow-medium);
+                border-color: var(--primary-light);
+            }
+
+            .product-image {
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+                background: linear-gradient(135deg, #f9f5f0, #e8dfd3);
+            }
+
+            .product-badge {
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                background: var(--danger-color);
+                color: var(--white);
+                padding: 4px 10px;
+                border-radius: 12px;
+                font-size: 11px;
+                font-weight: 700;
+                box-shadow: 0 2px 8px rgba(255, 71, 87, 0.3);
+            }
+
+            .product-content {
+                padding: 20px;
+            }
+
+            .product-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 10px;
+            }
+
+            .product-name {
+                font-size: 18px;
+                font-weight: 600;
+                color: var(--primary-color);
+                margin-bottom: 5px;
+            }
+
+            .product-category {
+                font-size: 12px;
+                color: var(--text-light);
+                background: rgba(63, 35, 5, 0.05);
+                padding: 2px 8px;
+                border-radius: 10px;
+                display: inline-block;
+            }
+
+            .product-price {
+                font-size: 20px;
+                font-weight: 700;
+                color: var(--accent-color);
+            }
+
+            .product-rating {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                margin: 10px 0;
+            }
+
+            .rating-stars-small {
+                display: flex;
+                gap: 1px;
+            }
+
+            .rating-stars-small i {
+                color: #FFD700;
+                font-size: 12px;
+            }
+
+            .rating-value {
+                font-size: 12px;
+                color: var(--text-light);
+            }
+
+            .product-description {
+                font-size: 13px;
+                color: var(--text-dark);
+                line-height: 1.5;
+                margin-bottom: 15px;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            .product-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 15px;
+                padding-top: 15px;
+                border-top: 1px solid rgba(63, 35, 5, 0.1);
+            }
+
+            .product-distance {
+                font-size: 12px;
+                color: var(--text-light);
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+
+            .product-distance i {
+                color: var(--primary-color);
+            }
+
+            .product-expiry {
+                font-size: 12px;
+                color: var(--danger-color);
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+
+            .add-to-cart-btn {
+                background: var(--primary-color);
+                color: var(--white);
+                border: none;
+                padding: 8px 20px;
+                border-radius: 20px;
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: var(--transition);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .add-to-cart-btn:hover {
+                background: var(--primary-dark);
+                transform: scale(1.05);
+            }
+
+            .no-results {
+                text-align: center;
+                padding: 60px 20px;
+                grid-column: 1 / -1;
+            }
+
+            .no-results-icon {
+                font-size: 60px;
+                color: var(--text-light);
+                margin-bottom: 20px;
+            }
+
+            .no-results-title {
+                font-size: 20px;
+                color: var(--primary-color);
+                margin-bottom: 10px;
+            }
+
+            .no-results-text {
+                color: var(--text-light);
+                margin-bottom: 20px;
+            }
+
+            .try-again-btn {
+                background: var(--primary-color);
+                color: var(--white);
+                border: none;
+                padding: 10px 25px;
+                border-radius: 25px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: var(--transition);
+            }
+
+            .try-again-btn:hover {
+                background: var(--primary-dark);
+            }
+
+            /* Loading State */
+            .loading-results {
+                text-align: center;
+                padding: 60px 20px;
+                grid-column: 1 / -1;
+            }
+
+            .loading-spinner {
+                width: 40px;
+                height: 40px;
+                border: 3px solid rgba(63, 35, 5, 0.1);
+                border-top-color: var(--primary-color);
+                border-radius: 50%;
+                margin: 0 auto 20px;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                to { transform: rotate(360deg); }
+            }
+
+            .loading-text {
+                color: var(--text-light);
+            }
+
+            /* Responsive */
+            @media (max-width: 1300px) {
+                .search-wrapper {
+                    width: 400px;
+                }
+
+                .search-results-grid {
+                    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                }
+            }
+
+            @media (max-width: 1024px) {
+                .search-wrapper {
+                    width: 100%;
+                    order: 3;
+                    margin: 10px 0;
+                }
+
+                .search-results-container {
+                    padding: 15px;
+                }
+
+                .search-results-grid {
+                    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                    gap: 15px;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .search-wrapper {
+                    width: 100%;
+                }
+
+                .search-content {
+                    max-height: 300px;
+                }
+
+                .search-results-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 15px;
+                }
+
+                .search-results-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .product-card {
+                    max-width: 400px;
+                    margin: 0 auto;
+                }
+            }
+        </style>
+
+        <!-- Integrated Search Component -->
+        <div class="search-wrapper">
+            <!-- Search Input -->
+            <div class="search-container" id="searchContainer">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon-left"></i>
+                    <input type="text"
+                           class="search-input"
+                           placeholder="Search Product"
+                           id="searchInput"
+                           autocomplete="off" />
+                </div>
+
+                <div class="search-actions">
+                    <!-- Filter Button -->
+                    <button class="search-action-btn filter-btn" id="filterBtn" onclick="toggleFilter()">
+                        <i class="fas fa-filter"></i>
+                        <span class="filter-badge" id="filterBadge">0</span>
+                    </button>
+
+                    <!-- Search Button -->
+                    <button class="search-action-btn search-btn" onclick="performSearch()">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search Dropdown (History + Filter) -->
+            <div class="search-dropdown" id="searchDropdown">
+                <!-- Header -->
+                <div class="search-header">
+                    <div class="search-title">
+                        <i class="fas fa-search"></i>
+                        <span id="searchTitle">Pencarian</span>
+                    </div>
+                    <button class="search-clear-btn" onclick="clearAll()">Bersihkan</button>
+                </div>
+
+                <!-- Content -->
+                <div class="search-content" id="searchContent">
+                    <!-- History Section (shown by default) -->
+                    <div class="search-history" id="historySection">
+                        <div class="history-title">
+                            <span>Pencarian Terakhir</span>
+                            <button class="clear-history-btn" onclick="clearHistory()">Hapus Semua</button>
+                        </div>
+                        <div class="history-list" id="historyList">
+                            <!-- History items will be dynamically added here -->
+                        </div>
+                    </div>
+
+                    <!-- Filter Section (hidden by default) -->
+                    <div class="filter-section" id="filterSection" style="display: none;">
+                        <div class="filter-title">
+                            <i class="fas fa-sliders-h"></i>
+                            Filter Pencarian
+                        </div>
+
+                        <!-- Price Filter -->
+                        <div class="filter-group">
+                            <div class="filter-group-header">
+                                <div class="filter-group-label">
+                                    <i class="fas fa-tag"></i>
+                                    Harga
+                                </div>
+                                <div class="filter-group-value" id="priceValue">Rp 0 - 50k+</div>
+                            </div>
+                            <div class="price-range-container">
+                                <div class="price-range-slider" id="priceRangeSlider">
+                                    <div class="price-range-track" id="priceRangeTrack"></div>
+                                    <div class="price-range-handle" id="priceMinHandle"></div>
+                                    <div class="price-range-handle" id="priceMaxHandle"></div>
+                                </div>
+                                <div class="price-range-labels">
+                                    <span>Rp 0</span>
+                                    <span>Rp 10k</span>
+                                    <span>Rp 20k</span>
+                                    <span>Rp 30k</span>
+                                    <span>Rp 40k</span>
+                                    <span>Rp 50k+</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rating Filter -->
+                        <div class="filter-group">
+                            <div class="filter-group-header">
+                                <div class="filter-group-label">
+                                    <i class="fas fa-star"></i>
+                                    Rating
+                                </div>
+                                <div class="filter-group-value" id="ratingValue">Semua</div>
+                            </div>
+                            <div class="rating-options">
+                                <div class="rating-option selected" onclick="selectRating(0)">
+                                    <div class="rating-stars">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <span class="rating-label">Semua Rating</span>
+                                </div>
+                                <div class="rating-option" onclick="selectRating(4)">
+                                    <div class="rating-stars">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="far fa-star"></i>
+                                    </div>
+                                    <span class="rating-label">4.0 ke atas</span>
+                                </div>
+                                <div class="rating-option" onclick="selectRating(3)">
+                                    <div class="rating-stars">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="far fa-star"></i>
+                                        <i class="far fa-star"></i>
+                                    </div>
+                                    <span class="rating-label">3.0 ke atas</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Category Filter -->
+                        <div class="filter-group">
+                            <div class="filter-group-header">
+                                <div class="filter-group-label">
+                                    <i class="fas fa-utensils"></i>
+                                    Kategori
+                                </div>
+                                <div class="filter-group-value" id="categoryValue">Semua</div>
+                            </div>
+                            <div class="category-options">
+                                <div class="category-chip" onclick="toggleCategory('bakery')">
+                                    <span>Roti & Bakery</span>
+                                </div>
+                                <div class="category-chip" onclick="toggleCategory('dairy')">
+                                    <span>Produk Susu</span>
+                                </div>
+                                <div class="category-chip" onclick="toggleCategory('fruits')">
+                                    <span>Buah & Sayur</span>
+                                </div>
+                                <div class="category-chip" onclick="toggleCategory('meat')">
+                                    <span>Daging & Ikan</span>
+                                </div>
+                                <div class="category-chip" onclick="toggleCategory('ready')">
+                                    <span>Siap Saji</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Distance Filter -->
+                        <div class="filter-group">
+                            <div class="filter-group-header">
+                                <div class="filter-group-label">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    Jarak
+                                </div>
+                                <div class="filter-group-value" id="distanceValue">10 km</div>
+                            </div>
+                            <div class="distance-filter">
+                                <input type="range"
+                                       min="1"
+                                       max="20"
+                                       value="10"
+                                       class="distance-slider"
+                                       id="distanceSlider"
+                                       oninput="updateDistance()">
+                                <div class="distance-value">
+                                    Dalam <span id="distanceText">10</span> km
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Active Filters -->
+                        <div class="active-filters" id="activeFilters">
+                            <!-- Active filter tags will be added here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="search-footer">
+                    <div class="filter-count">
+                        <span id="filterCount">0</span> filter aktif
+                    </div>
+                    <button class="search-apply-btn" onclick="applySearch()">
+                        <i class="fas fa-search"></i>
+                        Terapkan Pencarian
+                    </button>
+                </div>
             </div>
         </div>
 
+        <!-- Search Results Display Area -->
+        <div class="search-results-container" id="searchResultsContainer">
+            <div class="search-results-header">
+                <div>
+                    <h2 class="results-title">
+                        Hasil Pencarian
+                        <span class="results-count" id="resultsCount">(0 produk)</span>
+                    </h2>
+                    <div class="results-summary" id="resultsSummary">
+                        Menampilkan hasil pencarian...
+                    </div>
+                </div>
+                <button class="close-results-btn" onclick="closeResults()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="search-results-grid" id="searchResultsGrid">
+                <!-- Search results will be dynamically added here -->
+            </div>
+        </div>
+
+        <script>
+            // ========== INTEGRATED SEARCH COMPONENT ==========
+
+            // State management
+            let searchHistory = JSON.parse(localStorage.getItem('lastbite_search_history')) || [];
+            let currentFilters = {
+                priceRange: { min: 0, max: 50000 },
+                minRating: 0,
+                categories: [],
+                maxDistance: 10
+            };
+            let showFilters = false;
+            let currentSearchQuery = '';
+            let searchResults = [];
+
+            // Sample product data (replace with API call)
+            const sampleProducts = [
+                {
+                    id: 1,
+                    name: "Roti Tawar Gandum",
+                    category: "bakery",
+                    price: 15000,
+                    originalPrice: 25000,
+                    rating: 4.5,
+                    description: "Roti tawar gandum segar, diskon 40% karena mendekati tanggal kadaluarsa",
+                    distance: 2.5,
+                    expiry: "2 hari lagi",
+                    image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=300&fit=crop"
+                },
+                {
+                    id: 2,
+                    name: "Susu Segar Murni",
+                    category: "dairy",
+                    price: 12000,
+                    originalPrice: 18000,
+                    rating: 4.2,
+                    description: "Susu segar murni, diskon 33% karena mendekati tanggal kadaluarsa",
+                    distance: 1.8,
+                    expiry: "1 hari lagi",
+                    image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400&h=300&fit=crop"
+                },
+                {
+                    id: 3,
+                    name: "Apel Fuji Premium",
+                    category: "fruits",
+                    price: 25000,
+                    originalPrice: 35000,
+                    rating: 4.7,
+                    description: "Apel Fuji segar, diskon 28% karena mendekati kesegaran optimal",
+                    distance: 3.2,
+                    expiry: "3 hari lagi",
+                    image: "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w-400&h=300&fit=crop"
+                },
+                {
+                    id: 4,
+                    name: "Daging Sapi Fillet",
+                    category: "meat",
+                    price: 45000,
+                    originalPrice: 65000,
+                    rating: 4.8,
+                    description: "Daging sapi fillet premium, diskon 30% karena mendekati tanggal kadaluarsa",
+                    distance: 4.5,
+                    expiry: "Hari ini",
+                    image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400&h=300&fit=crop"
+                },
+                {
+                    id: 5,
+                    name: "Salad Buah Segar",
+                    category: "ready",
+                    price: 18000,
+                    originalPrice: 25000,
+                    rating: 4.3,
+                    description: "Salad buah segar dengan yogurt, diskon 28% karena mendekati tanggal kadaluarsa",
+                    distance: 2.1,
+                    expiry: "Hari ini",
+                    image: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400&h=300&fit=crop"
+                },
+                {
+                    id: 6,
+                    name: "Croissant Keju",
+                    category: "bakery",
+                    price: 8000,
+                    originalPrice: 15000,
+                    rating: 4.6,
+                    description: "Croissant keju lembut, diskon 47% karena mendekati tanggal kadaluarsa",
+                    distance: 1.5,
+                    expiry: "1 hari lagi",
+                    image: "https://images.unsplash.com/photo-1555507036-ab794f27d2e9?w=400&h=300&fit=crop"
+                },
+                {
+                    id: 7,
+                    name: "Yogurt Greek",
+                    category: "dairy",
+                    price: 14000,
+                    originalPrice: 22000,
+                    rating: 4.4,
+                    description: "Yogurt Greek rendah lemak, diskon 36% karena mendekati tanggal kadaluarsa",
+                    distance: 3.8,
+                    expiry: "2 hari lagi",
+                    image: "https://images.unsplash.com/photo-1567306301404-7362a5c5c8b6?w=400&h=300&fit=crop"
+                },
+                {
+                    id: 8,
+                    name: "Strawberry Organik",
+                    category: "fruits",
+                    price: 22000,
+                    originalPrice: 32000,
+                    rating: 4.9,
+                    description: "Strawberry organik segar, diskon 31% karena mendekati kesegaran optimal",
+                    distance: 5.2,
+                    expiry: "1 hari lagi",
+                    image: "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=400&h=300&fit=crop"
+                }
+            ];
+
+            // Initialize
+            document.addEventListener('DOMContentLoaded', function() {
+                loadSearchHistory();
+                initializePriceSlider();
+                updateUI();
+
+                // Search input events
+                const searchInput = document.getElementById('searchInput');
+                const searchContainer = document.getElementById('searchContainer');
+
+                searchInput.addEventListener('focus', function() {
+                    searchContainer.classList.add('active');
+                    showDropdown();
+                    showHistory();
+                });
+
+                searchInput.addEventListener('input', function() {
+                    const query = this.value.trim();
+                    document.getElementById('searchTitle').textContent =
+                        query ? `Mencari: "${query}"` : 'Pencarian';
+                    currentSearchQuery = query;
+                });
+
+                // Enter key for search
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        performSearch();
+                    }
+                });
+
+                // Click outside to close dropdown
+                document.addEventListener('click', function(e) {
+                    const searchWrapper = document.querySelector('.search-wrapper');
+                    const dropdown = document.getElementById('searchDropdown');
+
+                    if (!searchWrapper.contains(e.target) && dropdown.classList.contains('show')) {
+                        hideDropdown();
+                        searchContainer.classList.remove('active');
+                    }
+                });
+            });
+
+            // Dropdown Management
+            function showDropdown() {
+                const dropdown = document.getElementById('searchDropdown');
+                dropdown.classList.add('show');
+            }
+
+            function hideDropdown() {
+                const dropdown = document.getElementById('searchDropdown');
+                dropdown.classList.remove('show');
+            }
+
+            function toggleFilter() {
+                showFilters = !showFilters;
+                const filterBtn = document.getElementById('filterBtn');
+                const historySection = document.getElementById('historySection');
+                const filterSection = document.getElementById('filterSection');
+
+                if (showFilters) {
+                    filterBtn.classList.add('active');
+                    historySection.style.display = 'none';
+                    filterSection.style.display = 'block';
+                    document.getElementById('searchTitle').textContent = 'Filter Pencarian';
+                } else {
+                    filterBtn.classList.remove('active');
+                    historySection.style.display = 'block';
+                    filterSection.style.display = 'none';
+                    const query = document.getElementById('searchInput').value.trim();
+                    document.getElementById('searchTitle').textContent =
+                        query ? `Mencari: "${query}"` : 'Pencarian';
+                }
+            }
+
+            function showHistory() {
+                showFilters = false;
+                const filterBtn = document.getElementById('filterBtn');
+                const historySection = document.getElementById('historySection');
+                const filterSection = document.getElementById('filterSection');
+
+                filterBtn.classList.remove('active');
+                historySection.style.display = 'block';
+                filterSection.style.display = 'none';
+            }
+
+            // Search History
+            function loadSearchHistory() {
+                const historyList = document.getElementById('historyList');
+
+                if (searchHistory.length === 0) {
+                    historyList.innerHTML = '<div class="no-history">Belum ada riwayat pencarian</div>';
+                    return;
+                }
+
+                historyList.innerHTML = searchHistory.map((item, index) => {
+                    const timeAgo = getTimeAgo(item.timestamp);
+                    return `
+                        <div class="history-item" onclick="useHistory('${item.query}', ${index})">
+                            <div class="history-content">
+                                <i class="fas fa-search history-icon"></i>
+                                <div>
+                                    <span class="history-text">${item.query}</span>
+                                    <span class="history-time">${timeAgo}</span>
+                                </div>
+                            </div>
+                            <button class="history-remove" onclick="removeHistory(${index}, event)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            function getTimeAgo(timestamp) {
+                const now = new Date();
+                const past = new Date(timestamp);
+                const diffMs = now - past;
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMs / 3600000);
+                const diffDays = Math.floor(diffMs / 86400000);
+
+                if (diffMins < 1) return 'baru saja';
+                if (diffMins < 60) return `${diffMins}m lalu`;
+                if (diffHours < 24) return `${diffHours}j lalu`;
+                if (diffDays < 7) return `${diffDays}h lalu`;
+                return `${Math.floor(diffDays / 7)}w lalu`;
+            }
+
+            function saveToHistory(query) {
+                query = query.trim();
+                if (!query) return;
+
+                // Remove if same query exists
+                const existingIndex = searchHistory.findIndex(item => item.query === query);
+                if (existingIndex > -1) {
+                    searchHistory.splice(existingIndex, 1);
+                }
+
+                // Add to beginning
+                searchHistory.unshift({
+                    query: query,
+                    timestamp: new Date().toISOString(),
+                    filters: { ...currentFilters }
+                });
+
+                // Keep only last 10 items
+                if (searchHistory.length > 10) {
+                    searchHistory = searchHistory.slice(0, 10);
+                }
+
+                localStorage.setItem('lastbite_search_history', JSON.stringify(searchHistory));
+                loadSearchHistory();
+            }
+
+            function useHistory(query, index) {
+                document.getElementById('searchInput').value = query;
+                currentSearchQuery = query;
+
+                // Restore filters from history if available
+                if (searchHistory[index].filters) {
+                    currentFilters = { ...searchHistory[index].filters };
+                    applyFiltersToUI();
+                    updateUI();
+                }
+
+                performSearch();
+            }
+
+            function removeHistory(index, event) {
+                event.stopPropagation();
+                searchHistory.splice(index, 1);
+                localStorage.setItem('lastbite_search_history', JSON.stringify(searchHistory));
+                loadSearchHistory();
+            }
+
+            function clearHistory() {
+                if (searchHistory.length === 0) return;
+
+                if (confirm('Hapus semua riwayat pencarian?')) {
+                    searchHistory = [];
+                    localStorage.removeItem('lastbite_search_history');
+                    loadSearchHistory();
+                    showNotification('Riwayat pencarian berhasil dihapus', 'success');
+                }
+            }
+
+            // Filter Functions
+            function initializePriceSlider() {
+                const slider = document.getElementById('priceRangeSlider');
+                const minHandle = document.getElementById('priceMinHandle');
+                const maxHandle = document.getElementById('priceMaxHandle');
+                const track = document.getElementById('priceRangeTrack');
+
+                function updateSlider() {
+                    const minPercent = (currentFilters.priceRange.min / 50000) * 100;
+                    const maxPercent = (currentFilters.priceRange.max / 50000) * 100;
+
+                    minHandle.style.left = `${minPercent}%`;
+                    maxHandle.style.left = `${maxPercent}%`;
+                    track.style.left = `${minPercent}%`;
+                    track.style.right = `${100 - maxPercent}%`;
+
+                    updatePriceDisplay();
+                }
+
+                function getPriceFromPosition(x) {
+                    const rect = slider.getBoundingClientRect();
+                    const percent = Math.max(0, Math.min(1, (x - rect.left) / rect.width));
+                    return Math.round(percent * 50000);
+                }
+
+                function startDrag(handle, isMin) {
+                    return function(e) {
+                        e.preventDefault();
+                        const startX = e.clientX;
+                        const startPrice = isMin ? currentFilters.priceRange.min : currentFilters.priceRange.max;
+
+                        function drag(e) {
+                            const deltaX = e.clientX - startX;
+                            const rect = slider.getBoundingClientRect();
+                            const deltaPercent = deltaX / rect.width;
+                            const deltaPrice = Math.round(deltaPercent * 50000);
+
+                            let newPrice = startPrice + deltaPrice;
+                            newPrice = Math.max(0, Math.min(50000, newPrice));
+
+                            if (isMin) {
+                                currentFilters.priceRange.min = Math.min(newPrice, currentFilters.priceRange.max - 5000);
+                            } else {
+                                currentFilters.priceRange.max = Math.max(newPrice, currentFilters.priceRange.min + 5000);
+                            }
+
+                            updateSlider();
+                            updateUI();
+                        }
+
+                        function stopDrag() {
+                            document.removeEventListener('mousemove', drag);
+                            document.removeEventListener('mouseup', stopDrag);
+                        }
+
+                        document.addEventListener('mousemove', drag);
+                        document.addEventListener('mouseup', stopDrag);
+                    };
+                }
+
+                minHandle.addEventListener('mousedown', startDrag(minHandle, true));
+                maxHandle.addEventListener('mousedown', startDrag(maxHandle, false));
+
+                updateSlider();
+            }
+
+            function updatePriceDisplay() {
+                const min = currentFilters.priceRange.min;
+                const max = currentFilters.priceRange.max;
+
+                const minText = min === 0 ? 'Rp 0' : `Rp ${min/1000}k`;
+                const maxText = max === 50000 ? 'Rp 50k+' : `Rp ${max/1000}k`;
+
+                document.getElementById('priceValue').textContent = `${minText} - ${maxText}`;
+            }
+
+            function selectRating(rating) {
+                currentFilters.minRating = rating;
+
+                // Update UI
+                document.querySelectorAll('.rating-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+
+                const ratingOptions = document.querySelectorAll('.rating-option');
+                if (rating === 0) {
+                    ratingOptions[0].classList.add('selected');
+                    document.getElementById('ratingValue').textContent = 'Semua';
+                } else if (rating === 4) {
+                    ratingOptions[1].classList.add('selected');
+                    document.getElementById('ratingValue').textContent = '4.0+';
+                } else if (rating === 3) {
+                    ratingOptions[2].classList.add('selected');
+                    document.getElementById('ratingValue').textContent = '3.0+';
+                }
+
+                updateUI();
+            }
+
+            function toggleCategory(category) {
+                const chip = document.querySelector(`.category-chip[onclick*="${category}"]`);
+                const index = currentFilters.categories.indexOf(category);
+
+                if (index === -1) {
+                    currentFilters.categories.push(category);
+                    chip.classList.add('selected');
+                } else {
+                    currentFilters.categories.splice(index, 1);
+                    chip.classList.remove('selected');
+                }
+
+                updateCategoryDisplay();
+                updateUI();
+            }
+
+            function updateCategoryDisplay() {
+                const count = currentFilters.categories.length;
+                if (count === 0) {
+                    document.getElementById('categoryValue').textContent = 'Semua';
+                } else if (count === 1) {
+                    document.getElementById('categoryValue').textContent = '1 kategori';
+                } else {
+                    document.getElementById('categoryValue').textContent = `${count} kategori`;
+                }
+            }
+
+            function updateDistance() {
+                const slider = document.getElementById('distanceSlider');
+                const value = slider.value;
+                currentFilters.maxDistance = parseInt(value);
+
+                document.getElementById('distanceText').textContent = value;
+                document.getElementById('distanceValue').textContent = value === '20' ? 'Semua' : `${value} km`;
+
+                updateUI();
+            }
+
+            function applyFiltersToUI() {
+                // Apply price range
+                updatePriceDisplay();
+
+                // Apply rating
+                selectRating(currentFilters.minRating);
+
+                // Apply categories
+                document.querySelectorAll('.category-chip').forEach(chip => {
+                    chip.classList.remove('selected');
+                });
+                currentFilters.categories.forEach(category => {
+                    const chip = document.querySelector(`.category-chip[onclick*="${category}"]`);
+                    if (chip) chip.classList.add('selected');
+                });
+                updateCategoryDisplay();
+
+                // Apply distance
+                document.getElementById('distanceSlider').value = currentFilters.maxDistance;
+                updateDistance();
+            }
+
+            // Update UI
+            function updateUI() {
+                // Calculate active filter count
+                let filterCount = 0;
+
+                if (currentFilters.priceRange.min > 0 || currentFilters.priceRange.max < 50000) filterCount++;
+                if (currentFilters.minRating > 0) filterCount++;
+                if (currentFilters.categories.length > 0) filterCount++;
+                if (currentFilters.maxDistance < 20) filterCount++;
+
+                // Update badge
+                document.getElementById('filterBadge').textContent = filterCount;
+                document.getElementById('filterCount').textContent = filterCount;
+
+                // Update search container
+                const searchContainer = document.getElementById('searchContainer');
+                if (filterCount > 0) {
+                    searchContainer.classList.add('has-filters');
+                } else {
+                    searchContainer.classList.remove('has-filters');
+                }
+
+                // Update active filters display
+                updateActiveFilters();
+            }
+
+            function updateActiveFilters() {
+                const container = document.getElementById('activeFilters');
+                const filters = [];
+
+                // Price filter
+                if (currentFilters.priceRange.min > 0 || currentFilters.priceRange.max < 50000) {
+                    const min = currentFilters.priceRange.min === 0 ? 'Rp 0' : `Rp ${currentFilters.priceRange.min/1000}k`;
+                    const max = currentFilters.priceRange.max === 50000 ? 'Rp 50k+' : `Rp ${currentFilters.priceRange.max/1000}k`;
+                    filters.push({
+                        label: `Harga: ${min} - ${max}`,
+                        remove: () => {
+                            currentFilters.priceRange = { min: 0, max: 50000 };
+                            updatePriceDisplay();
+                            updateUI();
+                        }
+                    });
+                }
+
+                // Rating filter
+                if (currentFilters.minRating > 0) {
+                    filters.push({
+                        label: `Rating: ${currentFilters.minRating}+`,
+                        remove: () => {
+                            selectRating(0);
+                        }
+                    });
+                }
+
+                // Category filters
+                currentFilters.categories.forEach(category => {
+                    const categoryNames = {
+                        'bakery': 'Roti & Bakery',
+                        'dairy': 'Produk Susu',
+                        'fruits': 'Buah & Sayur',
+                        'meat': 'Daging & Ikan',
+                        'ready': 'Siap Saji'
+                    };
+
+                    filters.push({
+                        label: categoryNames[category],
+                        remove: () => {
+                            toggleCategory(category);
+                        }
+                    });
+                });
+
+                // Distance filter
+                if (currentFilters.maxDistance < 20) {
+                    filters.push({
+                        label: `Jarak: ${currentFilters.maxDistance} km`,
+                        remove: () => {
+                            document.getElementById('distanceSlider').value = 20;
+                            updateDistance();
+                        }
+                    });
+                }
+
+                // Render active filters
+                if (filters.length > 0) {
+                    container.innerHTML = filters.map(filter => `
+                        <div class="active-filter-tag">
+                            ${filter.label}
+                            <button class="filter-remove" onclick="event.stopPropagation(); ${filter.remove.toString().replace('()', '')}">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `).join('');
+                    container.style.display = 'flex';
+                } else {
+                    container.innerHTML = '';
+                    container.style.display = 'none';
+                }
+            }
+
+            // Search Functions
+            function performSearch() {
+                const query = document.getElementById('searchInput').value.trim();
+                currentSearchQuery = query;
+
+                if (!query && getActiveFilterCount() === 0) {
+                    showNotification('Masukkan kata kunci pencarian', 'warning');
+                    return;
+                }
+
+                if (query) {
+                    saveToHistory(query);
+                }
+
+                applySearch();
+            }
+
+            function applySearch() {
+                showLoadingResults();
+
+                // Simulate API delay
+                setTimeout(() => {
+                    // Filter products based on search query and filters
+                    const filteredProducts = filterProducts();
+                    searchResults = filteredProducts;
+
+                    // Display results
+                    displaySearchResults(filteredProducts);
+
+                    // Show notification
+                    showSearchNotification(filteredProducts.length);
+
+                    // Close dropdown
+                    hideDropdown();
+                    document.getElementById('searchContainer').classList.remove('active');
+                }, 800);
+            }
+
+            function filterProducts() {
+                return sampleProducts.filter(product => {
+                    // Filter by search query
+                    if (currentSearchQuery) {
+                        const searchLower = currentSearchQuery.toLowerCase();
+                        const nameMatch = product.name.toLowerCase().includes(searchLower);
+                        const descMatch = product.description.toLowerCase().includes(searchLower);
+                        const categoryMatch = product.category.toLowerCase().includes(searchLower);
+
+                        if (!nameMatch && !descMatch && !categoryMatch) {
+                            return false;
+                        }
+                    }
+
+                    // Filter by price range
+                    if (product.price < currentFilters.priceRange.min || product.price > currentFilters.priceRange.max) {
+                        return false;
+                    }
+
+                    // Filter by rating
+                    if (currentFilters.minRating > 0 && product.rating < currentFilters.minRating) {
+                        return false;
+                    }
+
+                    // Filter by categories
+                    if (currentFilters.categories.length > 0 && !currentFilters.categories.includes(product.category)) {
+                        return false;
+                    }
+
+                    // Filter by distance
+                    if (currentFilters.maxDistance < 20 && product.distance > currentFilters.maxDistance) {
+                        return false;
+                    }
+
+                    return true;
+                });
+            }
+
+            function displaySearchResults(products) {
+                const container = document.getElementById('searchResultsContainer');
+                const grid = document.getElementById('searchResultsGrid');
+                const resultsCount = document.getElementById('resultsCount');
+                const resultsSummary = document.getElementById('resultsSummary');
+
+                // Show results container
+                container.classList.add('show');
+
+                // Update counts
+                resultsCount.textContent = `(${products.length} produk)`;
+
+                // Update summary
+                let summary = '';
+                if (currentSearchQuery) {
+                    summary += `Hasil pencarian untuk "<strong>${currentSearchQuery}</strong>"`;
+                }
+                if (getActiveFilterCount() > 0) {
+                    if (summary) summary += ' ';
+                    summary += `dengan <strong>${getActiveFilterCount()} filter</strong>`;
+                }
+                if (!summary) {
+                    summary = 'Menampilkan semua produk';
+                }
+                resultsSummary.innerHTML = summary;
+
+                // Display products or no results message
+                if (products.length === 0) {
+                    grid.innerHTML = `
+                        <div class="no-results">
+                            <div class="no-results-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h3 class="no-results-title">Tidak ada produk ditemukan</h3>
+                            <p class="no-results-text">
+                                ${currentSearchQuery ? `Tidak ada produk yang cocok dengan "${currentSearchQuery}"` : 'Tidak ada produk yang sesuai dengan filter'}
+                            </p>
+                            <button class="try-again-btn" onclick="clearAll()">
+                                Coba Pencarian Lain
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    grid.innerHTML = products.map(product => `
+                        <div class="product-card" onclick="viewProductDetail(${product.id})">
+                            <div style="position: relative;">
+                                <img src="${product.image}" alt="${product.name}" class="product-image">
+                                <span class="product-badge">Diskon ${Math.round((1 - product.price / product.originalPrice) * 100)}%</span>
+                            </div>
+                            <div class="product-content">
+                                <div class="product-header">
+                                    <div>
+                                        <h3 class="product-name">${product.name}</h3>
+                                        <span class="product-category">${getCategoryName(product.category)}</span>
+                                    </div>
+                                    <div class="product-price">Rp ${product.price.toLocaleString()}</div>
+                                </div>
+                                <div class="product-rating">
+                                    <div class="rating-stars-small">
+                                        ${getStarIcons(product.rating)}
+                                    </div>
+                                    <span class="rating-value">${product.rating}</span>
+                                </div>
+                                <p class="product-description">${product.description}</p>
+                                <div class="product-footer">
+                                    <div>
+                                        <div class="product-distance">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            ${product.distance} km
+                                        </div>
+                                        <div class="product-expiry">
+                                            <i class="fas fa-clock"></i>
+                                            ${product.expiry}
+                                        </div>
+                                    </div>
+                                    <button class="add-to-cart-btn" onclick="addToCart(${product.id}, event)">
+                                        <i class="fas fa-cart-plus"></i>
+                                        Tambah
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            function getCategoryName(category) {
+                const categories = {
+                    'bakery': 'Roti & Bakery',
+                    'dairy': 'Produk Susu',
+                    'fruits': 'Buah & Sayur',
+                    'meat': 'Daging & Ikan',
+                    'ready': 'Siap Saji'
+                };
+                return categories[category] || category;
+            }
+
+            function getStarIcons(rating) {
+                const stars = [];
+                const fullStars = Math.floor(rating);
+                const hasHalfStar = rating % 1 >= 0.5;
+
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= fullStars) {
+                        stars.push('<i class="fas fa-star"></i>');
+                    } else if (i === fullStars + 1 && hasHalfStar) {
+                        stars.push('<i class="fas fa-star-half-alt"></i>');
+                    } else {
+                        stars.push('<i class="far fa-star"></i>');
+                    }
+                }
+
+                return stars.join('');
+            }
+
+            function showLoadingResults() {
+                const container = document.getElementById('searchResultsContainer');
+                const grid = document.getElementById('searchResultsGrid');
+
+                container.classList.add('show');
+                grid.innerHTML = `
+                    <div class="loading-results">
+                        <div class="loading-spinner"></div>
+                        <p class="loading-text">Mencari produk...</p>
+                    </div>
+                `;
+            }
+
+            function showSearchNotification(resultCount) {
+                let message;
+                if (currentSearchQuery && resultCount > 0) {
+                    message = `Ditemukan ${resultCount} produk untuk "${currentSearchQuery}"`;
+                } else if (currentSearchQuery && resultCount === 0) {
+                    message = `Tidak ditemukan produk untuk "${currentSearchQuery}"`;
+                } else if (resultCount > 0) {
+                    message = `Menampilkan ${resultCount} produk dengan filter`;
+                } else {
+                    message = 'Tidak ada produk yang sesuai';
+                }
+
+                showNotification(message, resultCount > 0 ? 'success' : 'warning');
+            }
+
+            function getActiveFilterCount() {
+                let count = 0;
+                if (currentFilters.priceRange.min > 0 || currentFilters.priceRange.max < 50000) count++;
+                if (currentFilters.minRating > 0) count++;
+                if (currentFilters.categories.length > 0) count++;
+                if (currentFilters.maxDistance < 20) count++;
+                return count;
+            }
+
+            function clearAll() {
+                // Clear input
+                document.getElementById('searchInput').value = '';
+                currentSearchQuery = '';
+
+                // Reset filters
+                currentFilters = {
+                    priceRange: { min: 0, max: 50000 },
+                    minRating: 0,
+                    categories: [],
+                    maxDistance: 10
+                };
+
+                applyFiltersToUI();
+                updateUI();
+                showHistory();
+
+                showNotification('Semua pencarian dan filter direset', 'success');
+            }
+
+            function closeResults() {
+                const container = document.getElementById('searchResultsContainer');
+                container.classList.remove('show');
+            }
+
+            // Product Actions (placeholder functions)
+            function viewProductDetail(productId) {
+                console.log('View product detail:', productId);
+                showNotification(`Membuka detail produk ${productId}`, 'success');
+                // In real implementation, redirect to product detail page
+            }
+
+            function addToCart(productId, event) {
+                event.stopPropagation();
+                console.log('Add to cart:', productId);
+                showNotification('Produk ditambahkan ke keranjang', 'success');
+                // In real implementation, update cart count via API
+            }
+
+            // Notification function
+            function showNotification(message, type = 'success') {
+                if (typeof window.showNotification === 'function') {
+                    window.showNotification(message, type);
+                } else {
+                    console.log(`${type.toUpperCase()}: ${message}`);
+
+                    // Create a simple notification
+                    const notification = document.createElement('div');
+                    notification.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: ${type === 'success' ? '#2ECC71' : '#FF4757'};
+                        color: white;
+                        padding: 12px 20px;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                        z-index: 9999;
+                        animation: slideIn 0.3s ease;
+                    `;
+                    notification.innerHTML = `
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                        <span style="margin-left: 8px;">${message}</span>
+                    `;
+
+                    document.body.appendChild(notification);
+
+                    setTimeout(() => {
+                        notification.style.animation = 'slideOut 0.3s ease';
+                        setTimeout(() => notification.remove(), 300);
+                    }, 3000);
+                }
+            }
+        </script>
+
+        <!-- Search History Dropdown -->
+        <div class="search-history-dropdown" id="searchHistory">
+            <div class="search-history-header">
+                <span class="search-history-title">Recent Searches</span>
+                <button class="clear-history-btn" onclick="clearSearchHistory()">Clear All</button>
+            </div>
+            <ul class="search-history-list" id="searchHistoryList">
+                <!-- Search history items will be dynamically added here -->
+            </ul>
+            <div class="search-history-empty" id="emptyHistory">
+                <i class="fas fa-clock"></i>
+                <p>No recent searches</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Section: Cart and Profile -->
+    <div class="navbar-right-section">
         <!-- Cart - Redirect to Cart Page -->
         <a href="{{ route('cart.index') }}" style="text-decoration: none;">
             <button class="cart-btn">
@@ -471,35 +3144,382 @@
             </ul>
         </div>
     </div>
+</div>
 
-    <script>
-        // ========== HEADER JAVASCRIPT ==========
-        function performSearch() {
-            const query = document.getElementById('searchInput').value.trim();
-            if (query) {
-                showNotification(`Searching for: ${query}`);
-                document.getElementById('searchInput').value = '';
-            } else {
-                showNotification('Please enter a search keyword', 'warning');
-            }
+<script>
+    // ========== SEARCH AND FILTER JAVASCRIPT ==========
+
+    // Local storage key for search history
+    const SEARCH_HISTORY_KEY = 'lastbite_search_history';
+    const MAX_HISTORY_ITEMS = 10;
+
+    // Current filter state
+    let currentFilters = {
+        minPrice: 0,
+        maxPrice: 100000,
+        minRating: 0,
+        category: 'all',
+        maxDistance: 10
+    };
+
+    // Initialize search history
+    function initSearchHistory() {
+        const history = getSearchHistory();
+        updateSearchHistoryDisplay(history);
+    }
+
+    // Get search history from localStorage
+    function getSearchHistory() {
+        const historyJson = localStorage.getItem(SEARCH_HISTORY_KEY);
+        return historyJson ? JSON.parse(historyJson) : [];
+    }
+
+    // Save search to history
+    function saveToSearchHistory(query) {
+        let history = getSearchHistory();
+
+        // Remove if already exists
+        history = history.filter(item => item.query.toLowerCase() !== query.toLowerCase());
+
+        // Add new search to beginning
+        const searchItem = {
+            query: query,
+            timestamp: new Date().toISOString(),
+            timeAgo: 'Just now'
+        };
+
+        history.unshift(searchItem);
+
+        // Limit to max items
+        if (history.length > MAX_HISTORY_ITEMS) {
+            history = history.slice(0, MAX_HISTORY_ITEMS);
         }
 
-        function setupCatalogDropdown() {
-            const dropdownItems = document.querySelectorAll('#catalogDropdown .dropdown-item');
-            dropdownItems.forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const category = this.dataset.category;
-                    filterByCategory(category);
+        // Update time ago for all items
+        history.forEach(updateTimeAgo);
 
-                    // Close dropdown
-                    const dropdown = document.querySelector('.catalog-btn');
-                    if (dropdown) {
-                        bootstrap.Dropdown.getInstance(dropdown)?.hide();
-                    }
-                });
+        // Save to localStorage
+        localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
+
+        // Update display
+        updateSearchHistoryDisplay(history);
+    }
+
+    // Update time ago for search items
+    function updateTimeAgo(item) {
+        const now = new Date();
+        const searchTime = new Date(item.timestamp);
+        const diffMs = now - searchTime;
+        const diffMins = Math.floor(diffMs / (1000 * 60));
+        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+        if (diffMins < 1) {
+            item.timeAgo = 'Just now';
+        } else if (diffMins < 60) {
+            item.timeAgo = `${diffMins} ${diffMins === 1 ? 'minute' : 'minutes'} ago`;
+        } else if (diffHours < 24) {
+            item.timeAgo = `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
+        } else {
+            item.timeAgo = `${diffDays} ${diffDays === 1 ? 'day' : 'days'} ago`;
+        }
+
+        return item;
+    }
+
+    // Update search history display
+    function updateSearchHistoryDisplay(history) {
+        const historyList = document.getElementById('searchHistoryList');
+        const emptyHistory = document.getElementById('emptyHistory');
+        const historyDropdown = document.getElementById('searchHistory');
+
+        historyList.innerHTML = '';
+
+        if (history.length === 0) {
+            emptyHistory.style.display = 'block';
+            return;
+        }
+
+        emptyHistory.style.display = 'none';
+
+        history.forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'search-history-item';
+            li.innerHTML = `
+                <div class="search-history-text">
+                    <i class="fas fa-search"></i>
+                    <span>${item.query}</span>
+                </div>
+                <div class="search-history-time">${item.timeAgo}</div>
+            `;
+
+            li.addEventListener('click', () => {
+                document.getElementById('searchInput').value = item.query;
+                performSearch();
             });
+
+            historyList.appendChild(li);
+        });
+    }
+
+    // Clear all search history
+    function clearSearchHistory() {
+        if (confirm('Are you sure you want to clear all search history?')) {
+            localStorage.removeItem(SEARCH_HISTORY_KEY);
+            initSearchHistory();
+            showNotification('Search history cleared', 'success');
         }
+    }
+
+    // Initialize filter values
+    function initFilters() {
+        // Price sliders
+        const minPriceSlider = document.getElementById('minPriceSlider');
+        const maxPriceSlider = document.getElementById('maxPriceSlider');
+        const minPriceValue = document.getElementById('minPriceValue');
+        const maxPriceValue = document.getElementById('maxPriceValue');
+
+        function formatPrice(price) {
+            return 'Rp ' + price.toLocaleString('id-ID');
+        }
+
+        function updatePriceValues() {
+            const minVal = parseInt(minPriceSlider.value);
+            const maxVal = parseInt(maxPriceSlider.value);
+
+            if (minVal > maxVal) {
+                minPriceSlider.value = maxVal;
+            }
+
+            minPriceValue.textContent = formatPrice(parseInt(minPriceSlider.value));
+            maxPriceValue.textContent = formatPrice(parseInt(maxPriceSlider.value));
+
+            currentFilters.minPrice = parseInt(minPriceSlider.value);
+            currentFilters.maxPrice = parseInt(maxPriceSlider.value);
+        }
+
+        minPriceSlider.addEventListener('input', updatePriceValues);
+        maxPriceSlider.addEventListener('input', updatePriceValues);
+
+        updatePriceValues();
+
+        // Rating options
+        const ratingOptions = document.querySelectorAll('.rating-option');
+        ratingOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                ratingOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                currentFilters.minRating = parseInt(this.dataset.rating);
+            });
+        });
+
+        // Category options
+        const categoryOptions = document.querySelectorAll('#categoryOptions .filter-option');
+        categoryOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                categoryOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                currentFilters.category = this.dataset.category;
+            });
+        });
+
+        // Distance options
+        const distanceOptions = document.querySelectorAll('.distance-option');
+        distanceOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                distanceOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                currentFilters.maxDistance = parseInt(this.dataset.distance);
+            });
+        });
+
+        // Reset filters button
+        document.getElementById('resetFilters').addEventListener('click', resetFilters);
+
+        // Apply filters button
+        document.getElementById('applyFilters').addEventListener('click', applyFilters);
+    }
+
+    // Reset all filters to default
+    function resetFilters() {
+        currentFilters = {
+            minPrice: 0,
+            maxPrice: 100000,
+            minRating: 0,
+            category: 'all',
+            maxDistance: 10
+        };
+
+        // Reset UI
+        document.getElementById('minPriceSlider').value = 0;
+        document.getElementById('maxPriceSlider').value = 100000;
+        document.getElementById('minPriceValue').textContent = 'Rp 0';
+        document.getElementById('maxPriceValue').textContent = 'Rp 100.000';
+
+        document.querySelectorAll('.rating-option').forEach(opt => opt.classList.remove('active'));
+        document.querySelectorAll('#categoryOptions .filter-option').forEach(opt => {
+            opt.classList.remove('active');
+            if (opt.dataset.category === 'all') opt.classList.add('active');
+        });
+
+        document.querySelectorAll('.distance-option').forEach(opt => {
+            opt.classList.remove('active');
+            if (opt.dataset.distance === '10') opt.classList.add('active');
+        });
+
+        showNotification('Filters reset to default', 'success');
+    }
+
+    // Apply filters and close modal
+    function applyFilters() {
+        closeFilterModal();
+        showNotification('Filters applied successfully', 'success');
+
+        // In a real application, you would trigger a search or filter operation here
+        console.log('Applied filters:', currentFilters);
+
+        // Example: If there's a search query, perform search with filters
+        const searchQuery = document.getElementById('searchInput').value.trim();
+        if (searchQuery) {
+            performSearchWithFilters(searchQuery, currentFilters);
+        }
+    }
+
+    // Perform search with current filters
+    function performSearchWithFilters(query, filters) {
+        // This would be your actual search implementation
+        console.log(`Searching for "${query}" with filters:`, filters);
+
+        // Show loading state
+        showNotification(`Searching for "${query}" with applied filters...`, 'info');
+
+        // Save to history
+        saveToSearchHistory(query);
+    }
+
+    // Toggle filter modal
+    function toggleFilterModal() {
+        const modal = document.getElementById('filterModal');
+        const filterToggle = document.getElementById('filterToggle');
+
+        if (modal.classList.contains('active')) {
+            closeFilterModal();
+        } else {
+            openFilterModal();
+        }
+    }
+
+    function openFilterModal() {
+        const modal = document.getElementById('filterModal');
+        const filterToggle = document.getElementById('filterToggle');
+
+        modal.classList.add('active');
+        filterToggle.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeFilterModal() {
+        const modal = document.getElementById('filterModal');
+        const filterToggle = document.getElementById('filterToggle');
+
+        modal.classList.remove('active');
+        filterToggle.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Enhanced search function
+    function performSearch() {
+        const query = document.getElementById('searchInput').value.trim();
+
+        if (query) {
+            // Check if filters are active
+            const filterToggle = document.getElementById('filterToggle');
+            const hasActiveFilters = !(currentFilters.minPrice === 0 &&
+                                      currentFilters.maxPrice === 100000 &&
+                                      currentFilters.minRating === 0 &&
+                                      currentFilters.category === 'all' &&
+                                      currentFilters.maxDistance === 10);
+
+            if (hasActiveFilters) {
+                // Use search with filters
+                performSearchWithFilters(query, currentFilters);
+            } else {
+                // Regular search
+                console.log(`Searching for: ${query}`);
+                showNotification(`Searching for: ${query}`, 'info');
+
+                // Save to history
+                saveToSearchHistory(query);
+            }
+
+            // Close search history dropdown
+            document.getElementById('searchHistory').classList.remove('active');
+            document.getElementById('searchContainer').classList.remove('active');
+        } else {
+            showNotification('Please enter a search keyword', 'warning');
+        }
+    }
+
+    // Setup search input events
+    function setupSearchInput() {
+        const searchInput = document.getElementById('searchInput');
+        const searchContainer = document.getElementById('searchContainer');
+        const searchHistory = document.getElementById('searchHistory');
+
+        searchInput.addEventListener('focus', function() {
+            const history = getSearchHistory();
+            if (history.length > 0) {
+                searchHistory.classList.add('active');
+                searchContainer.classList.add('active');
+            }
+        });
+
+        searchInput.addEventListener('input', function() {
+            if (this.value.trim() === '') {
+                searchHistory.classList.remove('active');
+                searchContainer.classList.remove('active');
+            }
+        });
+
+        // Close search history when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!searchContainer.contains(event.target) &&
+                !searchHistory.contains(event.target)) {
+                searchHistory.classList.remove('active');
+                searchContainer.classList.remove('active');
+            }
+        });
+    }
+
+    // ========== INITIALIZATION ==========
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize search history
+        initSearchHistory();
+
+        // Initialize filters
+        initFilters();
+
+        // Setup search input
+        setupSearchInput();
+
+        // Setup filter toggle
+        document.getElementById('filterToggle').addEventListener('click', toggleFilterModal);
+        document.getElementById('filterClose').addEventListener('click', closeFilterModal);
+
+        // Close modal when clicking outside
+        document.getElementById('filterModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeFilterModal();
+            }
+        });
+
+        // Search input enter key
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') performSearch();
+        });
+
+        // Initialize catalog dropdown
+        setupCatalogDropdown();
 
         // Navbar scroll effect
         window.addEventListener('scroll', function() {
@@ -508,34 +3528,55 @@
                 navbar.classList.toggle('navbar-scrolled', window.scrollY > 50);
             }
         });
+    });
 
-        // Search input enter key
-        document.getElementById('searchInput')?.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') performSearch();
+    // ========== EXISTING FUNCTIONS ==========
+    function setupCatalogDropdown() {
+        const dropdownItems = document.querySelectorAll('#catalogDropdown .dropdown-item');
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const category = this.dataset.category;
+                filterByCategory(category);
+
+                // Close dropdown
+                const dropdown = document.querySelector('.catalog-btn');
+                if (dropdown) {
+                    bootstrap.Dropdown.getInstance(dropdown)?.hide();
+                }
+            });
+        });
+    }
+
+    function filterByCategory(category) {
+        console.log(`Filtering by category: ${category}`);
+        showNotification(`Showing ${category} category items`, 'info');
+
+        // Update search input placeholder
+        const searchInput = document.getElementById('searchInput');
+        searchInput.placeholder = `Search in ${category}...`;
+
+        // Set category filter
+        currentFilters.category = category;
+
+        // Update UI
+        document.querySelectorAll('#categoryOptions .filter-option').forEach(opt => {
+            opt.classList.remove('active');
+            if (opt.dataset.category === category) opt.classList.add('active');
         });
 
-        // Shared notification function
-        function showNotification(message, type = 'success') {
-            const notification = document.getElementById('notification');
-            notification.className = 'notification';
-            notification.classList.add('show');
-
-            if (type === 'success') {
-                notification.classList.add('notification-success');
-                notification.innerHTML = `<i class="fas fa-check-circle"></i><span>${message}</span>`;
-            } else if (type === 'error') {
-                notification.classList.add('notification-error');
-                notification.innerHTML = `<i class="fas fa-exclamation-circle"></i><span>${message}</span>`;
-            } else {
-                notification.innerHTML = `<i class="fas fa-info-circle"></i><span>${message}</span>`;
-            }
-
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => notification.innerHTML = '', 400);
-            }, 3000);
+        // Trigger search if there's a query
+        const query = searchInput.value.trim();
+        if (query) {
+            performSearchWithFilters(query, currentFilters);
         }
-    </script>
+    }
+
+    function showNotification(message, type = 'success') {
+        // Use your existing notification system or create a simple one
+        alert(`${type.toUpperCase()}: ${message}`);
+    }
+</script>
 
     <!-- =========================================== -->
     <!-- DASHBOARD SECTION -->

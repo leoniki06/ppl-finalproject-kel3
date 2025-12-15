@@ -104,6 +104,60 @@ class ProductController extends Controller
         return $allProducts;
     }
 
+    // app/Http/Controllers/ProductController.php
+    public function search(Request $request)
+    {
+        try {
+            $query = Product::query();
+
+            // Search by name or description
+            if ($request->has('q') && !empty($request->q)) {
+                $searchTerm = $request->q;
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('name', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('description', 'LIKE', "%{$searchTerm}%");
+                });
+            }
+
+            // Filter by price
+            if ($request->has('min_price')) {
+                $query->where('price', '>=', $request->min_price);
+            }
+            if ($request->has('max_price')) {
+                $query->where('price', '<=', $request->max_price);
+            }
+
+            // Filter by rating
+            if ($request->has('min_rating')) {
+                $query->where('rating', '>=', $request->min_rating);
+            }
+
+            // Filter by categories
+            if ($request->has('categories') && !empty($request->categories)) {
+                $categories = explode(',', $request->categories);
+                $query->whereIn('category', $categories);
+            }
+
+            // Only show available products
+            $query->where('stock', '>', 0);
+
+            $products = $query->take(50)->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'products' => $products,
+                    'total' => $products->count()
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error searching products'
+            ], 500);
+        }
+    }
+
     /**
      * Create dummy product for testing - KEMBALIKAN SEBAGAI OBJECT
      */

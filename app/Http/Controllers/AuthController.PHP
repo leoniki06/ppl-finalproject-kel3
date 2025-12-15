@@ -9,43 +9,37 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    // Tampilkan form login
+    // Show login form
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
-    // Proses login
+    // Handle login
     public function login(Request $request)
     {
-        // Validasi input
-        $request->validate([
+        $credentials = $request->validate([
             'email' => 'required|email',
-            'password' => 'required|min:6',
+            'password' => 'required',
         ]);
 
-        // Coba login dengan Auth Laravel
-        if (Auth::attempt([
-            'email' => $request->email,
-            'password' => $request->password
-        ])) {
+        if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->route('dashboard')->with('success', 'Login berhasil!');
+            return redirect()->intended('/dashboard');
         }
 
-        // Jika gagal
         return back()->withErrors([
             'email' => 'Email atau password salah.',
         ])->onlyInput('email');
     }
 
-    // Tampilkan form register
+    // Show registration form
     public function showRegisterForm()
     {
         return view('auth.register');
     }
 
-    // Proses register
+    // Handle registration
     public function register(Request $request)
     {
         $request->validate([
@@ -54,26 +48,25 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        // Buat user baru
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
-        // Login otomatis setelah register
         Auth::login($user);
 
-        return redirect()->route('dashboard')->with('success', 'Registrasi berhasil!');
+        return redirect('/dashboard')->with('success', 'Registrasi berhasil!');
     }
 
-    // Logout
+    // Handle logout
     public function logout(Request $request)
     {
         Auth::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login')->with('success', 'Logout berhasil!');
+        return redirect('/')->with('success', 'Logout berhasil!');
     }
 }

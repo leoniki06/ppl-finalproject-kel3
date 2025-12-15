@@ -1092,8 +1092,7 @@
             <div class="recommended-grid" id="recommendedGrid">
                 @if (isset($recommendedProducts) && count($recommendedProducts) > 0)
                     @foreach ($recommendedProducts as $product)
-                        <div class="product-card"
-                            onclick="window.location.href='{{ route('product.show', $product->id) }}'">
+                        <div class="product-card" onclick="window.location.href='{{ route('product.show', $product->id) }}'">
                             @if ($product->is_flash_sale)
                                 <span class="flash-badge">Flash Sale</span>
                             @else
@@ -1125,8 +1124,7 @@
                                 </div>
                                 <div class="product-price">
                                     <div class="price-container">
-                                        <span
-                                            class="current-price">Rp{{ number_format($product->price, 0, ',', '.') }}</span>
+                                        <span class="current-price">Rp{{ number_format($product->price, 0, ',', '.') }}</span>
                                         <div>
                                             <span
                                                 class="original-price">Rp{{ number_format($product->original_price, 0, ',', '.') }}</span>

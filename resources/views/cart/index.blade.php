@@ -127,6 +127,7 @@
             gap: 20px;
             padding: 25px 0;
             border-bottom: 1px solid rgba(63, 35, 5, 0.08);
+            cursor: pointer;
         }
 
         .cart-item:last-child {
@@ -764,51 +765,13 @@
                         <div class="select-all-checkbox" id="selectAllCheckbox">
                             <i class="fas fa-check"></i>
                         </div>
-                        <span class="select-all-text">Select All (<span id="selectedCount">1</span>)</span>
+                        <span class="select-all-text">Select All (<span id="selectedCount">0</span>)</span>
                     </div>
                 </div>
 
                 <!-- Cart Items Container -->
                 <div class="cart-items-container" id="cartItemsContainer">
-                    <!-- Cart Item 1 - dengan ID yang jelas -->
-                    <div class="cart-item" id="cartItem-1" data-item-id="1">
-                        <div class="cart-item-checkbox selected" data-item-id="1">
-                            <i class="fas fa-check"></i>
-                        </div>
-
-                        <div class="cart-item-image">
-                            <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Roti Sisir Cream Cheese">
-                        </div>
-
-                        <div class="cart-item-details">
-                            <div class="cart-item-brand">Holland Bakery</div>
-                            <h3 class="cart-item-name">ROTI SISIR CREAM CHEESE</h3>
-                            <p class="cart-item-desc">
-                                Roti sisir dengan isian 1 pack 4 sisir roti dengan isian cream cheese buatan holland bakery
-                                dibuat dengan roti khas prancis dengan cita rasa cream cheese germany
-                            </p>
-
-                            <div class="cart-item-meta">
-                                <span><i class="fas fa-tag"></i> Bakery</span>
-                                <span><i class="fas fa-clock"></i> Exp: 25/12</span>
-                                <span><i class="fas fa-star"></i> 4.5 (24 reviews)</span>
-                            </div>
-
-                            <div class="cart-item-actions">
-                                <div class="quantity-control">
-                                    <button class="quantity-btn minus" data-item-id="1" onclick="handleQuantityChange(1, 'minus')">-</button>
-                                    <span class="quantity-value" id="quantity-1">1</span>
-                                    <button class="quantity-btn plus" data-item-id="1" onclick="handleQuantityChange(1, 'plus')">+</button>
-                                </div>
-
-                                <div class="cart-item-price" id="price-1">Rp15,000</div>
-
-                                <button class="remove-item-btn" data-item-id="1" onclick="removeItem(1)">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Cart items will be rendered here by JavaScript -->
                 </div>
             </div>
 
@@ -818,8 +781,9 @@
                     <h3 class="summary-title">Your Shopping Cart</h3>
 
                     <div class="summary-row">
-                        <span class="summary-label">Subtotal (<span id="subtotalItems">1</span> item<span id="subtotalPlural"></span>)</span>
-                        <span class="summary-value" id="subtotal">Rp15,000</span>
+                        <span class="summary-label">Subtotal (<span id="subtotalItems">0</span> item<span
+                                id="subtotalPlural">s</span>)</span>
+                        <span class="summary-value" id="subtotal">Rp0</span>
                     </div>
 
                     <div class="summary-row">
@@ -834,7 +798,7 @@
 
                     <div class="summary-total">
                         <span class="total-label">Total</span>
-                        <span class="total-value" id="total">Rp15,000</span>
+                        <span class="total-value" id="total">Rp0</span>
                     </div>
 
                     <div class="summary-buttons">
@@ -853,7 +817,7 @@
                 <div class="checkout-section">
                     <button class="btn-checkout" id="checkoutBtn">
                         <i class="fas fa-shopping-bag"></i>
-                        Check Out (<span id="checkoutCount">1</span>)
+                        Check Out (<span id="checkoutCount">0</span>)
                     </button>
                 </div>
             </div>
@@ -863,508 +827,492 @@
         <div class="recommendations-section">
             <div class="recommendations-header">
                 <h3 class="section-title">Recommended for You</h3>
-                <a href="#" class="see-more-link">
+                <a href="{{ route('dashboard') }}" class="see-more-link">
                     See more <i class="fas fa-chevron-down"></i>
                 </a>
             </div>
 
-            <div class="recommendations-grid">
-                <!-- Recommended Product 1 -->
-                <div class="product-card">
-                    <span class="recommended-badge">Save 25%</span>
-                    <div class="product-image-container">
-                        <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
-                             alt="Roti Sisir Holland Bakery" class="product-image">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-name">Roti Sisir Holland Bakery</h3>
-                        <span class="product-category">Bakery</span>
-                        <div class="product-rating">
-                            <div class="stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="far fa-star"></i>
+            @if ($recommendedProducts && $recommendedProducts->count() > 0)
+                <div class="recommendations-grid">
+                    @foreach ($recommendedProducts as $recProduct)
+                        <div class="product-card"
+                            onclick="window.location.href='{{ route('product.show', $recProduct->id) }}'">
+                            @if ($recProduct->is_flash_sale || $recProduct->discount_percent >= 20)
+                                <span class="flash-badge">Flash Sale</span>
+                            @elseif($recProduct->discount_percent > 0)
+                                <span class="recommended-badge">Save {{ $recProduct->discount_percent }}%</span>
+                            @endif
+
+                            <div class="product-image-container">
+                                <img src="{{ $recProduct->image_url }}" alt="{{ $recProduct->name }}" class="product-image">
                             </div>
-                            <span class="rating-count">(24)</span>
-                        </div>
-                        <div class="product-price">
-                            <div class="price-container">
-                                <span class="current-price-sm">Rp15,000</span>
-                                <span class="original-price-sm">Rp20,000</span>
+
+                            <div class="product-info">
+                                <h3 class="product-name">{{ Str::limit($recProduct->name, 40) }}</h3>
+                                <span class="product-category">{{ ucfirst($recProduct->category) }}</span>
+
+                                <div class="product-rating">
+                                    <div class="stars">
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            @if ($i <= floor($recProduct->rating))
+                                                <i class="fas fa-star"></i>
+                                            @elseif($i - 0.5 <= $recProduct->rating)
+                                                <i class="fas fa-star-half-alt"></i>
+                                            @else
+                                                <i class="far fa-star"></i>
+                                            @endif
+                                        @endfor
+                                    </div>
+                                    <span class="rating-count">({{ number_format($recProduct->rating_count) }})</span>
+                                </div>
+
+                                <div class="product-price">
+                                    <div class="price-container">
+                                        <span
+                                            class="current-price-sm">Rp{{ number_format($recProduct->price, 0, ',', '.') }}</span>
+                                        @if ($recProduct->original_price > $recProduct->price)
+                                            <span
+                                                class="original-price-sm">Rp{{ number_format($recProduct->original_price, 0, ',', '.') }}</span>
+                                        @endif
+                                    </div>
+                                    <button class="add-to-cart-btn"
+                                        onclick="addToCartFromRecommended(event, {{ $recProduct->id }}, '{{ addslashes($recProduct->name) }}', {{ $recProduct->price }}, '{{ addslashes($recProduct->image_url) }}', '{{ addslashes($recProduct->brand) }}', '{{ addslashes($recProduct->category) }}', {{ $recProduct->rating }}, {{ $recProduct->rating_count }}, '{{ addslashes($recProduct->description ?? '') }}');">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </button>
+                                </div>
                             </div>
-                            <button class="add-to-cart-btn" onclick="addToCartFromRecommended(101, 'Roti Sisir Holland Bakery', 15000)">
-                                <i class="fas fa-shopping-cart"></i>
-                            </button>
                         </div>
-                    </div>
+                    @endforeach
+                </div>
+            @else
+                <div style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 15px;">
+                    <i class="fas fa-box-open" style="font-size: 48px; color: #ccc; margin-bottom: 15px;"></i>
+                    <h4 style="color: #666; margin-bottom: 10px;">No products available</h4>
+                    <p style="color: #999;">Please add products to the database first.</p>
+                    <a href="{{ route('dashboard') }}"
+                        style="display: inline-block; margin-top: 20px; padding: 12px 24px; background: var(--primary-color); color: white; border-radius: 25px; text-decoration: none;">
+                        Go to Dashboard
+                    </a>
+                </div>
+            @endif
+        </div>
+
+        {{-- Script untuk Cart Page - FIXED sesuai dengan Detail Product --}}
+        <script>
+            // ========== CART SYSTEM - FIXED ==========
+            // PERBAIKAN UTAMA:
+            // 1. Struktur data sama dengan detail produk (menggunakan image_url, bukan image)
+            // 2. Recommended products menggunakan addslashes() yang benar
+            // 3. Gambar produk sekarang sinkron 100%
+
+            let cartItems = [];
+
+            // Initialize cart dari data server
+            function initializeCart() {
+                try {
+                    @if (Auth::check() && isset($cartItems) && count($cartItems) > 0)
+                        // PERBAIKAN: Data dari server sudah dalam format yang benar
+                        cartItems = @json($cartItems);
+                        console.log('Cart loaded from server:', cartItems.length, 'items');
+                    @else
+                        // Guest user: ambil dari localStorage
+                        const savedCart = localStorage.getItem('lastbite_cart');
+                        if (savedCart) {
+                            cartItems = JSON.parse(savedCart);
+                            console.log('Cart loaded from localStorage:', cartItems.length, 'items');
+                        } else {
+                            cartItems = [];
+                        }
+                    @endif
+                } catch (error) {
+                    console.error('Error loading cart:', error);
+                    cartItems = [];
+                }
+
+                renderCartItems();
+                updateAllUI();
+            }
+
+            // Render cart items
+            function renderCartItems() {
+                const container = document.getElementById('cartItemsContainer');
+                if (!container) return;
+
+                container.innerHTML = '';
+
+                if (cartItems.length === 0) {
+                    container.innerHTML = `
+                <div class="empty-cart" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; text-align: center;">
+                    <i class="fas fa-shopping-cart" style="font-size: 64px; color: var(--text-light); margin-bottom: 20px; opacity: 0.5;"></i>
+                    <h3 style="font-size: 24px; color: var(--text-dark); margin-bottom: 15px;">Your cart is empty</h3>
+                    <p style="color: var(--text-light); margin-bottom: 30px; max-width: 400px;">Looks like you haven't added any items to your cart yet. Start shopping to find amazing deals!</p>
+                    <a href="{{ route('dashboard') }}" class="btn-start-shopping" style="background: var(--primary-color); color: var(--white); border: none; padding: 14px 32px; border-radius: 30px; font-weight: 600; font-size: 16px; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-store"></i>
+                        Start Shopping
+                    </a>
+                </div>
+            `;
+                } else {
+                    cartItems.forEach(item => {
+                        const cartItemElement = createCartItemElement(item);
+                        container.appendChild(cartItemElement);
+                    });
+
+                    attachCartItemEventListeners();
+                }
+            }
+
+            // Create cart item element - PERBAIKAN: gunakan image_url seperti di detail produk
+            function createCartItemElement(item) {
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.id = `cartItem-${item.id}`;
+                cartItem.dataset.itemId = item.id;
+
+                const itemTotalPrice = item.price * item.quantity;
+
+                // PERBAIKAN KRUSIAL: Gunakan image_url (bukan image) seperti di detail produk
+                const itemImage = item.image_url || item.image ||
+                    'https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80';
+
+                cartItem.innerHTML = `
+            <div class="cart-item-checkbox ${item.selected ? 'selected' : ''}"
+                 data-item-id="${item.id}">
+                <i class="fas fa-check"></i>
+            </div>
+
+            <div class="cart-item-image">
+                <img src="${itemImage}" alt="${item.name}">
+            </div>
+
+            <div class="cart-item-details">
+                <div class="cart-item-brand">${item.brand || 'LastBite'}</div>
+                <h3 class="cart-item-name">${item.name}</h3>
+                <p class="cart-item-desc">
+                    ${item.description || 'Fresh product with great quality and best price.'}
+                </p>
+
+                <div class="cart-item-meta">
+                    <span><i class="fas fa-tag"></i> ${item.category || 'Food'}</span>
+                    <span><i class="fas fa-clock"></i> Exp: ${item.expiry_date || 'Soon'}</span>
+                    <span><i class="fas fa-star"></i> ${item.rating || '4.5'} (${item.rating_count || '10'} reviews)</span>
                 </div>
 
-                <!-- Recommended Product 2 -->
-                <div class="product-card">
-                    <span class="flash-badge">Flash Sale</span>
-                    <div class="product-image-container">
-                        <img src="https://images.unsplash.com/photo-1488477181946-6428a0291777?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
-                             alt="Bread Loaf" class="product-image">
+                <div class="cart-item-actions">
+                    <div class="quantity-control">
+                        <button class="quantity-btn minus" data-item-id="${item.id}">-</button>
+                        <span class="quantity-value" id="quantity-${item.id}">${item.quantity}</span>
+                        <button class="quantity-btn plus" data-item-id="${item.id}">+</button>
                     </div>
-                    <div class="product-info">
-                        <h3 class="product-name">Whole Wheat Bread Loaf</h3>
-                        <span class="product-category">Bakery</span>
-                        <div class="product-rating">
-                            <div class="stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                                <i class="far fa-star"></i>
-                            </div>
-                            <span class="rating-count">(31)</span>
-                        </div>
-                        <div class="product-price">
-                            <div class="price-container">
-                                <span class="current-price-sm">Rp18,000</span>
-                                <span class="original-price-sm">Rp25,000</span>
-                            </div>
-                            <button class="add-to-cart-btn" onclick="addToCartFromRecommended(102, 'Whole Wheat Bread Loaf', 18000)">
-                                <i class="fas fa-shopping-cart"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Recommended Product 3 -->
-                <div class="product-card">
-                    <span class="recommended-badge">Save 30%</span>
-                    <div class="product-image-container">
-                        <img src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
-                             alt="Croissant" class="product-image">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-name">Butter Croissant Premium</h3>
-                        <span class="product-category">Pastry</span>
-                        <div class="product-rating">
-                            <div class="stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="far fa-star"></i>
-                            </div>
-                            <span class="rating-count">(42)</span>
-                        </div>
-                        <div class="product-price">
-                            <div class="price-container">
-                                <span class="current-price-sm">Rp12,000</span>
-                                <span class="original-price-sm">Rp17,000</span>
-                            </div>
-                            <button class="add-to-cart-btn" onclick="addToCartFromRecommended(103, 'Butter Croissant Premium', 12000)">
-                                <i class="fas fa-shopping-cart"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                    <div class="cart-item-price" id="price-${item.id}">Rp${itemTotalPrice.toLocaleString('id-ID')}</div>
 
-                <!-- Recommended Product 4 -->
-                <div class="product-card">
-                    <span class="recommended-badge">Save 20%</span>
-                    <div class="product-image-container">
-                        <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
-                             alt="Bagel" class="product-image">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-name">Everything Bagel with Cream</h3>
-                        <span class="product-category">Bagel</span>
-                        <div class="product-rating">
-                            <div class="stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                            </div>
-                            <span class="rating-count">(37)</span>
-                        </div>
-                        <div class="product-price">
-                            <div class="price-container">
-                                <span class="current-price-sm">Rp14,000</span>
-                                <span class="original-price-sm">Rp17,500</span>
-                            </div>
-                            <button class="add-to-cart-btn" onclick="addToCartFromRecommended(104, 'Everything Bagel with Cream', 14000)">
-                                <i class="fas fa-shopping-cart"></i>
-                            </button>
-                        </div>
-                    </div>
+                    <button class="remove-item-btn" data-item-id="${item.id}">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </div>
             </div>
-        </div>
-    </div>
+        `;
 
-    <script>
-        // Global cart data
-        let cartItems = [
-            {
-                id: 1,
-                name: "ROTI SISIR CREAM CHEESE",
-                price: 15000,
-                quantity: 1,
-                selected: true,
-                brand: "Holland Bakery",
-                image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-                category: "Bakery",
-                expiry: "25/12",
-                rating: "4.5 (24 reviews)"
-            }
-        ];
-
-        // Update selected count text
-        function updateSelectedCount() {
-            const selectedItems = cartItems.filter(item => item.selected);
-            const selectedCount = selectedItems.length;
-
-            // Update "Select All" text
-            document.getElementById('selectedCount').textContent = selectedCount;
-
-            // Update subtotal items text
-            const totalItems = selectedItems.reduce((total, item) => total + item.quantity, 0);
-            document.getElementById('subtotalItems').textContent = totalItems;
-
-            // Update plural "s"
-            document.getElementById('subtotalPlural').textContent = totalItems > 1 ? 's' : '';
-
-            // Update checkout count
-            document.getElementById('checkoutCount').textContent = totalItems;
-
-            // Update select all checkbox state
-            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-            if (selectedCount > 0 && selectedCount === cartItems.length) {
-                selectAllCheckbox.classList.add('selected');
-            } else {
-                selectAllCheckbox.classList.remove('selected');
+                return cartItem;
             }
 
-            return totalItems;
-        }
+            // Attach event listeners to cart items
+            function attachCartItemEventListeners() {
+                document.querySelectorAll('.cart-item-checkbox').forEach(checkbox => {
+                    checkbox.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const itemId = parseInt(this.dataset.itemId);
+                        toggleItemSelection(itemId);
+                    });
+                });
 
-        // Calculate total
-        function calculateTotal() {
-            let subtotal = 0;
-            let totalItems = 0;
+                document.querySelectorAll('.quantity-btn.minus').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const itemId = parseInt(this.dataset.itemId);
+                        handleQuantityChange(itemId, 'minus');
+                    });
+                });
 
-            cartItems.forEach(item => {
-                if (item.selected) {
-                    subtotal += item.price * item.quantity;
-                    totalItems += item.quantity;
+                document.querySelectorAll('.quantity-btn.plus').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const itemId = parseInt(this.dataset.itemId);
+                        handleQuantityChange(itemId, 'plus');
+                    });
+                });
+
+                document.querySelectorAll('.remove-item-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const itemId = parseInt(this.dataset.itemId);
+                        removeItem(itemId);
+                    });
+                });
+            }
+
+            // Toggle item selection
+            function toggleItemSelection(itemId) {
+                const itemIndex = cartItems.findIndex(item => item.id === itemId);
+                if (itemIndex !== -1) {
+                    cartItems[itemIndex].selected = !cartItems[itemIndex].selected;
+                    saveCartToStorage();
+                    updateCartItemCheckbox(itemId, cartItems[itemIndex].selected);
+                    updateAllUI();
                 }
+            }
+
+            // Update individual checkbox
+            function updateCartItemCheckbox(itemId, selected) {
+                const checkbox = document.querySelector(`.cart-item-checkbox[data-item-id="${itemId}"]`);
+                if (checkbox) {
+                    if (selected) {
+                        checkbox.classList.add('selected');
+                    } else {
+                        checkbox.classList.remove('selected');
+                    }
+                }
+            }
+
+            // Select all functionality
+            document.getElementById('selectAll')?.addEventListener('click', function() {
+                const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+                const isCurrentlySelected = selectAllCheckbox.classList.contains('selected');
+                const newState = !isCurrentlySelected;
+
+                if (newState) {
+                    selectAllCheckbox.classList.add('selected');
+                } else {
+                    selectAllCheckbox.classList.remove('selected');
+                }
+
+                cartItems.forEach(item => {
+                    item.selected = newState;
+                });
+
+                saveCartToStorage();
+                renderCartItems();
+                updateAllUI();
             });
 
-            // Update subtotal text
-            document.getElementById('subtotal').textContent = `Rp${subtotal.toLocaleString('id-ID')}`;
-            document.getElementById('total').textContent = `Rp${subtotal.toLocaleString('id-ID')}`;
+            // Handle quantity change
+            function handleQuantityChange(itemId, action) {
+                const itemIndex = cartItems.findIndex(item => item.id === itemId);
+                if (itemIndex === -1) return;
 
-            return { subtotal, totalItems };
-        }
-
-        // Update all UI elements
-        function updateAllUI() {
-            console.log('Updating UI...');
-            console.log('Cart items:', cartItems);
-
-            const totalItems = updateSelectedCount();
-            const { subtotal } = calculateTotal();
-
-            // Update subtotal label
-            document.getElementById('subtotalItems').textContent = totalItems;
-            document.getElementById('subtotalPlural').textContent = totalItems > 1 ? 's' : '';
-
-            // Update checkout button
-            document.getElementById('checkoutCount').textContent = totalItems;
-
-            console.log('UI updated. Total items:', totalItems);
-        }
-
-        // REVISI FIX: Handle quantity change - URUT 1, 2, 3, dst
-        function handleQuantityChange(itemId, action) {
-            console.log(`Quantity change: Item ${itemId}, Action: ${action}`);
-
-            const item = cartItems.find(item => item.id === itemId);
-            if (!item) {
-                console.error(`Item with id ${itemId} not found`);
-                return;
-            }
-
-            console.log(`Before change - Quantity: ${item.quantity}`);
-
-            if (action === 'plus') {
-                // REVISI: Hanya tambah 1, tidak langsung ke 3 atau 5
-                item.quantity += 1;
-                console.log(`After plus - New quantity: ${item.quantity}`);
-            } else if (action === 'minus') {
-                if (item.quantity > 1) {
-                    item.quantity -= 1;
-                    console.log(`After minus - New quantity: ${item.quantity}`);
+                if (action === 'plus') {
+                    cartItems[itemIndex].quantity += 1;
+                } else if (action === 'minus') {
+                    if (cartItems[itemIndex].quantity > 1) {
+                        cartItems[itemIndex].quantity -= 1;
+                    } else {
+                        if (confirm('Remove this item from cart?')) {
+                            removeItem(itemId);
+                        }
+                        return;
+                    }
                 }
+
+                saveCartToStorage();
+                updateQuantityDisplay(itemId, cartItems[itemIndex].quantity);
+                updateAllUI();
             }
 
             // Update quantity display
-            const quantityElement = document.getElementById(`quantity-${itemId}`);
-            if (quantityElement) {
-                quantityElement.textContent = item.quantity;
-                console.log(`Updated quantity display to: ${item.quantity}`);
+            function updateQuantityDisplay(itemId, quantity) {
+                const quantityElement = document.getElementById(`quantity-${itemId}`);
+                const priceElement = document.getElementById(`price-${itemId}`);
+                const item = cartItems.find(item => item.id === itemId);
 
-                // Animation
-                quantityElement.style.transform = 'scale(1.2)';
-                quantityElement.style.color = action === 'plus' ? 'var(--primary-color)' : 'var(--danger-color)';
-                setTimeout(() => {
-                    quantityElement.style.transform = '';
-                    quantityElement.style.color = '';
-                }, 300);
-            }
-
-            // Update price display
-            const priceElement = document.getElementById(`price-${itemId}`);
-            if (priceElement) {
-                const newPrice = item.price * item.quantity;
-                priceElement.textContent = `Rp${newPrice.toLocaleString('id-ID')}`;
-                console.log(`Updated price display to: Rp${newPrice}`);
-            }
-
-            // Update UI
-            updateAllUI();
-        }
-
-        // Remove item
-        function removeItem(itemId) {
-            if (confirm('Are you sure you want to remove this item from your cart?')) {
-                const itemElement = document.getElementById(`cartItem-${itemId}`);
-                if (itemElement) {
-                    itemElement.style.opacity = '0';
-                    itemElement.style.transform = 'translateX(-20px)';
-
-                    setTimeout(() => {
-                        itemElement.remove();
-                        const itemIndex = cartItems.findIndex(item => item.id === itemId);
-                        if (itemIndex !== -1) {
-                            cartItems.splice(itemIndex, 1);
-                        }
-
-                        updateAllUI();
-                    }, 300);
+                if (quantityElement && item) {
+                    quantityElement.textContent = quantity;
+                    if (priceElement) {
+                        const totalPrice = item.price * quantity;
+                        priceElement.textContent = `Rp${totalPrice.toLocaleString('id-ID')}`;
+                    }
                 }
             }
-        }
 
-        // Add to cart from recommended products
-        function addToCartFromRecommended(productId, productName, productPrice) {
-            console.log(`Adding to cart: ${productName}, ID: ${productId}, Price: ${productPrice}`);
-
-            // Cek apakah produk sudah ada di cart
-            const existingItemIndex = cartItems.findIndex(item => item.id === productId);
-
-            if (existingItemIndex !== -1) {
-                // Jika sudah ada, tambah quantity 1
-                cartItems[existingItemIndex].quantity += 1;
-                console.log(`Item already exists. New quantity: ${cartItems[existingItemIndex].quantity}`);
-
-                // Update quantity di UI jika item ada di tampilan
-                const quantityElement = document.getElementById(`quantity-${productId}`);
-                if (quantityElement) {
-                    quantityElement.textContent = cartItems[existingItemIndex].quantity;
+            // Remove item from cart
+            function removeItem(itemId) {
+                const itemIndex = cartItems.findIndex(item => item.id === itemId);
+                if (itemIndex !== -1) {
+                    cartItems.splice(itemIndex, 1);
+                    saveCartToStorage();
+                    renderCartItems();
+                    updateAllUI();
+                    showNotification('Item removed from cart', 'info');
                 }
-
-                // Update price di UI
-                const priceElement = document.getElementById(`price-${productId}`);
-                if (priceElement) {
-                    const newPrice = cartItems[existingItemIndex].price * cartItems[existingItemIndex].quantity;
-                    priceElement.textContent = `Rp${newPrice.toLocaleString('id-ID')}`;
-                }
-            } else {
-                // Jika belum ada, tambah item baru dengan quantity 1
-                const newItemId = cartItems.length > 0 ? Math.max(...cartItems.map(item => item.id)) + 1 : 2;
-
-                // Data produk baru
-                const newItem = {
-                    id: productId,
-                    name: productName,
-                    price: productPrice,
-                    quantity: 1, // SELALU DIMULAI DARI 1
-                    selected: true,
-                    brand: "Recommended Product",
-                    image: event.target.closest('.product-card').querySelector('.product-image').src,
-                    category: event.target.closest('.product-info').querySelector('.product-category').textContent,
-                    expiry: "28/12",
-                    rating: "4.0 (10 reviews)"
-                };
-
-                cartItems.push(newItem);
-                console.log(`Added new item. Total items in cart: ${cartItems.length}`);
-
-                // Buat elemen cart item baru
-                const newCartItem = createCartItemElement(newItem);
-                document.getElementById('cartItemsContainer').appendChild(newCartItem);
             }
 
-            // Show success notification
-            showNotification(`${productName} added to cart!`, 'success');
+            // PERBAIKAN: Add to cart from recommended - SIMPAN image_url dengan benar
+            function addToCartFromRecommended(event, productId, productName, productPrice, productImageUrl, productBrand,
+                productCategory, productRating, productRatingCount, productDescription) {
+                event.stopPropagation();
 
-            // Update UI
-            updateAllUI();
+                const existingItemIndex = cartItems.findIndex(item => item.id === productId);
 
-            // Button animation
-            event.target.style.transform = 'scale(1.2) rotate(360deg)';
-            event.target.style.backgroundColor = 'var(--success-color)';
-            setTimeout(() => {
-                event.target.style.transform = '';
-                event.target.style.backgroundColor = '';
-            }, 500);
-        }
-
-        // Function to create cart item element
-        function createCartItemElement(item) {
-            const cartItem = document.createElement('div');
-            cartItem.className = 'cart-item';
-            cartItem.id = `cartItem-${item.id}`;
-            cartItem.dataset.itemId = item.id;
-
-            cartItem.innerHTML = `
-                <div class="cart-item-checkbox selected" data-item-id="${item.id}" onclick="toggleItemSelection(${item.id})">
-                    <i class="fas fa-check"></i>
-                </div>
-
-                <div class="cart-item-image">
-                    <img src="${item.image}" alt="${item.name}">
-                </div>
-
-                <div class="cart-item-details">
-                    <div class="cart-item-brand">${item.brand}</div>
-                    <h3 class="cart-item-name">${item.name}</h3>
-                    <p class="cart-item-desc">
-                        Produk rekomendasi berkualitas tinggi dengan harga terjangkau.
-                    </p>
-
-                    <div class="cart-item-meta">
-                        <span><i class="fas fa-tag"></i> ${item.category}</span>
-                        <span><i class="fas fa-clock"></i> Exp: ${item.expiry}</span>
-                        <span><i class="fas fa-star"></i> ${item.rating}</span>
-                    </div>
-
-                    <div class="cart-item-actions">
-                        <div class="quantity-control">
-                            <button class="quantity-btn minus" data-item-id="${item.id}" onclick="handleQuantityChange(${item.id}, 'minus')">-</button>
-                            <span class="quantity-value" id="quantity-${item.id}">${item.quantity}</span>
-                            <button class="quantity-btn plus" data-item-id="${item.id}" onclick="handleQuantityChange(${item.id}, 'plus')">+</button>
-                        </div>
-
-                        <div class="cart-item-price" id="price-${item.id}">Rp${(item.price * item.quantity).toLocaleString('id-ID')}</div>
-
-                        <button class="remove-item-btn" data-item-id="${item.id}" onclick="removeItem(${item.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-
-            return cartItem;
-        }
-
-        // Toggle item selection
-        function toggleItemSelection(itemId) {
-            const item = cartItems.find(item => item.id === itemId);
-            if (item) {
-                item.selected = !item.selected;
-
-                const checkbox = document.querySelector(`.cart-item-checkbox[data-item-id="${itemId}"]`);
-                if (checkbox) {
-                    checkbox.classList.toggle('selected');
-                }
-
-                updateAllUI();
-            }
-        }
-
-        // Select all functionality
-        document.getElementById('selectAll').addEventListener('click', function() {
-            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-            const isAllSelected = selectAllCheckbox.classList.contains('selected');
-            const newState = !isAllSelected;
-
-            // Update all checkboxes
-            document.querySelectorAll('.cart-item-checkbox').forEach(checkbox => {
-                if (newState) {
-                    checkbox.classList.add('selected');
+                if (existingItemIndex !== -1) {
+                    cartItems[existingItemIndex].quantity += 1;
+                    cartItems[existingItemIndex].selected = true;
                 } else {
-                    checkbox.classList.remove('selected');
+                    // PERBAIKAN KRUSIAL: Simpan sebagai image_url (bukan image)
+                    const newItem = {
+                        id: productId,
+                        name: productName,
+                        price: productPrice,
+                        quantity: 1,
+                        selected: true,
+                        image_url: productImageUrl, // PENTING: image_url seperti di detail produk
+                        brand: productBrand || 'LastBite',
+                        category: productCategory || 'Product',
+                        expiry_date: 'Soon',
+                        rating: productRating || 4.5,
+                        rating_count: productRatingCount || 10,
+                        description: productDescription || 'Fresh product with great quality and best price.'
+                    };
+                    cartItems.push(newItem);
                 }
 
-                // Update cart data
-                const itemId = checkbox.dataset.itemId;
-                const item = cartItems.find(item => item.id == itemId);
-                if (item) item.selected = newState;
+                saveCartToStorage();
+                renderCartItems();
+                updateAllUI();
+                showNotification(`${productName} added to cart!`, 'success');
+
+                const button = event.target.closest('.add-to-cart-btn') || event.target;
+                button.style.transform = 'scale(1.2) rotate(360deg)';
+                button.style.backgroundColor = 'var(--success-color)';
+                setTimeout(() => {
+                    button.style.transform = '';
+                    button.style.backgroundColor = '';
+                }, 500);
+            }
+
+            // Save cart to localStorage
+            function saveCartToStorage() {
+                try {
+                    localStorage.setItem('lastbite_cart', JSON.stringify(cartItems));
+                } catch (error) {
+                    console.error('Error saving cart:', error);
+                }
+            }
+
+            // Update selected count
+            function updateSelectedCount() {
+                const selectedItems = cartItems.filter(item => item.selected);
+                const selectedCount = selectedItems.length;
+                const totalItems = selectedItems.reduce((total, item) => total + item.quantity, 0);
+
+                document.getElementById('selectedCount').textContent = selectedCount;
+                document.getElementById('subtotalItems').textContent = totalItems;
+                document.getElementById('subtotalPlural').textContent = totalItems !== 1 ? 's' : '';
+                document.getElementById('checkoutCount').textContent = totalItems;
+
+                const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+                if (cartItems.length > 0 && selectedCount === cartItems.length) {
+                    selectAllCheckbox.classList.add('selected');
+                } else if (selectedCount > 0) {
+                    selectAllCheckbox.classList.add('selected');
+                } else {
+                    selectAllCheckbox.classList.remove('selected');
+                }
+
+                return totalItems;
+            }
+
+            // Calculate total
+            function calculateTotal() {
+                let subtotal = 0;
+                let totalItems = 0;
+
+                cartItems.forEach(item => {
+                    if (item.selected) {
+                        subtotal += item.price * item.quantity;
+                        totalItems += item.quantity;
+                    }
+                });
+
+                document.getElementById('subtotal').textContent = `Rp${subtotal.toLocaleString('id-ID')}`;
+                document.getElementById('total').textContent = `Rp${subtotal.toLocaleString('id-ID')}`;
+
+                return {
+                    subtotal,
+                    totalItems
+                };
+            }
+
+            // Update all UI
+            function updateAllUI() {
+                updateSelectedCount();
+                calculateTotal();
+            }
+
+            // Payment Method Button
+            document.getElementById('paymentMethodBtn')?.addEventListener('click', function() {
+                alert('Payment method module will be implemented later');
             });
 
-            // Update checkbox state
-            selectAllCheckbox.classList.toggle('selected');
+            // Voucher Discount Button
+            document.getElementById('voucherDiscountBtn')?.addEventListener('click', function() {
+                alert('Voucher discount module will be implemented later');
+            });
 
-            // Update UI
-            updateAllUI();
-        });
+            // Checkout Button
+            document.getElementById('checkoutBtn')?.addEventListener('click', function() {
+                const selectedItems = cartItems.filter(item => item.selected);
 
-        // Payment Method Button
-        document.getElementById('paymentMethodBtn').addEventListener('click', function() {
-            alert('Payment method module will be implemented later');
-        });
+                if (selectedItems.length === 0) {
+                    alert('Please select at least one item to checkout');
+                    return;
+                }
 
-        // Voucher Discount Button
-        document.getElementById('voucherDiscountBtn').addEventListener('click', function() {
-            alert('Voucher discount module will be implemented later');
-        });
+                alert('Checkout successful! Your order has been placed.');
+            });
 
-        // Checkout Button
-        document.getElementById('checkoutBtn').addEventListener('click', function() {
-            const selectedItems = cartItems.filter(item => item.selected);
+            // Show notification
+            function showNotification(message, type = 'success') {
+                const existingNotification = document.querySelector('.cart-notification');
+                if (existingNotification) {
+                    existingNotification.remove();
+                }
 
-            if (selectedItems.length === 0) {
-                alert('Please select at least one item to checkout');
-                return;
+                const notification = document.createElement('div');
+                notification.className = 'cart-notification';
+                notification.innerHTML = `
+            <div class="notification-content ${type}">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>${message}</span>
+            </div>
+        `;
+
+                notification.style.cssText = `
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 9999;
+            animation: slideIn 0.3s ease;
+        `;
+
+                document.body.appendChild(notification);
+
+                setTimeout(() => notification.classList.add('show'), 100);
+
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.remove();
+                        }
+                    }, 300);
+                }, 3000);
             }
 
-            alert('Checkout successful! Your order has been placed.');
-        });
-
-        // Notification function
-        function showNotification(message, type = 'success') {
-            const notification = document.createElement('div');
-            notification.className = 'cart-notification';
-            notification.innerHTML = `
-                <div class="notification-content ${type}">
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
-                    <span>${message}</span>
-                </div>
-            `;
-
-            notification.style.cssText = `
-                position: fixed;
-                top: 100px;
-                right: 20px;
-                z-index: 9999;
-                animation: slideIn 0.3s ease;
-            `;
-
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-                notification.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.remove();
-                    }
-                }, 300);
-            }, 3000);
-        }
-
-        // Add CSS for notification animations
-        const style = document.createElement('style');
-        style.textContent = `
+            // Add CSS for notification animations
+            if (!document.querySelector('#cart-notification-style')) {
+                const style = document.createElement('style');
+                style.id = 'cart-notification-style';
+                style.textContent = `
             @keyframes slideIn {
                 from { transform: translateX(100%); opacity: 0; }
                 to { transform: translateX(0); opacity: 1; }
@@ -1390,19 +1338,38 @@
             .cart-notification .notification-content.success i {
                 color: var(--success-color);
             }
+            .cart-notification .notification-content.info {
+                border-left: 4px solid var(--info-color);
+                color: var(--text-dark);
+            }
+            .cart-notification .notification-content.info i {
+                color: var(--info-color);
+            }
         `;
-        document.head.appendChild(style);
+                document.head.appendChild(style);
+            }
 
-        // "See More" link functionality
-        document.querySelector('.see-more-link').addEventListener('click', function(e) {
-            e.preventDefault();
-            alert('See more recommended products functionality will be implemented later');
-        });
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('Cart page initialized');
+                initializeCart();
+            });
 
-        // Initialize UI
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Cart initialized');
-            updateAllUI();
-        });
-    </script>
-@endsection
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('Cart page initialized');
+                initializeCart();
+
+                if (typeof initializeNavbar === 'function') {
+                    initializeNavbar();
+                }
+            });
+
+            document.body.addEventListener('click', function(e) {
+                if (e.target.closest('.cart-item') ||
+                    e.target.closest('.cart-summary') ||
+                    e.target.closest('.recommendations-section')) {
+                    return;
+                }
+
+            }, true);
+        </script>
+    @endsection

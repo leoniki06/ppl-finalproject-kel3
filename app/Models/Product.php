@@ -10,38 +10,45 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'brand', 'description', 'image_url', 'price', 'original_price',
-        'category', 'rating', 'rating_count', 'discount_percent', 'expiry_date',
-        'stock', 'is_flash_sale', 'is_recommended', 'seller_id'
+        'name',
+        'description',
+        'price',
+        'original_price',
+        'discount_percent',
+        'category',
+        'brand',
+        'stock',
+        'image_url',
+        'rating',
+        'rating_count',
+        'is_flash_sale',
+        'expiry_date',
     ];
 
     protected $casts = [
-        'expiry_date' => 'date',
-        'price' => 'decimal:2',
-        'original_price' => 'decimal:2',
+        'price' => 'integer',
+        'original_price' => 'integer',
+        'discount_percent' => 'integer',
+        'stock' => 'integer',
+        'rating' => 'decimal:1',
+        'rating_count' => 'integer',
+        'is_flash_sale' => 'boolean',
+        'expiry_date' => 'datetime',
     ];
 
-    // Relasi dengan seller (user)
-    public function seller()
+    /**
+     * Relationship dengan Cart
+     */
+    public function carts()
     {
-        return $this->belongsTo(User::class, 'seller_id');
+        return $this->hasMany(Cart::class);
     }
 
-    // Scope untuk produk yang masih tersedia
-    public function scopeAvailable($query)
+    /**
+     * Relationship dengan OrderItem
+     */
+    public function orderItems()
     {
-        return $query->where('stock', '>', 0)
-                    ->where('expiry_date', '>', now());
-    }
-
-    // Hitung impact wasting food
-    public function calculateImpact()
-    {
-        // Misal: setiap pembelian menyelamatkan 1kg CO2
-        return [
-            'co2_saved' => 1.5, // kg CO2
-            'water_saved' => 500, // liter air
-            'food_saved' => 1, // kg makanan
-        ];
+        return $this->hasMany(OrderItem::class);
     }
 }

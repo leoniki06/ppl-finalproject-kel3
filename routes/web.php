@@ -1,55 +1,61 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\FavoritesController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\AuthController;
 
-
-// ==================== PUBLIC ROUTES ====================
+// 1. SPLASH PAGE (Halaman pertama yang diakses)
 Route::get('/', function () {
     return view('splash');
 })->name('splash');
 
+// 2. ABOUT PAGE
 Route::get('/about', function () {
     return view('about');
 })->name('about');
 
+// 3. EDUKASI PAGE
 Route::get('/edukasi', function () {
     return view('edukasi');
 })->name('edukasi');
 
+// 4. FITUR PAGE
 Route::get('/fitur', function () {
     return view('fitur');
 })->name('fitur');
 
+// 5. ROLE PAGE
 Route::get('/role', function () {
     return view('role');
 })->name('role');
 
-// ==================== SIMPLE FORGOT PASSWORD ROUTE ====================
-// Forgot Password - Simple Email Only
-Route::get('/forgot-password', [ForgotPasswordController::class, 'showForm'])->name('password.request');
-Route::post('/forgot-password/check-email', [ForgotPasswordController::class, 'checkEmail'])->name('password.check');
-Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'resetPassword'])->name('password.reset');
-
-// ==================== AUTH ROUTES (NO MIDDLEWARE) ====================
+// 6. LOGIN & REGISTER
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
 
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+// ==================== SIMPLE FORGOT PASSWORD ROUTE ====================
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showForm'])->name('password.request');
+Route::post('/forgot-password/check-email', [ForgotPasswordController::class, 'checkEmail'])->name('password.check');
+Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'resetPassword'])->name('password.reset');
 
-// ==================== PROTECTED ROUTES (WITH MIDDLEWARE) ====================
+// ==================== PUBLIC PRODUCT ROUTES ====================
+Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.show');
+
+// ==================== PROTECTED ROUTES (HANYA UNTUK USER YANG LOGIN) ====================
 Route::middleware(['checkauth'])->group(function () {
-    // DASHBOARD
+    // DASHBOARD (setelah login)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Alternatif: jika ingin ProductController menangani dashboard
+    // Route::get('/dashboard', [ProductController::class, 'dashboard'])->name('dashboard');
 
     // PROFILE ROUTES
     Route::prefix('profile')->group(function () {
@@ -59,31 +65,25 @@ Route::middleware(['checkauth'])->group(function () {
         Route::get('/orders', [ProfileController::class, 'orders'])->name('profile.orders');
     });
 
-    // Di dalam middleware group atau sesuai kebutuhan:
+    // CART ROUTES (hanya untuk yang login)
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+
+    // FAVORITES ROUTES
     Route::get('/favorites', [FavoritesController::class, 'index'])->name('favorites');
 
-// ==================== PRODUCT ====================
-// Dashboard route
-Route::get('/', [ProductController::class, 'dashboard'])->name('dashboard');
-Route::get('/dashboard', [ProductController::class, 'dashboard'])->name('dashboard.index');
+    // LOGOUT
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Product detail route
-Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.show');
+    // CHECKOUT (redirect ke cart jika belum siap)
+    Route::get('/checkout', function () {
+        return redirect()->route('cart.index');
+    })->name('cart.checkout');
 
-
-// routes/web.php
-Route::get('/checkout', function () {
-    // Redirect ke cart page dulu jika belum ada checkout
-    return redirect()->route('cart.index');
-})->name('cart.checkout');
-
-// Atau langsung ke cart page
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+    Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+    Route::get('/cart/summary', [CartController::class, 'getCartSummary'])->name('cart.summary');
 
 });
-
-// Route untuk halaman keranjang
-Route::get('/cart', function () {
-    return view('cart.index');
-})->name('cart.index');

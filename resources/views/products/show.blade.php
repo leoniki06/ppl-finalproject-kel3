@@ -1061,50 +1061,76 @@
         </div>
 
         <!-- Recommended Products -->
-        @if ($recommendedProducts->count() > 0)
+        @if ($recommendedProducts && $recommendedProducts->count() > 0)
             <div class="recommendations-section">
                 <h3 class="section-title">You May Also Like</h3>
                 <div class="recommendations-grid">
-                    @foreach ($recommendedProducts as $recommended)
+                    @foreach ($recommendedProducts as $product)
+                        @php
+                            // Pastikan kita mengakses sebagai object
+                            $productId = is_object($product) ? $product->id : $product['id'];
+                            $productName = is_object($product) ? $product->name : $product['name'];
+                            $productPrice = is_object($product) ? $product->price : $product['price'];
+                            $productOriginalPrice = is_object($product)
+                                ? $product->original_price
+                                : $product['original_price'];
+                            $productDiscountPercent = is_object($product)
+                                ? $product->discount_percent
+                                : $product['discount_percent'];
+                            $productCategory = is_object($product) ? $product->category : $product['category'];
+                            $productBrand = is_object($product) ? $product->brand : $product['brand'];
+                            $productImageUrl = is_object($product) ? $product->image_url : $product['image_url'];
+                            $productRating = is_object($product) ? $product->rating : $product['rating'];
+                            $productRatingCount = is_object($product)
+                                ? $product->rating_count
+                                : $product['rating_count'];
+                            $productIsFlashSale = is_object($product)
+                                ? $product->is_flash_sale
+                                : $product['is_flash_sale'];
+                        @endphp
+
                         <div class="product-card"
-                            onclick="window.location.href='{{ route('product.show', $recommended->id) }}'">
-                            @if ($recommended->is_flash_sale)
+                            onclick="window.location.href='{{ route('product.show', $productId) }}'">
+                            @if ($productIsFlashSale || $productDiscountPercent >= 20)
                                 <span class="flash-badge">Flash Sale</span>
-                            @elseif($recommended->discount_percent > 0)
-                                <span class="recommended-badge">Save {{ $recommended->discount_percent }}%</span>
+                            @elseif($productDiscountPercent > 0)
+                                <span class="recommended-badge">Save {{ $productDiscountPercent }}%</span>
                             @endif
+
                             <div class="product-image-container">
-                                <img src="{{ $recommended->image_url }}" alt="{{ $recommended->name }}"
-                                    class="product-image">
+                                <img src="{{ $productImageUrl }}" alt="{{ $productName }}" class="product-image">
                             </div>
+
                             <div class="product-info">
-                                <h3 class="product-name">{{ Str::limit($recommended->name, 40) }}</h3>
-                                <span class="product-category">{{ ucfirst($recommended->category) }}</span>
+                                <h3 class="product-name">{{ Str::limit($productName, 40) }}</h3>
+                                <span class="product-category">{{ ucfirst($productCategory) }}</span>
+
                                 <div class="product-rating">
                                     <div class="stars">
                                         @for ($i = 1; $i <= 5; $i++)
-                                            @if ($i <= floor($recommended->rating))
+                                            @if ($i <= floor($productRating))
                                                 <i class="fas fa-star"></i>
-                                            @elseif($i - 0.5 <= $recommended->rating)
+                                            @elseif($i - 0.5 <= $productRating)
                                                 <i class="fas fa-star-half-alt"></i>
                                             @else
                                                 <i class="far fa-star"></i>
                                             @endif
                                         @endfor
                                     </div>
-                                    <span class="rating-count">({{ number_format($recommended->rating_count) }})</span>
+                                    <span class="rating-count">({{ number_format($productRatingCount) }})</span>
                                 </div>
+
                                 <div class="product-price">
                                     <div class="price-container">
                                         <span
-                                            class="current-price-sm">Rp{{ number_format($recommended->price, 0, ',', '.') }}</span>
-                                        @if ($recommended->original_price > $recommended->price)
+                                            class="current-price-sm">Rp{{ number_format($productPrice, 0, ',', '.') }}</span>
+                                        @if ($productOriginalPrice > $productPrice)
                                             <span
-                                                class="original-price-sm">Rp{{ number_format($recommended->original_price, 0, ',', '.') }}</span>
+                                                class="original-price-sm">Rp{{ number_format($productOriginalPrice, 0, ',', '.') }}</span>
                                         @endif
                                     </div>
                                     <button class="add-to-cart-btn"
-                                        onclick="addToCart({{ $recommended->id }}, '{{ $recommended->name }}', {{ $recommended->price }}); event.stopPropagation()">
+                                        onclick="addToCart({{ $productId }}, '{{ addslashes($productName) }}', {{ $productPrice }}); event.stopPropagation()">
                                         <i class="fas fa-shopping-cart"></i>
                                     </button>
                                 </div>
@@ -1114,111 +1140,131 @@
                 </div>
             </div>
         @endif
-    </div>
 
-    <script>
-        // Image Gallery Function
-        function changeImage(imageUrl, element) {
-            // Update main image
-            document.getElementById('mainImage').src = imageUrl;
+        <script>
+            // Image Gallery Function
+            function changeImage(imageUrl, element) {
+                // Update main image
+                document.getElementById('mainImage').src = imageUrl;
 
-            // Update active thumbnail
-            document.querySelectorAll('.thumbnail').forEach(thumb => {
-                thumb.classList.remove('active');
-            });
-            element.classList.add('active');
-        }
-
-        // Add to Cart Function
-        function addToCart(productId, productName, price) {
-            try {
-                let cart = JSON.parse(localStorage.getItem('lastbite_cart') || '[]');
-                const existingItem = cart.find(item => item.id === productId);
-
-                if (existingItem) {
-                    existingItem.quantity += 1;
-                } else {
-                    cart.push({
-                        id: productId,
-                        name: productName,
-                        price: price,
-                        quantity: 1,
-                        addedAt: new Date().toISOString()
-                    });
-                }
-
-                localStorage.setItem('lastbite_cart', JSON.stringify(cart));
-                updateCartCount();
-                showNotification(`${productName} added to cart!`, 'success');
-
-            } catch (error) {
-                console.error('Error adding to cart:', error);
-                showNotification('Failed to add item to cart', 'error');
+                // Update active thumbnail
+                document.querySelectorAll('.thumbnail').forEach(thumb => {
+                    thumb.classList.remove('active');
+                });
+                element.classList.add('active');
             }
-        }
 
-        // Buy Now Function
-        function buyNow(productId) {
-            // Add to cart first
-            addToCart(productId, '{{ $product->name }}', {{ $product->price }});
+            // Add to Cart Function
+            function addToCart(productId, productName, price) {
+                // Dapatkan data produk dari elemen yang ada di halaman
+                const product = @json($product); // Data dari controller
 
-            // Redirect to cart page
-            setTimeout(() => {
-                window.location.href = '{{ route('cart.index') ?? '/cart' }}';
-            }, 500);
-        }
+                // Panggil fungsi global addToCart dengan data lengkap
+                window.addToCart(
+                    productId,
+                    productName,
+                    price,
+                    product.image_url,
+                    product.brand,
+                    product.category,
+                    product.rating,
+                    product.rating_count
+                );
+            }
 
-        // Update Cart Count
-        function updateCartCount() {
-            try {
-                const cart = JSON.parse(localStorage.getItem('lastbite_cart') || '[]');
-                const totalItems = cart.reduce((total, item) => total + (item.quantity || 1), 0);
-                const cartCountElement = document.getElementById('cartCount');
+            // Buy Now Function
+            function buyNow(productId) {
+                const product = @json($product);
 
-                if (cartCountElement) {
-                    cartCountElement.textContent = totalItems;
-                    if (totalItems > 0) {
-                        cartCountElement.style.transform = 'scale(1.2)';
-                        setTimeout(() => cartCountElement.style.transform = 'scale(1)', 300);
+                // Panggil addToCart dengan parameter lengkap
+                window.addToCart(
+                    productId,
+                    product.name,
+                    product.price,
+                    product.image_url,
+                    product.brand,
+                    product.category,
+                    product.rating,
+                    product.rating_count
+                );
+
+                // Redirect to cart page
+                setTimeout(() => {
+                    window.location.href = '{{ route('cart.index') ?? '/cart' }}';
+                }, 500);
+
+                // Update Cart Count
+                function updateCartCount() {
+                    try {
+                        const cart = JSON.parse(localStorage.getItem('lastbite_cart') || '[]');
+                        const totalItems = cart.reduce((total, item) => total + (item.quantity || 1), 0);
+                        const cartCountElement = document.getElementById('cartCount');
+
+                        if (cartCountElement) {
+                            cartCountElement.textContent = totalItems;
+                            if (totalItems > 0) {
+                                cartCountElement.style.transform = 'scale(1.2)';
+                                setTimeout(() => cartCountElement.style.transform = 'scale(1)', 300);
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error updating cart count:', error);
                     }
                 }
-            } catch (error) {
-                console.error('Error updating cart count:', error);
-            }
-        }
 
-        // Show Notification
-        function showNotification(message, type = 'success') {
-            // Remove existing notification
-            const existingNotification = document.querySelector('.notification');
-            if (existingNotification) {
-                existingNotification.remove();
-            }
+                // Show Notification
+                function showNotification(message, type = 'success') {
+                    // Remove existing notification
+                    const existingNotification = document.querySelector('.notification');
+                    if (existingNotification) {
+                        existingNotification.remove();
+                    }
 
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.className = `notification notification-${type}`;
-            notification.innerHTML = `
+                    // Create notification element
+                    const notification = document.createElement('div');
+                    notification.className = `notification notification-${type}`;
+                    notification.innerHTML = `
                 <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
                 <span>${message}</span>
             `;
 
-            // Add to body
-            document.body.appendChild(notification);
+                    // Add to body
+                    document.body.appendChild(notification);
 
-            // Show notification
-            setTimeout(() => notification.classList.add('show'), 100);
+                    // Show notification
+                    setTimeout(() => notification.classList.add('show'), 100);
 
-            // Remove after 3 seconds
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => notification.remove(), 400);
-            }, 3000);
-        }
+                    // Remove after 3 seconds
+                    setTimeout(() => {
+                        notification.classList.remove('show');
+                        setTimeout(() => notification.remove(), 400);
+                    }, 3000);
+                }
 
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            updateCartCount();
-        });
-    </script>
-@endsection
+                // Initialize on page load
+                document.addEventListener('DOMContentLoaded', function() {
+                    updateCartCount();
+                });
+                // Initialize on page load
+                document.addEventListener('DOMContentLoaded', function() {
+                    updateCartCount();
+
+                    // JANGAN lupa panggil fungsi navbar jika ada
+                    if (typeof initializeNavbar === 'function') {
+                        initializeNavbar();
+                    }
+                });
+
+                // Pastikan tidak ada konflik dengan event navbar
+                // Event delegation untuk mencegah konflik
+                document.body.addEventListener('click', function(e) {
+                    // Jika klik pada elemen product detail, biarkan handler product yang menangani
+                    if (e.target.closest('.product-detail-grid') ||
+                        e.target.closest('.recommendations-section')) {
+                        return;
+                    }
+
+                    // Biarkan navbar handler menangani klik navbar
+                }, true);
+        </script>
+    @endsection

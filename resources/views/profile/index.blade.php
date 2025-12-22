@@ -1146,54 +1146,23 @@
             <div class="orders-section">
                 <div class="orders-header">
                     <h2 class="section-subtitle">Recent Orders</h2>
-                    <a href="{{ route('profile.orders') }}" class="view-all-btn">
-                        View All
-                        <i class="fas fa-arrow-right"></i>
+                    <a href="javascript:void(0)" class="view-all-btn" id="refreshOrdersBtn">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh
                     </a>
                 </div>
 
-                <div class="orders-grid">
-                    <!-- Dummy order data -->
-                    <div class="order-card">
-                        <div class="order-header">
-                            <div class="order-id">#LB-2024-001</div>
-                            <div class="order-status status-completed">Completed</div>
-                        </div>
-                        <div class="order-details">
-                            Artisan Bread Package, Fresh Salad Bowl
-                        </div>
-                        <div class="order-total">
-                            <span>Total:</span>
-                            <span class="total-amount">Rp 85.000</span>
-                        </div>
-                    </div>
-
-                    <div class="order-card">
-                        <div class="order-header">
-                            <div class="order-id">#LB-2024-002</div>
-                            <div class="order-status status-completed">Completed</div>
-                        </div>
-                        <div class="order-details">
-                            Sushi Combo, Green Tea
-                        </div>
-                        <div class="order-total">
-                            <span>Total:</span>
-                            <span class="total-amount">Rp 90.000</span>
-                        </div>
-                    </div>
-
-                    <div class="order-card">
-                        <div class="order-header">
-                            <div class="order-id">#LB-2024-003</div>
-                            <div class="order-status status-pending">Pending</div>
-                        </div>
-                        <div class="order-details">
-                            Fruits & Vegetables Box
-                        </div>
-                        <div class="order-total">
-                            <span>Total:</span>
-                            <span class="total-amount">Rp 120.000</span>
-                        </div>
+                <div class="orders-grid" id="ordersGridContainer">
+                    <!-- Order akan dimuat via JavaScript -->
+                    <div id="noOrdersMessage" style="text-align: center; padding: 40px; display: none;">
+                        <i class="fas fa-shopping-bag" style="font-size: 48px; color: #ccc; margin-bottom: 15px;"></i>
+                        <h4 style="color: #666; margin-bottom: 10px;">No orders yet</h4>
+                        <p style="color: #999;">You haven't placed any orders yet.</p>
+                        <a href="{{ route('dashboard') }}" class="btn-start-shopping"
+                            style="display: inline-block; margin-top: 20px; padding: 12px 24px; background: var(--primary-color); color: white; border-radius: 25px; text-decoration: none;">
+                            <i class="fas fa-store"></i>
+                            Start Shopping
+                        </a>
                     </div>
                 </div>
             </div>
@@ -1907,6 +1876,81 @@
                     }
                 @endif
             }
+
+            // ========== ORDER HISTORY SYSTEM ==========
+            function loadOrderHistory() {
+                const ordersGrid = document.getElementById('ordersGridContainer');
+                const noOrdersMessage = document.getElementById('noOrdersMessage');
+
+                if (!ordersGrid) return;
+
+                // REVISI: Kosongkan dulu
+                ordersGrid.innerHTML = '';
+
+                // Cek orders dari localStorage
+                let orders = [];
+                try {
+                    const savedOrders = localStorage.getItem('lastbite_order_history');
+                    if (savedOrders) {
+                        orders = JSON.parse(savedOrders);
+                    }
+                } catch (error) {
+                    console.error('Error loading orders:', error);
+                    orders = [];
+                }
+
+                // REVISI: Tampilkan pesan jika tidak ada order
+                if (orders.length === 0) {
+                    noOrdersMessage.style.display = 'block';
+                    ordersGrid.appendChild(noOrdersMessage);
+                    return;
+                }
+
+                noOrdersMessage.style.display = 'none';
+
+                // Tampilkan maksimal 3 order terbaru
+                const recentOrders = orders.slice(0, 3);
+
+                recentOrders.forEach(order => {
+                    const orderCard = document.createElement('div');
+                    orderCard.className = 'order-card';
+
+                    const totalAmount = order.totals?.total || order.total_amount || 0;
+                    const status = order.status || 'completed';
+                    const items = order.items || [];
+                    const itemNames = items.slice(0, 2).map(item => item.name).join(', ') +
+                        (items.length > 2 ? ` and ${items.length - 2} more items` : '');
+
+                    orderCard.innerHTML = `
+            <div class="order-header">
+                <div class="order-id">#${order.orderId || order.order_number || 'N/A'}</div>
+                <div class="order-status status-${status}">
+                    ${status.charAt(0).toUpperCase() + status.slice(1)}
+                </div>
+            </div>
+            <div class="order-details">
+                ${itemNames || 'Various items'}
+            </div>
+            <div class="order-total">
+                <span>Total:</span>
+                <span class="total-amount">Rp${totalAmount.toLocaleString('id-ID')}</span>
+            </div>
+        `;
+
+                    ordersGrid.appendChild(orderCard);
+                });
+            }
+
+            // Refresh orders button
+            document.getElementById('refreshOrdersBtn')?.addEventListener('click', function() {
+                loadOrderHistory();
+                showNotification('Orders refreshed!', 'info');
+            });
+
+            // Load orders saat halaman profile dibuka
+            document.addEventListener('DOMContentLoaded', function() {
+                loadOrderHistory();
+            });
 
             function deleteProfilePhoto() {
                 if (confirm('Apakah Anda yakin ingin menghapus foto profil?')) {

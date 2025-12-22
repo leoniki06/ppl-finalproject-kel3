@@ -222,12 +222,20 @@
         }
 
         .categories-grid {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             justify-content: center;
-            flex-wrap: wrap;
-            gap: 35px;
-            max-width: 1000px;
+            gap: 25px;
+            max-width: 600px;
             margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .categories-grid {
+                grid-template-columns: repeat(4, 1fr);
+                max-width: 1000px;
+                gap: 35px;
+            }
         }
 
         .category-item {
@@ -236,7 +244,7 @@
             align-items: center;
             cursor: pointer;
             transition: var(--transition);
-            width: 120px;
+            width: 100%;
         }
 
         .category-item:hover {
@@ -280,6 +288,8 @@
             font-weight: 600;
             color: var(--text-dark);
             transition: var(--transition);
+            text-align: center;
+            line-height: 1.3;
         }
 
         .category-item:hover .category-name {
@@ -304,6 +314,7 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            flex-wrap: wrap;
         }
 
         .section-title h2 {
@@ -372,6 +383,7 @@
             align-items: center;
             gap: 8px;
             font-size: 15px;
+            white-space: nowrap;
         }
 
         .see-more-btn:hover {
@@ -474,6 +486,7 @@
             transform: scale(1.05);
         }
 
+        /* ========== FAVORITE BUTTON ========== */
         .product-actions {
             position: absolute;
             top: 15px;
@@ -481,7 +494,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            z-index: 2;
+            z-index: 3;
         }
 
         .favorite-btn {
@@ -497,10 +510,11 @@
             transition: var(--transition);
             color: var(--text-dark);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-size: 16px;
         }
 
         .favorite-btn:hover {
-            background: var(--primary-color);
+            background: var(--danger-color);
             color: var(--white);
             transform: scale(1.1);
         }
@@ -508,6 +522,10 @@
         .favorite-btn.active {
             background: var(--danger-color);
             color: var(--white);
+        }
+
+        .favorite-btn.active:hover {
+            background: #c82333;
         }
 
         .product-info {
@@ -713,7 +731,7 @@
 
         .recommended-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 30px;
             max-width: 1200px;
             margin: 0 auto;
@@ -748,6 +766,42 @@
 
         .notification-error {
             background: #dc3545;
+        }
+
+        /* ========== LAYOUT IMPROVEMENTS ========== */
+        .food-urgency-badge {
+            position: absolute;
+            top: 15px;
+            right: 60px;
+            background: var(--warning-color);
+            color: var(--white);
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 600;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .expiry-info {
+            font-size: 12px;
+            color: var(--warning-color);
+            font-weight: 600;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .location-info {
+            font-size: 12px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 5px;
         }
 
         /* ========== RESPONSIVE ========== */
@@ -835,11 +889,12 @@
             }
 
             .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
                 gap: 20px;
             }
 
             .category-item {
-                width: 100px;
+                width: 100%;
             }
 
             .category-circle {
@@ -857,6 +912,25 @@
 
             .section-title h2 {
                 font-size: 24px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .section-title {
+                width: 100%;
+            }
+
+            .countdown-timer {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .see-more-btn {
+                align-self: flex-start;
             }
 
             .timer-display {
@@ -898,11 +972,12 @@
             }
 
             .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
                 gap: 15px;
             }
 
             .category-item {
-                width: 85px;
+                width: 100%;
             }
 
             .category-circle {
@@ -986,9 +1061,27 @@
                                 <div class="product-card"
                                     onclick="window.location.href='{{ route('product.show', $product->id) }}'">
                                     <span class="flash-badge">Flash Sale</span>
+                                    <!-- Food Urgency Badge -->
+                                    @if ($product->expiry_days <= 1)
+                                        <span class="food-urgency-badge">
+                                            <i class="fas fa-exclamation-triangle"></i> Expiring Today!
+                                        </span>
+                                    @elseif($product->expiry_days <= 3)
+                                        <span class="food-urgency-badge">
+                                            <i class="fas fa-clock"></i> Expiring Soon
+                                        </span>
+                                    @endif
+
                                     <div class="product-image-container">
                                         <img src="{{ $product->image_url }}" alt="{{ $product->name }}"
                                             class="product-image">
+                                        <!-- Favorite Button -->
+                                        <div class="product-actions">
+                                            <button class="favorite-btn {{ $product->is_favorite ? 'active' : '' }}"
+                                                onclick="toggleFavorite({{ $product->id }}); event.stopPropagation()">
+                                                <i class="{{ $product->is_favorite ? 'fas' : 'far' }} fa-heart"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                     <div class="product-info">
                                         <div class="product-brand">
@@ -997,6 +1090,19 @@
                                         </div>
                                         <h3 class="product-name">{{ $product->name }}</h3>
                                         <span class="product-category">{{ ucfirst($product->category) }}</span>
+
+                                        <!-- Expiry Information -->
+                                        <div class="expiry-info">
+                                            <i class="fas fa-hourglass-half"></i>
+                                            Expires in {{ $product->expiry_days }} day(s)
+                                        </div>
+
+                                        <!-- Location Information -->
+                                        <div class="location-info">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            {{ $product->distance }} km away
+                                        </div>
+
                                         <div class="product-rating">
                                             <div class="stars">
                                                 @for ($i = 1; $i <= 5; $i++)
@@ -1018,11 +1124,12 @@
                                                 <div>
                                                     <span
                                                         class="original-price">Rp{{ number_format($product->original_price, 0, ',', '.') }}</span>
-                                                    <span class="discount-percent">-{{ $product->discount_percent }}%</span>
+                                                    <span
+                                                        class="discount-percent">-{{ $product->discount_percent }}%</span>
                                                 </div>
                                             </div>
                                             <button class="add-to-cart-btn"
-                                                onclick="addToCart({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price }}, '{{ addslashes($product->image_url) }}', '{{ addslashes($product->brand) }}', '{{ addslashes($product->category) }}', {{ $product->rating }}, {{ $product->rating_count }}); event.stopPropagation()">
+                                                onclick="addToCart({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price }}, '{{ addslashes($product->image_url) }}', '{{ addslashes($product->brand) }}', '{{ addslashes($product->category) }}', {{ $product->rating }}, {{ $product->rating_count }}, {{ $product->expiry_days }}, {{ $product->distance }}); event.stopPropagation()">
                                                 <i class="fas fa-shopping-cart"></i>
                                             </button>
                                         </div>
@@ -1038,6 +1145,12 @@
                                 <div class="product-image-container">
                                     <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
                                         alt="No Products" class="product-image">
+                                    <!-- Favorite Button -->
+                                    <div class="product-actions">
+                                        <button class="favorite-btn" onclick="event.stopPropagation()">
+                                            <i class="far fa-heart"></i>
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="product-info">
                                     <div class="product-brand">
@@ -1092,14 +1205,34 @@
             <div class="recommended-grid" id="recommendedGrid">
                 @if (isset($recommendedProducts) && count($recommendedProducts) > 0)
                     @foreach ($recommendedProducts as $product)
-                        <div class="product-card" onclick="window.location.href='{{ route('product.show', $product->id) }}'">
+                        <div class="product-card"
+                            onclick="window.location.href='{{ route('product.show', $product->id) }}'">
                             @if ($product->is_flash_sale)
                                 <span class="flash-badge">Flash Sale</span>
                             @else
                                 <span class="recommended-badge">Recommended</span>
                             @endif
+
+                            <!-- Food Urgency Badge -->
+                            @if ($product->expiry_days <= 1)
+                                <span class="food-urgency-badge">
+                                    <i class="fas fa-exclamation-triangle"></i> Expiring Today!
+                                </span>
+                            @elseif($product->expiry_days <= 3)
+                                <span class="food-urgency-badge">
+                                    <i class="fas fa-clock"></i> Expiring Soon
+                                </span>
+                            @endif
+
                             <div class="product-image-container">
                                 <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="product-image">
+                                <!-- Favorite Button -->
+                                <div class="product-actions">
+                                    <button class="favorite-btn {{ $product->is_favorite ? 'active' : '' }}"
+                                        onclick="toggleFavorite({{ $product->id }}); event.stopPropagation()">
+                                        <i class="{{ $product->is_favorite ? 'fas' : 'far' }} fa-heart"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="product-info">
                                 <div class="product-brand">
@@ -1108,6 +1241,19 @@
                                 </div>
                                 <h3 class="product-name">{{ $product->name }}</h3>
                                 <span class="product-category">{{ ucfirst($product->category) }}</span>
+
+                                <!-- Expiry Information -->
+                                <div class="expiry-info">
+                                    <i class="fas fa-hourglass-half"></i>
+                                    Expires in {{ $product->expiry_days }} day(s)
+                                </div>
+
+                                <!-- Location Information -->
+                                <div class="location-info">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{ $product->distance }} km away
+                                </div>
+
                                 <div class="product-rating">
                                     <div class="stars">
                                         @for ($i = 1; $i <= 5; $i++)
@@ -1124,7 +1270,8 @@
                                 </div>
                                 <div class="product-price">
                                     <div class="price-container">
-                                        <span class="current-price">Rp{{ number_format($product->price, 0, ',', '.') }}</span>
+                                        <span
+                                            class="current-price">Rp{{ number_format($product->price, 0, ',', '.') }}</span>
                                         <div>
                                             <span
                                                 class="original-price">Rp{{ number_format($product->original_price, 0, ',', '.') }}</span>
@@ -1132,7 +1279,7 @@
                                         </div>
                                     </div>
                                     <button class="add-to-cart-btn"
-                                        onclick="addToCart({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price }}, '{{ addslashes($product->image_url) }}', '{{ addslashes($product->brand) }}', '{{ addslashes($product->category) }}', {{ $product->rating }}, {{ $product->rating_count }}); event.stopPropagation()">
+                                        onclick="addToCart({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price }}, '{{ addslashes($product->image_url) }}', '{{ addslashes($product->brand) }}', '{{ addslashes($product->category) }}', {{ $product->rating }}, {{ $product->rating_count }}, {{ $product->expiry_days }}, {{ $product->distance }}); event.stopPropagation()">
                                         <i class="fas fa-shopping-cart"></i>
                                     </button>
                                 </div>
@@ -1146,6 +1293,12 @@
                         <div class="product-image-container">
                             <img src="https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
                                 alt="No Products" class="product-image">
+                            <!-- Favorite Button -->
+                            <div class="product-actions">
+                                <button class="favorite-btn" onclick="event.stopPropagation()">
+                                    <i class="far fa-heart"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="product-info">
                             <div class="product-brand">
@@ -1193,8 +1346,11 @@
                     discount_percent: 44,
                     rating: 4.7,
                     rating_count: 128,
+                    expiry_days: 1,
+                    distance: 2.5,
                     image_url: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                    is_flash_sale: true
+                    is_flash_sale: true,
+                    is_favorite: false
                 },
                 {
                     id: 2,
@@ -1206,8 +1362,11 @@
                     discount_percent: 42,
                     rating: 4.8,
                     rating_count: 95,
+                    expiry_days: 2,
+                    distance: 1.8,
                     image_url: 'https://images.unsplash.com/photo-1555507036-ab794f27d2e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                    is_flash_sale: true
+                    is_flash_sale: true,
+                    is_favorite: true
                 },
                 {
                     id: 3,
@@ -1219,8 +1378,11 @@
                     discount_percent: 36,
                     rating: 4.5,
                     rating_count: 76,
+                    expiry_days: 3,
+                    distance: 3.2,
                     image_url: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                    is_flash_sale: true
+                    is_flash_sale: true,
+                    is_favorite: false
                 },
                 {
                     id: 4,
@@ -1232,8 +1394,11 @@
                     discount_percent: 37,
                     rating: 4.6,
                     rating_count: 89,
+                    expiry_days: 4,
+                    distance: 2.1,
                     image_url: 'https://images.unsplash.com/photo-1567306300913-3def25b4c99b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                    is_flash_sale: true
+                    is_flash_sale: true,
+                    is_favorite: false
                 }
             ],
             recommended: [{
@@ -1246,8 +1411,11 @@
                     discount_percent: 22,
                     rating: 4.9,
                     rating_count: 210,
+                    expiry_days: 5,
+                    distance: 1.5,
                     image_url: 'https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                    is_flash_sale: false
+                    is_flash_sale: false,
+                    is_favorite: true
                 },
                 {
                     id: 6,
@@ -1259,8 +1427,11 @@
                     discount_percent: 24,
                     rating: 4.8,
                     rating_count: 167,
+                    expiry_days: 2,
+                    distance: 4.2,
                     image_url: 'https://images.unsplash.com/photo-1604503468505-1d2d6a9a6c8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                    is_flash_sale: false
+                    is_flash_sale: false,
+                    is_favorite: false
                 },
                 {
                     id: 7,
@@ -1272,8 +1443,11 @@
                     discount_percent: 30,
                     rating: 4.7,
                     rating_count: 142,
+                    expiry_days: 1,
+                    distance: 0.8,
                     image_url: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                    is_flash_sale: false
+                    is_flash_sale: false,
+                    is_favorite: true
                 },
                 {
                     id: 8,
@@ -1285,8 +1459,11 @@
                     discount_percent: 24,
                     rating: 4.6,
                     rating_count: 98,
+                    expiry_days: 3,
+                    distance: 2.7,
                     image_url: 'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                    is_flash_sale: false
+                    is_flash_sale: false,
+                    is_favorite: false
                 },
                 {
                     id: 9,
@@ -1298,8 +1475,11 @@
                     discount_percent: 27,
                     rating: 4.9,
                     rating_count: 189,
+                    expiry_days: 1,
+                    distance: 3.5,
                     image_url: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                    is_flash_sale: false
+                    is_flash_sale: false,
+                    is_favorite: false
                 },
                 {
                     id: 10,
@@ -1311,8 +1491,11 @@
                     discount_percent: 25,
                     rating: 4.8,
                     rating_count: 123,
+                    expiry_days: 4,
+                    distance: 1.2,
                     image_url: 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                    is_flash_sale: false
+                    is_flash_sale: false,
+                    is_favorite: true
                 },
                 {
                     id: 11,
@@ -1324,8 +1507,11 @@
                     discount_percent: 27,
                     rating: 4.5,
                     rating_count: 87,
+                    expiry_days: 7,
+                    distance: 2.3,
                     image_url: 'https://images.unsplash.com/photo-1552767059-ce182ead6c1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                    is_flash_sale: false
+                    is_flash_sale: false,
+                    is_favorite: false
                 },
                 {
                     id: 12,
@@ -1337,8 +1523,11 @@
                     discount_percent: 21,
                     rating: 4.7,
                     rating_count: 112,
+                    expiry_days: 2,
+                    distance: 3.8,
                     image_url: 'https://images.unsplash.com/photo-1602476524182-2cf6586b1021?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                    is_flash_sale: false
+                    is_flash_sale: false,
+                    is_favorite: false
                 }
             ]
         };
@@ -1471,12 +1660,25 @@
 
             // Add dummy products
             dummyProducts.flashSale.forEach(product => {
+                const foodUrgencyBadge = product.expiry_days <= 1 ?
+                    '<span class="food-urgency-badge"><i class="fas fa-exclamation-triangle"></i> Expiring Today!</span>' :
+                    product.expiry_days <= 3 ?
+                    '<span class="food-urgency-badge"><i class="fas fa-clock"></i> Expiring Soon</span>' :
+                    '';
+
                 const productHTML = `
                 <div class="swiper-slide">
                     <div class="product-card" onclick="viewProductDetail(${product.id})">
                         <span class="flash-badge">Flash Sale</span>
+                        ${foodUrgencyBadge}
                         <div class="product-image-container">
                             <img src="${product.image_url}" alt="${product.name}" class="product-image">
+                            <div class="product-actions">
+                                <button class="favorite-btn ${product.is_favorite ? 'active' : ''}"
+                                        onclick="toggleFavorite(${product.id}); event.stopPropagation()">
+                                    <i class="${product.is_favorite ? 'fas' : 'far'} fa-heart"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="product-info">
                             <div class="product-brand">
@@ -1485,6 +1687,14 @@
                             </div>
                             <h3 class="product-name">${product.name}</h3>
                             <span class="product-category">${product.category.charAt(0).toUpperCase() + product.category.slice(1)}</span>
+                            <div class="expiry-info">
+                                <i class="fas fa-hourglass-half"></i>
+                                Expires in ${product.expiry_days} day(s)
+                            </div>
+                            <div class="location-info">
+                                <i class="fas fa-map-marker-alt"></i>
+                                ${product.distance} km away
+                            </div>
                             <div class="product-rating">
                                 <div class="stars">
                                     ${generateStars(product.rating)}
@@ -1500,7 +1710,7 @@
                                     </div>
                                 </div>
                                 <button class="add-to-cart-btn"
-                                    onclick="addToCart(${product.id}, '${product.name.replace(/'/g, "\\'")}', ${product.price}, '${product.image_url.replace(/'/g, "\\'")}', '${product.brand.replace(/'/g, "\\'")}', '${product.category.replace(/'/g, "\\'")}', ${product.rating}, ${product.rating_count}); event.stopPropagation()">
+                                    onclick="addToCart(${product.id}, '${product.name.replace(/'/g, "\\'")}', ${product.price}, '${product.image_url.replace(/'/g, "\\'")}', '${product.brand.replace(/'/g, "\\'")}', '${product.category.replace(/'/g, "\\'")}', ${product.rating}, ${product.rating_count}, ${product.expiry_days}, ${product.distance}); event.stopPropagation()">
                                     <i class="fas fa-shopping-cart"></i>
                                 </button>
                             </div>
@@ -1521,13 +1731,28 @@
 
             // Add dummy products
             dummyProducts.recommended.forEach(product => {
+                const foodUrgencyBadge = product.expiry_days <= 1 ?
+                    '<span class="food-urgency-badge"><i class="fas fa-exclamation-triangle"></i> Expiring Today!</span>' :
+                    product.expiry_days <= 3 ?
+                    '<span class="food-urgency-badge"><i class="fas fa-clock"></i> Expiring Soon</span>' :
+                    '';
+
+                const badge = product.is_flash_sale ?
+                    '<span class="flash-badge">Flash Sale</span>' :
+                    '<span class="recommended-badge">Recommended</span>';
+
                 const productHTML = `
                 <div class="product-card" onclick="viewProductDetail(${product.id})">
-                    ${product.is_flash_sale ?
-                        '<span class="flash-badge">Flash Sale</span>' :
-                        '<span class="recommended-badge">Recommended</span>'}
+                    ${badge}
+                    ${foodUrgencyBadge}
                     <div class="product-image-container">
                         <img src="${product.image_url}" alt="${product.name}" class="product-image">
+                        <div class="product-actions">
+                            <button class="favorite-btn ${product.is_favorite ? 'active' : ''}"
+                                    onclick="toggleFavorite(${product.id}); event.stopPropagation()">
+                                <i class="${product.is_favorite ? 'fas' : 'far'} fa-heart"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="product-info">
                         <div class="product-brand">
@@ -1536,6 +1761,14 @@
                         </div>
                         <h3 class="product-name">${product.name}</h3>
                         <span class="product-category">${product.category.charAt(0).toUpperCase() + product.category.slice(1)}</span>
+                        <div class="expiry-info">
+                            <i class="fas fa-hourglass-half"></i>
+                            Expires in ${product.expiry_days} day(s)
+                        </div>
+                        <div class="location-info">
+                            <i class="fas fa-map-marker-alt"></i>
+                            ${product.distance} km away
+                        </div>
                         <div class="product-rating">
                             <div class="stars">
                                 ${generateStars(product.rating)}
@@ -1551,7 +1784,7 @@
                                 </div>
                             </div>
                             <button class="add-to-cart-btn"
-                                onclick="addToCart(${product.id}, '${product.name.replace(/'/g, "\\'")}', ${product.price}, '${product.image_url.replace(/'/g, "\\'")}', '${product.brand.replace(/'/g, "\\'")}', '${product.category.replace(/'/g, "\\'")}', ${product.rating}, ${product.rating_count}); event.stopPropagation()">
+                                onclick="addToCart(${product.id}, '${product.name.replace(/'/g, "\\'")}', ${product.price}, '${product.image_url.replace(/'/g, "\\'")}', '${product.brand.replace(/'/g, "\\'")}', '${product.category.replace(/'/g, "\\'")}', ${product.rating}, ${product.rating_count}, ${product.expiry_days}, ${product.distance}); event.stopPropagation()">
                                 <i class="fas fa-shopping-cart"></i>
                             </button>
                         </div>
@@ -1620,7 +1853,8 @@
             }
         }
 
-        function addToCart(productId, productName, price, image_url, brand, category, rating, rating_count) {
+        function addToCart(productId, productName, price, image_url, brand, category, rating, rating_count, expiry_days,
+            distance) {
             try {
                 let cart = JSON.parse(localStorage.getItem('lastbite_cart') || '[]');
                 const existingItem = cart.find(item => item.id === productId);
@@ -1637,6 +1871,8 @@
                         category: category,
                         rating: rating,
                         rating_count: rating_count,
+                        expiry_days: expiry_days,
+                        distance: distance,
                         quantity: 1,
                         addedAt: new Date().toISOString()
                     });
@@ -1815,6 +2051,70 @@
             }, 3000);
         }
 
+        // ========== FAVORITE FUNCTIONALITY ==========
+
+        // Initialize favorite buttons
+        function updateFavoriteButtons() {
+            const favorites = JSON.parse(localStorage.getItem('lastbite_favorites') || '[]');
+
+            // Update all favorite buttons
+            document.querySelectorAll('.favorite-btn').forEach(btn => {
+                const productId = parseInt(btn.getAttribute('onclick')?.match(/\d+/)?.[0]);
+                if (productId) {
+                    const isFavorite = favorites.some(fav => fav.id === productId);
+                    if (isFavorite) {
+                        btn.classList.add('active');
+                        btn.innerHTML = '<i class="fas fa-heart"></i>';
+                    } else {
+                        btn.classList.remove('active');
+                        btn.innerHTML = '<i class="far fa-heart"></i>';
+                    }
+                }
+            });
+        }
+
+        // Toggle favorite status
+        function toggleFavorite(productId) {
+            let favorites = JSON.parse(localStorage.getItem('lastbite_favorites') || '[]');
+            const existingIndex = favorites.findIndex(p => p.id === productId);
+
+            const product = dummyProducts.flashSale.find(p => p.id === productId) ||
+                dummyProducts.recommended.find(p => p.id === productId);
+
+            if (existingIndex > -1) {
+                // Remove from favorites
+                favorites.splice(existingIndex, 1);
+                showNotification('Removed from favorites', 'info');
+            } else {
+                // Add to favorites
+                if (product) {
+                    favorites.push({
+                        id: productId,
+                        name: product.name,
+                        price: product.price,
+                        original_price: product.original_price,
+                        image_url: product.image_url,
+                        brand: product.brand,
+                        category: product.category,
+                        rating: product.rating,
+                        rating_count: product.rating_count,
+                        expiry_days: product.expiry_days,
+                        distance: product.distance,
+                        addedAt: new Date().toISOString()
+                    });
+                    showNotification('Added to favorites!', 'success');
+                }
+            }
+
+            localStorage.setItem('lastbite_favorites', JSON.stringify(favorites));
+            updateFavoriteButtons();
+
+            // Update product data for immediate UI feedback
+            if (product) {
+                product.is_favorite = !product.is_favorite;
+            }
+        }
+
         // Initialize Dashboard
         function initializeDashboard() {
             initializeHeroSlideshow();
@@ -1833,6 +2133,7 @@
             initializeFlashSaleSwiper();
             updateCountdownTimer();
             updateCartCount();
+            updateFavoriteButtons();
 
             console.log('Dashboard initialized successfully');
         }

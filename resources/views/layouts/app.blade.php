@@ -1227,6 +1227,486 @@
         }
     </style>
 
+    <!-- ========== FOOTER STYLES ========== -->
+    <style>
+        .footer {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+            color: var(--white);
+            padding: 60px 0 30px;
+            margin-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--danger-color), var(--success-color), var(--accent-color));
+            background-size: 200% 100%;
+            animation: gradientMove 3s linear infinite;
+        }
+
+        @keyframes gradientMove {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 200% 50%;
+            }
+        }
+
+        .footer-container {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+            gap: 50px;
+            margin-bottom: 50px;
+        }
+
+        .footer-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-brand {
+            margin-bottom: 25px;
+        }
+
+        .footer-logo {
+            width: 140px;
+            height: auto;
+            margin-bottom: 20px;
+            filter: brightness(0) invert(1);
+            transition: var(--transition);
+        }
+
+        .footer-logo:hover {
+            transform: scale(1.05);
+        }
+
+        .footer-description {
+            font-size: 14px;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 25px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            transition: var(--transition);
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .social-icon:hover {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 159, 28, 0.3);
+        }
+
+        .footer-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--white);
+            position: relative;
+            padding-bottom: 12px;
+        }
+
+        .footer-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--accent-color);
+            border-radius: 2px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-link {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            font-size: 14px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 0;
+        }
+
+        .footer-link:hover {
+            color: var(--accent-color);
+            transform: translateX(5px);
+        }
+
+        .footer-link i {
+            font-size: 12px;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .footer-link:hover i {
+            opacity: 1;
+        }
+
+        .footer-contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-color);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .contact-text {
+            flex: 1;
+        }
+
+        .contact-text strong {
+            display: block;
+            color: var(--white);
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .footer-newsletter {
+            margin-top: 10px;
+        }
+
+        .newsletter-text {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .newsletter-input {
+            flex: 1;
+            padding: 12px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .newsletter-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .newsletter-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(255, 159, 28, 0.2);
+        }
+
+        .newsletter-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            background: var(--accent-color);
+            color: var(--primary-dark);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .newsletter-btn:hover {
+            background: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .footer-apps {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .app-button {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: var(--white);
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .app-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--accent-color);
+            transform: translateX(5px);
+        }
+
+        .app-icon {
+            font-size: 24px;
+        }
+
+        .app-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .app-text small {
+            font-size: 10px;
+            opacity: 0.8;
+        }
+
+        .app-text strong {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-copyright {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .footer-copyright a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .footer-copyright a:hover {
+            color: var(--white);
+        }
+
+        .footer-bottom-links {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .footer-bottom-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 13px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .footer-bottom-link::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -2px;
+            width: 0;
+            height: 2px;
+            background: var(--accent-color);
+            transition: var(--transition);
+        }
+
+        .footer-bottom-link:hover {
+            color: var(--white);
+        }
+
+        .footer-bottom-link:hover::after {
+            width: 100%;
+        }
+
+        .footer-payment {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .payment-icon {
+            width: 50px;
+            height: 32px;
+            background: var(--white);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .payment-icon:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .payment-icon i {
+            font-size: 18px;
+            color: var(--primary-color);
+        }
+
+        /* Scroll to Top Button */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(63, 35, 5, 0.3);
+        }
+
+        .scroll-to-top.show {
+            display: flex;
+        }
+
+        .scroll-to-top:hover {
+            background: var(--accent-color);
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(255, 159, 28, 0.4);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .footer-content {
+                grid-template-columns: 2fr 1fr 1fr 1.5fr;
+                gap: 40px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+                gap: 40px;
+            }
+
+            .footer-column:first-child {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .footer {
+                padding: 40px 0 20px;
+                margin-top: 60px;
+            }
+
+            .footer-container {
+                padding: 0 20px;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 35px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .footer-bottom-links {
+                justify-content: center;
+            }
+
+            .footer-payment {
+                justify-content: center;
+            }
+
+            .scroll-to-top {
+                bottom: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .newsletter-form {
+                flex-direction: column;
+            }
+
+            .newsletter-btn {
+                width: 100%;
+            }
+
+            .footer-apps {
+                margin-top: 10px;
+            }
+        }
+    </style>
+
     <!-- ========== NOTIFICATION STYLES ========== -->
     <style>
         .notification {
@@ -1553,6 +2033,198 @@
         <i class="fas fa-check-circle"></i>
         <span id="notificationMessage">Product added to cart!</span>
     </div>
+
+    <!-- ========== FOOTER SECTION ========== -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <!-- Column 1: Brand & Social -->
+                <div class="footer-column">
+                    <div class="footer-brand">
+                        <img src="{{ asset('images/LOGO LASTBITE.png') }}" alt="LastBite Logo" class="footer-logo">
+                        <p class="footer-description">
+                            LastBite is your trusted platform to reduce food waste and save money.
+                            We connect you with quality food at amazing prices before it goes to waste.
+                        </p>
+                    </div>
+                    <div class="footer-social">
+                        <a href="https://facebook.com" target="_blank" class="social-icon" title="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://instagram.com" target="_blank" class="social-icon" title="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://twitter.com" target="_blank" class="social-icon" title="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://linkedin.com" target="_blank" class="social-icon" title="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="https://youtube.com" target="_blank" class="social-icon" title="YouTube">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Column 2: Quick Links -->
+                <div class="footer-column">
+                    <h3 class="footer-title">Quick Links</h3>
+                    <div class="footer-links">
+                        <a href="{{ route('dashboard') }}" class="footer-link">
+                            <i class="fas fa-chevron-right"></i>
+                            Home
+                        </a>
+                        <a href="#" class="footer-link">
+                            <i class="fas fa-chevron-right"></i>
+                            About Us
+                        </a>
+                        <a href="#" class="footer-link">
+                            <i class="fas fa-chevron-right"></i>
+                            How It Works
+                        </a>
+                        <a href="{{ route('cart.index') }}" class="footer-link">
+                            <i class="fas fa-chevron-right"></i>
+                            Shopping Cart
+                        </a>
+                        <a href="{{ route('favorites') }}" class="footer-link">
+                            <i class="fas fa-chevron-right"></i>
+                            Favorites
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Column 3: Support -->
+                <div class="footer-column">
+                    <h3 class="footer-title">Support</h3>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">
+                            <i class="fas fa-chevron-right"></i>
+                            Help Center
+                        </a>
+                        <a href="#" class="footer-link">
+                            <i class="fas fa-chevron-right"></i>
+                            FAQs
+                        </a>
+                        <a href="#" class="footer-link">
+                            <i class="fas fa-chevron-right"></i>
+                            Terms & Conditions
+                        </a>
+                        <a href="#" class="footer-link">
+                            <i class="fas fa-chevron-right"></i>
+                            Privacy Policy
+                        </a>
+                        <a href="#" class="footer-link">
+                            <i class="fas fa-chevron-right"></i>
+                            Contact Us
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Column 4: Contact Info -->
+                <div class="footer-column">
+                    <h3 class="footer-title">Contact Us</h3>
+                    <div class="footer-contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-text">
+                            <strong>Address</strong>
+                            Jl. Raya Darmo No. 123<br>
+                            Surabaya, East Java 60241
+                        </div>
+                    </div>
+                    <div class="footer-contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <div class="contact-text">
+                            <strong>Phone</strong>
+                            +62 812-3456-7890
+                        </div>
+                    </div>
+                    <div class="footer-contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-text">
+                            <strong>Email</strong>
+                            support@lastbite.com
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 5: Newsletter & Apps -->
+                <div class="footer-column">
+                    <h3 class="footer-title">Stay Updated</h3>
+                    <div class="footer-newsletter">
+                        <p class="newsletter-text">
+                            Subscribe to our newsletter for special offers and updates!
+                        </p>
+                        <form class="newsletter-form" onsubmit="handleNewsletterSubmit(event)">
+                            <input type="email" class="newsletter-input" placeholder="Your email address"
+                                id="newsletterEmail" required>
+                            <button type="submit" class="newsletter-btn">
+                                Subscribe
+                            </button>
+                        </form>
+                    </div>
+
+                    <h4 class="footer-title" style="margin-top: 25px;">Download App</h4>
+                    <div class="footer-apps">
+                        <a href="#" class="app-button">
+                            <i class="fab fa-apple app-icon"></i>
+                            <div class="app-text">
+                                <small>Download on the</small>
+                                <strong>App Store</strong>
+                            </div>
+                        </a>
+                        <a href="#" class="app-button">
+                            <i class="fab fa-google-play app-icon"></i>
+                            <div class="app-text">
+                                <small>Get it on</small>
+                                <strong>Google Play</strong>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    &copy; 2024 <a href="{{ route('dashboard') }}">LastBite</a>. All rights reserved.
+                    Made with <i class="fas fa-heart" style="color: var(--danger-color);"></i> to reduce food waste.
+                </div>
+
+                <div class="footer-bottom-links">
+                    <a href="#" class="footer-bottom-link">Privacy Policy</a>
+                    <a href="#" class="footer-bottom-link">Terms of Service</a>
+                    <a href="#" class="footer-bottom-link">Cookie Policy</a>
+                    <a href="#" class="footer-bottom-link">Sitemap</a>
+                </div>
+
+                <div class="footer-payment">
+                    <span style="color: rgba(255, 255, 255, 0.7); font-size: 13px; margin-right: 10px;">
+                        We Accept:
+                    </span>
+                    <div class="payment-icon" title="Visa">
+                        <i class="fab fa-cc-visa"></i>
+                    </div>
+                    <div class="payment-icon" title="Mastercard">
+                        <i class="fab fa-cc-mastercard"></i>
+                    </div>
+                    <div class="payment-icon" title="PayPal">
+                        <i class="fab fa-cc-paypal"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-to-top" id="scrollToTop" onclick="scrollToTop()">
+        <i class="fas fa-chevron-up"></i>
+    </button>
 
     <!-- ========== JAVASCRIPT DEPENDENCIES ========== -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -2023,15 +2695,15 @@
                             Rp ${parseInt(product.price || 0).toLocaleString()}
                         </span>
                         ${product.original_price && product.original_price > product.price ? `
-                                    <div>
-                                        <span class="original-price" style="font-size: 14px; color: var(--text-light); text-decoration: line-through;">
-                                            Rp ${parseInt(product.original_price).toLocaleString()}
-                                        </span>
-                                        <span class="discount-percent" style="font-size: 12px; color: var(--success-color); font-weight: 600; margin-left: 5px;">
-                                            -${calculateDiscountPercent(product.price, product.original_price)}%
-                                        </span>
-                                    </div>
-                                ` : ''}
+                                                    <div>
+                                                        <span class="original-price" style="font-size: 14px; color: var(--text-light); text-decoration: line-through;">
+                                                            Rp ${parseInt(product.original_price).toLocaleString()}
+                                                        </span>
+                                                        <span class="discount-percent" style="font-size: 12px; color: var(--success-color); font-weight: 600; margin-left: 5px;">
+                                                            -${calculateDiscountPercent(product.price, product.original_price)}%
+                                                        </span>
+                                                    </div>
+                                                ` : ''}
                     </div>
 
                     <button class="add-to-cart-btn"
@@ -2654,6 +3326,152 @@
         // Initialize cart count on load
         updateCartCount();
         setInterval(updateCartCount, 2000);
+
+        // ========== FOOTER JAVASCRIPT ==========
+
+        // Newsletter Subscription
+        function handleNewsletterSubmit(event) {
+            event.preventDefault();
+
+            const emailInput = document.getElementById('newsletterEmail');
+            const email = emailInput.value.trim();
+
+            if (!email) {
+                showNotification('Please enter your email address', 'warning');
+                return;
+            }
+
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showNotification('Please enter a valid email address', 'error');
+                return;
+            }
+
+            // Simulate API call
+            showNotification('Processing...', 'info');
+
+            setTimeout(() => {
+                // Here you would normally send to your backend
+                try {
+                    // Store in localStorage (for demo purposes)
+                    let subscribers = JSON.parse(localStorage.getItem('lastbite_subscribers') || '[]');
+
+                    if (subscribers.includes(email)) {
+                        showNotification('This email is already subscribed!', 'warning');
+                        return;
+                    }
+
+                    subscribers.push(email);
+                    localStorage.setItem('lastbite_subscribers', JSON.stringify(subscribers));
+
+                    showNotification('Thank you for subscribing! 🎉', 'success');
+                    emailInput.value = '';
+
+                    // Optional: Send to backend
+                    // fetch('/api/newsletter/subscribe', {
+                    //     method: 'POST',
+                    //     headers: { 'Content-Type': 'application/json' },
+                    //     body: JSON.stringify({ email: email })
+                    // });
+
+                } catch (error) {
+                    console.error('Newsletter subscription error:', error);
+                    showNotification('Something went wrong. Please try again.', 'error');
+                }
+            }, 1000);
+        }
+
+        // Scroll to Top Functionality
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Show/Hide Scroll to Top Button
+        window.addEventListener('scroll', function() {
+            const scrollToTopBtn = document.getElementById('scrollToTop');
+            if (scrollToTopBtn) {
+                if (window.pageYOffset > 300) {
+                    scrollToTopBtn.classList.add('show');
+                } else {
+                    scrollToTopBtn.classList.remove('show');
+                }
+            }
+        });
+
+        // Smooth scroll for footer links
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add smooth scroll to all anchor links in footer
+            const footerLinks = document.querySelectorAll('.footer a[href^="#"]');
+
+            footerLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+
+                    if (href === '#') {
+                        e.preventDefault();
+                        return;
+                    }
+
+                    const target = document.querySelector(href);
+                    if (target) {
+                        e.preventDefault();
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Social media link tracking (optional)
+            const socialIcons = document.querySelectorAll('.social-icon');
+            socialIcons.forEach(icon => {
+                icon.addEventListener('click', function(e) {
+                    const platform = this.getAttribute('title');
+                    console.log(`Social media clicked: ${platform}`);
+                    // You can add analytics tracking here
+                });
+            });
+
+            // App button tracking (optional)
+            const appButtons = document.querySelectorAll('.app-button');
+            appButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const appStore = this.querySelector('strong').textContent;
+                    console.log(`App download clicked: ${appStore}`);
+                    showNotification(`Redirecting to ${appStore}...`, 'info');
+                    // Add your app store links here
+                });
+            });
+
+            // Payment icon hover effects
+            const paymentIcons = document.querySelectorAll('.payment-icon');
+            paymentIcons.forEach(icon => {
+                icon.addEventListener('mouseenter', function() {
+                    const paymentMethod = this.getAttribute('title');
+                    console.log(`Payment method hovered: ${paymentMethod}`);
+                });
+            });
+
+            console.log('Footer initialized successfully');
+        });
+
+        // Dynamic year update (optional)
+        function updateCopyrightYear() {
+            const copyrightText = document.querySelector('.footer-copyright');
+            if (copyrightText) {
+                const currentYear = new Date().getFullYear();
+                copyrightText.innerHTML = copyrightText.innerHTML.replace('2024', currentYear);
+            }
+        }
+
+        // Call on page load
+        updateCopyrightYear();
     </script>
 
     <!-- Additional scripts from child pages -->

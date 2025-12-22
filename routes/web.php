@@ -4,10 +4,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\FavoritesController;
+use App\Http\Controllers\FavoritesController; // Sudah ada
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\OrderController;
+
+// ==================== PUBLIC ROUTES (BISA DIAKSES TANPA LOGIN) ====================
 
 // 1. SPLASH PAGE (Halaman pertama yang diakses)
 Route::get('/', function () {
@@ -34,14 +38,17 @@ Route::get('/role', function () {
     return view('role');
 })->name('role');
 
-// 6. LOGIN & REGISTER
+// ==================== AUTHENTICATION ROUTES ====================
+
+// Login Routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
+// Register Routes
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
 
-// ==================== SIMPLE FORGOT PASSWORD ROUTE ====================
+// ==================== PASSWORD RESET ROUTES ====================
 Route::get('/forgot-password', [ForgotPasswordController::class, 'showForm'])->name('password.request');
 Route::post('/forgot-password/check-email', [ForgotPasswordController::class, 'checkEmail'])->name('password.check');
 Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'resetPassword'])->name('password.reset');
@@ -51,39 +58,67 @@ Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.s
 
 // ==================== PROTECTED ROUTES (HANYA UNTUK USER YANG LOGIN) ====================
 Route::middleware(['checkauth'])->group(function () {
-    // DASHBOARD (setelah login)
+
+    // ==================== DASHBOARD ROUTES ====================
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Alternatif: jika ingin ProductController menangani dashboard
-    // Route::get('/dashboard', [ProductController::class, 'dashboard'])->name('dashboard');
-
-    // PROFILE ROUTES
+    // ==================== PROFILE ROUTES ====================
     Route::prefix('profile')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('profile');
         Route::post('/update', [ProfileController::class, 'update'])->name('profile.update');
         Route::post('/delete-photo', [ProfileController::class, 'deletePhoto'])->name('profile.delete-photo');
-        Route::get('/orders', [ProfileController::class, 'orders'])->name('profile.orders');
+        Route::get('/orders', function () {
+            return redirect()->route('orders.index');
+        })->name('profile.orders');
     });
 
-    // CART ROUTES (hanya untuk yang login)
-    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    // ==================== CART ROUTES ====================
+    Route::prefix('cart')->group(function () {
+        Route::get('/', [CartController::class, 'index'])->name('cart.index');
+        Route::post('/add', [CartController::class, 'add'])->name('cart.add');
+        Route::post('/remove', [CartController::class, 'remove'])->name('cart.remove');
+        Route::post('/update', [CartController::class, 'update'])->name('cart.update');
+    });
 
-    // FAVORITES ROUTES
-    Route::get('/favorites', [FavoritesController::class, 'index'])->name('favorites');
+    // ==================== CHECKOUT ROUTES ====================
+    Route::prefix('checkout')->group(function () {
+        Route::get('/', [CheckoutController::class, 'index'])->name('checkout.index');
+        Route::post('/process', [CheckoutController::class, 'process'])->name('checkout.process');
+        Route::post('/confirm', [CheckoutController::class, 'confirm'])->name('checkout.confirm');
+    });
 
-    // LOGOUT
+    // ==================== ORDER ROUTES ====================
+    Route::prefix('orders')->group(function () {
+        Route::get('/', [OrderController::class, 'index'])->name('orders.index');
+        Route::post('/store', [OrderController::class, 'store'])->name('orders.store');
+    });
+
+    // ==================== FAVORITES ROUTES ====================
+    Route::prefix('favorites')->group(function () {
+        Route::get('/', [FavoritesController::class, 'index'])->name('favorites');
+        Route::post('/toggle', [FavoritesController::class, 'toggle'])->name('favorites.toggle');
+        Route::post('/remove/{id}', [FavoritesController::class, 'remove'])->name('favorites.remove');
+        Route::post('/clear', [FavoritesController::class, 'clear'])->name('favorites.clear');
+        Route::get('/count', [FavoritesController::class, 'count'])->name('favorites.count');
+        Route::get('/status/{productId}', [FavoritesController::class, 'checkStatus'])->name('favorites.status');
+        Route::get('/list', [FavoritesController::class, 'list'])->name('favorites.list');
+    });
+
+    // ==================== LOGOUT ROUTE ====================
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // CHECKOUT (redirect ke cart jika belum siap)
-    Route::get('/checkout', function () {
-        return redirect()->route('cart.index');
+    // ==================== REDIRECT ROUTES ====================
+    Route::get('/cart/checkout', function () {
+        return redirect()->route('checkout.index');
     })->name('cart.checkout');
 
-    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-    Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
-    Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
-    Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
-    Route::get('/cart/summary', [CartController::class, 'getCartSummary'])->name('cart.summary');
+    // ==================== ORDER HISTORY ROUTES ====================
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
 
+    // Atau jika ingin langsung ke profile
+    Route::get('/orders', function () {
+        return redirect()->route('profile')->with('active_tab', 'orders');
+    })->name('orders.index');
+
+    Route::post('/orders/store', [OrderController::class, 'store'])->name('orders.store');
 });

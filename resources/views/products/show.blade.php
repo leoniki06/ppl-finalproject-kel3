@@ -1266,5 +1266,107 @@
 
                     // Biarkan navbar handler menangani klik navbar
                 }, true);
+
+                // ========== FAVORITE FUNCTIONALITY ==========
+
+                // Toggle favorite status
+                // Fungsi toggleFavorite yang terintegrasi dengan backend
+                async function toggleFavorite(productId) {
+                    try {
+                        const response = await fetch('/favorites/toggle', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ||
+                                    csrfToken
+                            },
+                            body: JSON.stringify({
+                                product_id: productId
+                            })
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            // Update localStorage untuk konsistensi
+                            let favorites = JSON.parse(localStorage.getItem('lastbite_favorites')) || [];
+
+                            if (data.is_favorite) {
+                                // Tambah ke localStorage
+                                const product = await getProductDetailsFromAPI(productId);
+                                if (product) {
+                                    product.addedAt = new Date().toISOString();
+                                    favorites.push(product);
+                                }
+                            } else {
+                                // Hapus dari localStorage
+                                favorites = favorites.filter(p => p.id !== productId);
+                            }
+
+                            localStorage.setItem('lastbite_favorites', JSON.stringify(favorites));
+
+                            // Update UI
+                            updateFavoriteButtons();
+                            showNotification(data.message, 'success');
+
+                            // Dispatch event untuk sinkronisasi
+                            window.dispatchEvent(new CustomEvent('favoritesUpdated'));
+                        }
+                    } catch (error) {
+                        console.error('Error toggling favorite:', error);
+                        // Fallback ke localStorage jika API gagal
+                        toggleFavoriteLocal(productId);
+                    }
+                }
+
+                // Fungsi fallback menggunakan localStorage
+                function toggleFavoriteLocal(productId) {
+                    let favorites = JSON.parse(localStorage.getItem('lastbite_favorites')) || [];
+                    const existingIndex = favorites.findIndex(p => p.id === productId);
+
+                    if (existingIndex > -1) {
+                        // Remove from favorites
+                        favorites.splice(existingIndex, 1);
+                        showNotification('Removed from favorites', 'info');
+                    } else {
+                        // Add to favorites
+                        const product = getProductDetails(productId);
+                        if (product) {
+                            product.addedAt = new Date().toISOString();
+                            favorites.push(product);
+                            showNotification('Added to favorites!', 'success');
+                        }
+                    }
+
+                    localStorage.setItem('lastbite_favorites', JSON.stringify(favorites));
+                    updateFavoriteButtons();
+                    window.dispatchEvent(new CustomEvent('favoritesUpdated'));
+                }
+
+                // Get product details (implement based on your data structure)
+                function getProductDetails(productId) {
+                    // This should fetch product details from your data
+                    // For now, returning a sample object
+                    return {
+                        id: productId,
+                        name: 'Sample Product',
+                        price: 25000,
+                        discountedPrice: 20000,
+                        discount: 20,
+                        category: 'Bakery',
+                        description: 'Delicious food item',
+                        image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w-400',
+                        distance: 2.5,
+                        expiry: 2
+                    };
+                }
+
+                // Initialize favorite buttons
+                document.addEventListener('DOMContentLoaded', function() {
+                    updateFavoriteButtons();
+
+                    // Listen for favorites updates from other pages
+                    window.addEventListener('favoritesUpdated', updateFavoriteButtons);
+                });
         </script>
     @endsection

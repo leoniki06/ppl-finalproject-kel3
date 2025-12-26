@@ -23,6 +23,7 @@ class Product extends Model
         'rating_count',
         'is_flash_sale',
         'expiry_date',
+        'seller_id',
     ];
 
     protected $casts = [
@@ -51,4 +52,13 @@ class Product extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
+    /**
+     * Relationship dengan User (Seller)
+     */
+    public function seller()
+    {
+        return $this->belongsTo(User::class, 'seller_id');
+    }
+
 }

@@ -4,12 +4,17 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\FavoritesController; // Sudah ada
+use App\Http\Controllers\FavoritesController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\Seller\SellerDashboardController;
+use App\Http\Controllers\Seller\SellerProductController;
+use App\Http\Controllers\Seller\SellerOrderController;
+use App\Http\Controllers\Seller\SellerStoreController;
+use App\Http\Controllers\Seller\SellerPayoutController;
 
 // ==================== PUBLIC ROUTES (BISA DIAKSES TANPA LOGIN) ====================
 
@@ -34,9 +39,8 @@ Route::get('/fitur', function () {
 })->name('fitur');
 
 // 5. ROLE PAGE
-Route::get('/role', function () {
-    return view('role');
-})->name('role');
+Route::get('/role', [AuthController::class, 'showRoleSelection'])->name('role');
+Route::post('/role/select', [AuthController::class, 'selectRole'])->name('role.select');
 
 // ==================== AUTHENTICATION ROUTES ====================
 
@@ -61,6 +65,34 @@ Route::middleware(['checkauth'])->group(function () {
 
     // ==================== DASHBOARD ROUTES ====================
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // ==================== SELLER DASHBOARD ROUTES ====================
+    Route::prefix('seller')->name('seller.')->group(function () {
+        Route::get('/dashboard', [SellerDashboardController::class, 'index'])->name('dashboard');
+
+        // PROUDCTS
+        Route::get('/products', [SellerProductController::class, 'index'])->name('products.index');
+        Route::get('/products/create', [SellerProductController::class, 'create'])->name('products.create');
+        Route::post('/products', [SellerProductController::class, 'store'])->name('products.store');
+        Route::get('/products/{id}/edit', [SellerProductController::class, 'edit'])->name('products.edit');
+        Route::put('/products/{id}', [SellerProductController::class, 'update'])->name('products.update');
+        Route::delete('/products/{id}', [SellerProductController::class, 'destroy'])->name('products.destroy');
+        Route::patch('/products/{id}/toggle-status', [SellerProductController::class, 'toggleStatus'])->name('products.toggleStatus');
+
+        // ORDERS
+        Route::get('/orders', [SellerOrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{id}', [SellerOrderController::class, 'show'])->name('orders.show');
+        Route::patch('/orders/{id}/status', [SellerOrderController::class, 'updateStatus'])->name('orders.updateStatus');
+
+        //STORE
+        Route::get('/store/profile', [SellerStoreController::class, 'edit'])->name('store.profile');
+        Route::put('/store/profile', [SellerStoreController::class, 'update'])->name('store.profile.update');
+
+        // PAYOUTS
+        Route::get('/payouts', [SellerPayoutController::class, 'index'])->name('payouts.index');
+        Route::post('/payouts/withdraw', [SellerPayoutController::class, 'withdraw'])->name('payouts.withdraw');
+
+    });
 
     // ==================== PROFILE ROUTES ====================
     Route::prefix('profile')->group(function () {
@@ -115,10 +147,6 @@ Route::middleware(['checkauth'])->group(function () {
     // ==================== ORDER HISTORY ROUTES ====================
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
 
-    // Atau jika ingin langsung ke profile
-    Route::get('/orders', function () {
-        return redirect()->route('profile')->with('active_tab', 'orders');
-    })->name('orders.index');
-
     Route::post('/orders/store', [OrderController::class, 'store'])->name('orders.store');
+
 });

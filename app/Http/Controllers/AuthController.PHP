@@ -15,7 +15,7 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    // Handle login
+    // Handle login - DIPERBARUI untuk redirect berdasarkan role
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -25,7 +25,21 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
+
+            $user = Auth::user();
+
+            $request->session()->put('user_id', $user->id);
+            $request->session()->put('user_role', $user->role);
+
+            // Redirect berdasarkan role user
+            if ($user->role === 'seller') {
+                return redirect()->route('seller.dashboard')
+                    ->with('success', 'Login seller berhasil!');
+            }
+
+            // Default ke dashboard pembeli
+            return redirect()->route('dashboard')
+                ->with('success', 'Login berhasil!');
         }
 
         return back()->withErrors([
@@ -34,29 +48,48 @@ class AuthController extends Controller
     }
 
     // Show registration form
-    public function showRegisterForm()
+    public function showRegisterForm(Request $request)
     {
-        return view('auth.register');
+    // Ambil role dari URL parameter
+    $selectedRole = $request->query('role', 'buyer');
+
+    // Validasi role
+    if (!in_array($selectedRole, ['buyer', 'seller'])) {
+        $selectedRole = 'buyer';
     }
 
-    // Handle registration
+    return view('auth.register', [
+        'selectedRole' => $selectedRole
+    ]);
+    }
+
+    // Handle registration - DIPERBARUI untuk menyimpan role
     public function register(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|in:buyer,seller', // Validasi role
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $request->role, // Simpan role
         ]);
 
         Auth::login($user);
 
-        return redirect('/dashboard')->with('success', 'Registrasi berhasil!');
+        // Redirect berdasarkan role setelah registrasi
+        if ($user->role === 'seller') {
+            return redirect()->route('seller.dashboard')
+                ->with('success', 'Registrasi seller berhasil!');
+        }
+
+        return redirect()->route('dashboard')
+            ->with('success', 'Registrasi berhasil!');
     }
 
     // Handle logout
@@ -68,5 +101,29 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/')->with('success', 'Logout berhasil!');
+    }
+
+    // ========== ROLE SELECTION METHODS ==========
+
+    // Show role selection page (untuk halaman /role)
+    public function showRoleSelection()
+    {
+        return view('role');
+    }
+
+    // Handle role selection (jika ada form POST di halaman role)
+    public function selectRole(Request $request)
+    {
+        // Validasi input role
+        $request->validate([
+            'role' => 'required|in:buyer,seller',
+        ]);
+
+        // Simpan role ke session untuk digunakan saat registrasi
+        $request->session()->put('selected_role', $request->role);
+
+        // Redirect ke halaman register dengan role yang dipilih
+        return redirect()->route('register')
+            ->with('selected_role', $request->role);
     }
 }

@@ -370,7 +370,7 @@
     <div class="register-container">
         <!-- Header -->
         <div class="register-header">
-            <a href="{{ route('login', ['role' => $selectedRole ?? 'pembeli']) }}" class="back-link">
+            <a href="{{ route('login', ['role' => $selectedRole ?? 'buyer']) }}" class="back-link">
                 ← Back to Login
             </a>
 
@@ -399,25 +399,25 @@
 
                 <!-- Hidden Role Field -->
                 <input type="hidden" name="role" id="selected-role"
-                    value="{{ old('role', $selectedRole ?? 'pembeli') }}">
+                    value="{{ old('role', $selectedRole ?? 'buyer') }}">
 
                 <!-- Role Selection -->
                 <div class="role-selection">
                     <div class="role-option">
-                        <input type="radio" name="role_selector" id="role-pembeli" value="pembeli" class="role-input"
-                            {{ old('role', $selectedRole ?? 'pembeli') == 'pembeli' ? 'checked' : '' }}>
-                        <label for="role-pembeli" class="role-label" onclick="setRole('pembeli')">
+                        <input type="radio" name="role_selector" id="role-buyer" value="buyer" class="role-input"
+                            {{ old('role', $selectedRole ?? 'buyer') == 'buyer' ? 'checked' : '' }}>
+                        <label for="role-buyer" class="role-label" onclick="setRole('buyer')">
                             <span class="role-icon">🛒</span>
-                            <span>Pembeli</span>
+                            <span>buyer</span>
                         </label>
                     </div>
 
                     <div class="role-option">
-                        <input type="radio" name="role_selector" id="role-penjual" value="penjual" class="role-input"
-                            {{ old('role', $selectedRole ?? 'pembeli') == 'penjual' ? 'checked' : '' }}>
-                        <label for="role-penjual" class="role-label" onclick="setRole('penjual')">
+                        <input type="radio" name="role_selector" id="role-seller" value="seller" class="role-input"
+                            {{ old('role', $selectedRole ?? 'seller') == 'seller' ? 'checked' : '' }}>
+                        <label for="role-seller" class="role-seller" onclick="setRole('seller')">
                             <span class="role-icon">🏪</span>
-                            <span>Penjual</span>
+                            <span>seller</span>
                         </label>
                     </div>
                 </div>
@@ -541,7 +541,7 @@
             const companyGroup = document.getElementById('company-based-group');
             const industryGroup = document.getElementById('industry-group');
 
-            if (role === 'penjual') {
+            if (role === 'seller') {
                 if (companyGroup) companyGroup.style.display = 'block';
                 if (industryGroup) industryGroup.style.display = 'block';
 
@@ -580,7 +580,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);
             const roleFromUrl = urlParams.get('role');
-            const selectedRole = "{{ $selectedRole ?? 'pembeli' }}";
+            const selectedRole = "{{ $selectedRole ?? 'buyer' }}";
 
             // Set role awal
             setRole(selectedRole);
@@ -598,6 +598,30 @@
                 radioButton.checked = true;
             }
         });
+        @push('scripts')
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Ambil role dari URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const roleFromUrl = urlParams.get('role');
+
+        // Ambil role dari sessionStorage (cadangan)
+        const roleFromStorage = sessionStorage.getItem('selectedRole');
+
+        // Pilih role yang ada (prioritas dari URL)
+        const role = roleFromUrl || roleFromStorage || 'buyer';
+
+        // Set value di select role
+        const roleSelect = document.querySelector('select[name="role"]');
+        if (roleSelect && role) {
+            roleSelect.value = role;
+        }
+
+        // Cleanup setelah digunakan
+        sessionStorage.removeItem('selectedRole');
+    });
+    </script>
+    @endpush
     </script>
 </body>
 

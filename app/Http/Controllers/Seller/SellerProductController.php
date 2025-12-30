@@ -3,127 +3,181 @@
 namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class SellerProductController extends Controller
 {
-    /**
-     * List products
-     */
-    public function index()
+    public function index(Request $request)
+    {
+        $sellerId = Auth::id();
+        $q = $request->query('q');
+        $sort = $request->query('sort', 'latest');
+
+        $products = Product::query()
+            ->where('seller_id', $sellerId)
+            ->when($q, function ($query) use ($q) {
+                $query->where(function ($qq) use ($q) {
+                    $qq->where('name', 'like', "%{$q}%")
+                        ->orWhere('category', 'like', "%{$q}%")
+                        ->orWhere('brand', 'like', "%{$q}%")
+                        ->orWhere('description', 'like', "%{$q}%");
+                });
+            })
+            ->when($sort, function ($query) use ($sort) {
+                return match ($sort) {
+                    'name_asc' => $query->orderBy('name', 'asc'),
+                    'name_desc' => $query->orderBy('name', 'desc'),
+                    'price_asc' => $query->orderBy('price', 'asc'),
+                    'price_desc' => $query->orderBy('price', 'desc'),
+                    default => $query->latest(),
+                };
+            })
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('seller.products.index', compact('products', 'q', 'sort'));
+
+
+    }
+    public function create()
 {
-    // Dummy data SUPER LENGKAP (semua field yang biasa dipakai blade)
-    $products = [
-        [
-            'id' => 1,
-            'name' => 'Nasi Goreng',
-            'category' => 'food',
-            'price' => 20000,
-            'stock' => 12,
-            'active' => true,
-            'image_url' => null,
-            'is_flash_sale' => true,   // ✅ INI yang bikin error tadi
-        ],
-        [
-            'id' => 2,
-            'name' => 'Es Teh',
-            'category' => 'drink',
-            'price' => 5000,
-            'stock' => 2,
-            'active' => true,
-            'image_url' => null,
-            'is_flash_sale' => false,
-        ],
-        [
-            'id' => 3,
-            'name' => 'Roti Bakar',
-            'category' => 'snack',
-            'price' => 15000,
-            'stock' => 0,
-            'active' => false,
-            'image_url' => null,
-            'is_flash_sale' => false,
-        ],
-    ];
-
-    // ✅ Default field list (kalau nanti ada item yang kurang fieldnya, otomatis diisi)
-    $defaults = [
-        'id' => 0,
-        'name' => '-',
-        'category' => '-',
-        'price' => 0,
-        'stock' => 0,
-        'active' => true,
-        'image_url' => null,
-        'is_flash_sale' => false,
-    ];
-
-    // ✅ Paksa setiap item punya field lengkap + jadi object (biar blade $p->xxx aman)
-    $products = collect($products)->map(function ($p) use ($defaults) {
-        $p = array_merge($defaults, $p);  // isi yang kurang
-        return (object) $p;
-    });
-
-    return view('seller.products', [
-        'products' => $products,
-        'sort' => request('sort'),
-        'q' => request('q'),
-    ]);
+    return view('seller.products.create'); // ✅ ini harus sesuai lokasi file blade
 }
 
 
 
-    /**
-     * Form create product
-     */
-    public function create()
-    {
-        return view('seller.product-create');
-    }
-
-    /**
-     * Simpan product (dummy)
-     */
     public function store(Request $request)
     {
-        return redirect()
-            ->route('seller.products.index')
-            ->with('success', 'Product berhasil ditambahkan (dummy)');
+        $sellerId = Auth::id();
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:120',
+            'brand' => 'required|string|max:120',
+            'category' => 'required|string|max:80',
+            'description' => 'required|string|max:2000',
+
+            'price' => 'required|numeric|min:0',
+            'original_price' => 'required|numeric|min:0',
+            'discount_percent' => 'nullable|integer|min:0|max:100',
+
+            'expiry_date' => 'required|date',
+            'stock' => 'required|integer|min:0',
+
+            'is_flash_sale' => 'nullable|boolean',
+            'is_recommended' => 'nullable|boolean',
+
+
+            // image_url kita isi dari upload file biar aman
+            'image' => 'required|image|max:2048',
+        ]);
+
+
+        $path = $request->file('image')->store('products', 'public');
+
+        Product::create([
+            'seller_id' => $sellerId,
+            'name' => $validated['name'],
+            'brand' => $validated['brand'],
+            'category' => $validated['category'],
+            'description' => $validated['description'],
+
+            'image_url' => $path,
+
+            'price' => $validated['price'],
+            'original_price' => $validated['original_price'],
+            'discount_percent' => $validated['discount_percent'] ?? 0,
+
+            'expiry_date' => $validated['expiry_date'],
+            'stock' => $validated['stock'],
+
+            'is_flash_sale' => (bool) ($request->input('is_flash_sale') ?? false),
+            'is_recommended' => (bool) ($request->input('is_recommended') ?? false),
+
+            'is_active' => true,
+        ]);
+
+        return redirect()->route('seller.products.index')->with('success', 'Produk berhasil ditambahkan.');
     }
 
-    /**
-     * Form edit product
-     */
     public function edit($id)
     {
-        return view('seller.product-edit', compact('id'));
+        $product = Product::where('seller_id', Auth::id())->findOrFail($id);
+        return view('seller.products.edit', compact('product'));
     }
 
-    /**
-     * Update product (dummy)
-     */
+
     public function update(Request $request, $id)
     {
-        return redirect()
-            ->route('seller.products.index')
-            ->with('success', "Product ID $id berhasil diupdate (dummy)");
+        $product = Product::where('seller_id', Auth::id())->findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:120',
+            'brand' => 'required|string|max:120',
+            'category' => 'required|string|max:80',
+            'description' => 'required|string|max:2000',
+
+            'price' => 'required|numeric|min:0',
+            'original_price' => 'required|numeric|min:0',
+            'discount_percent' => 'nullable|integer|min:0|max:100',
+
+            'expiry_date' => 'required|date',
+            'stock' => 'required|integer|min:0',
+
+            'is_flash_sale' => 'nullable|boolean',
+            'is_recommended' => 'nullable|boolean',
+
+            // edit boleh tidak upload image
+            'image' => 'nullable|image|max:2048',
+        ]);
+
+        // ✅ kalau upload gambar baru, hapus yg lama lalu simpan yg baru
+        if ($request->hasFile('image')) {
+            if ($product->image_url) {
+                Storage::disk('public')->delete($product->image_url);
+            }
+            $product->image_url = $request->file('image')->store('products', 'public');
+        }
+
+        $product->fill([
+            'name' => $validated['name'],
+            'brand' => $validated['brand'],
+            'category' => $validated['category'],
+            'description' => $validated['description'],
+
+            'price' => $validated['price'],
+            'original_price' => $validated['original_price'],
+            'discount_percent' => $validated['discount_percent'] ?? 0,
+
+            'expiry_date' => $validated['expiry_date'],
+            'stock' => $validated['stock'],
+
+            'is_flash_sale' => (bool) $request->boolean('is_flash_sale'),
+            'is_recommended' => (bool) $request->boolean('is_recommended'),
+        ])->save();
+
+        return redirect()->route('seller.products.index')->with('success', 'Produk berhasil diupdate.');
     }
 
-    /**
-     * Delete product (dummy)
-     */
     public function destroy($id)
     {
-        return redirect()
-            ->route('seller.products.index')
-            ->with('success', "Product ID $id berhasil dihapus (dummy)");
+        $product = Product::where('seller_id', Auth::id())->findOrFail($id);
+
+        if ($product->image_url) Storage::disk('public')->delete($product->image_url);
+
+        $product->delete();
+
+        return redirect()->route('seller.products.index')->with('success', 'Produk berhasil dihapus.');
     }
 
-    /**
-     * Toggle status product (dummy)
-     */
     public function toggleStatus($id)
     {
-        return back()->with('success', "Status product ID $id diubah (dummy)");
+        $product = Product::where('seller_id', Auth::id())->findOrFail($id);
+        $product->is_active = ! $product->is_active;
+        $product->save();
+
+        return back()->with('success', 'Status produk diubah jadi ' . ($product->is_active ? 'Aktif' : 'Nonaktif') . '.');
     }
 }

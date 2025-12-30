@@ -12,10 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            // Tambah kolom is_active jika belum ada
-            if (!Schema::hasColumn('products', 'is_active')) {
-                $table->boolean('is_active')->default(true)->after('stock');
-            }
+            $table->boolean('is_active')->default(true)->after('stock');
 
             // Tambah kolom lain yang mungkin belum ada
             if (!Schema::hasColumn('products', 'discount_percent')) {

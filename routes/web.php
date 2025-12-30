@@ -117,4 +117,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::get('/cart/checkout', fn() => redirect()->route('checkout.index'))->name('cart.checkout');
+
+    // PRODUCTS (UI variants - NEW, tanpa ubah route sebelumnya)
+    Route::get('/seller/products', [SellerProductController::class, 'index'])->name('seller.products.index');
+
+
+    // OPTIONAL: versi card/list kalau kamu butuh nanti
+    // Route::get('/products/cards', [SellerProductController::class, 'cards'])->name('products.cards');
+
+
 });
+

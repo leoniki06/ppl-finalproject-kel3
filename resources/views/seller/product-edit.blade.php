@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.seller')
 
 @section('content')
 <div class="container" style="padding:24px; max-width:900px">
@@ -32,63 +32,28 @@
   @endphp
 
   <div style="margin-top:16px; border:1px solid #eee; border-radius:14px; padding:16px;">
-    <form method="POST" action="{{ route('seller.products.update', $id) }}">
-      @csrf
-      @method('PUT')
+    <form method="POST" action="{{ route('seller.products.update', $product->id) }}" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
 
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-        <div>
-          <label style="font-weight:600;">Name</label>
-          <input name="name" value="{{ $p['name'] }}" required
-                 style="width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:10px; margin-top:6px;">
-        </div>
+        <input name="name" value="{{ old('name', $product->name) }}" required>
+        <input name="brand" value="{{ old('brand', $product->brand) }}" required>
+        <input name="category" value="{{ old('category', $product->category) }}" required>
 
-        <div>
-          <label style="font-weight:600;">Category</label>
-          <input name="category" value="{{ $p['category'] }}"
-                 style="width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:10px; margin-top:6px;">
-        </div>
+        <textarea name="description" required>{{ old('description', $product->description) }}</textarea>
 
-        <div>
-          <label style="font-weight:600;">Price</label>
-          <input name="price" type="number" min="0" value="{{ $p['price'] }}"
-                 style="width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:10px; margin-top:6px;">
-        </div>
+        <input name="price" type="number" value="{{ old('price', $product->price) }}" required>
+        <input name="original_price" type="number" value="{{ old('original_price', $product->original_price) }}" required>
+        <input name="discount_percent" type="number" min="0" max="100" value="{{ old('discount_percent', $product->discount_percent) }}">
 
-        <div>
-          <label style="font-weight:600;">Stock</label>
-          <input name="stock" type="number" min="0" value="{{ $p['stock'] }}"
-                 style="width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:10px; margin-top:6px;">
-        </div>
-      </div>
+        <input name="stock" type="number" min="0" value="{{ old('stock', $product->stock) }}" required>
+        <input name="expiry_date" type="date" value="{{ old('expiry_date', $product->expiry_date?->format('Y-m-d')) }}" required>
 
-      <div style="margin-top:12px;">
-        <label style="font-weight:600;">Description</label>
-        <textarea name="description" rows="4"
-                  style="width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:10px; margin-top:6px;">{{ $p['description'] }}</textarea>
-      </div>
+        <input name="image" type="file" accept="image/*"> {{-- optional --}}
 
-      <div style="margin-top:12px;">
-        <label style="font-weight:600;">Image URL</label>
-        <input name="image_url" value="{{ $p['image_url'] }}" placeholder="https://..."
-               style="width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:10px; margin-top:6px;">
-      </div>
+        <button type="submit">Update</button>
+      </form>
 
-      <div style="margin-top:14px; display:flex; gap:10px; justify-content:flex-end;">
-        <a href="{{ route('seller.products.index') }}"
-           style="padding:10px 14px; border:1px solid #ddd; border-radius:10px; text-decoration:none; background:#fff;">
-          Cancel
-        </a>
-        <button type="submit"
-                style="padding:10px 14px; background:#111; color:#fff; border-radius:10px; border:none; cursor:pointer;">
-          Update (Dummy)
-        </button>
-      </div>
-
-      <p style="margin-top:10px; color:#777; font-size:12px;">
-        * Ini dummy. Update akan redirect balik dengan pesan sukses (dummy).
-      </p>
-    </form>
   </div>
 </div>
 @endsection

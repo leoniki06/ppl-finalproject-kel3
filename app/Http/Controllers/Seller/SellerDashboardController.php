@@ -17,14 +17,10 @@ class SellerDashboardController extends Controller
     {
         $seller = Auth::user();
 
-        // VALIDASI: Cek apakah user adalah seller
-        if (!$seller) {
+        if (!$seller || $seller->role !== 'seller') {
             return redirect()->route('dashboard')
-                ->with('error', 'Silakan login dulu.');
+                ->with('error', 'Akses ditolak. Halaman ini khusus seller.');
         }
-
-        // FORCE sementara biar bisa lihat tampilan
-        // anggap semua user sebagai seller
 
 
         // Get store information dengan fallback

@@ -1,1393 +1,1643 @@
-@extends('layouts.app')
+{{-- sellerdashboard.blade.php --}}
+@extends('layouts.seller')
 
-@section('content')
-    <!-- =========================================== -->
-    <!-- SELLER DASHBOARD SECTION (Consistent UI) -->
-    <!-- =========================================== -->
+@section('title', 'LastBite • Dashboard Operasional')
+
+@php
+    $productsList = $products ?? collect();
+    $storeName = $storeData['name'] ?? 'Toko LastBite';
+    $rescuedItems = max(0, (int) ($stats['rescued_items'] ?? 0));
+    $flashReadyPct = max(0, min(100, (int) ($stats['flash_ready_pct'] ?? 0)));
+    $ordersList = $orders ?? ($recentOrders ?? collect());
+
+    $mapToBoard = function ($raw) {
+        $s = strtolower((string) $raw);
+        if (in_array($s, ['unpaid', 'belum_bayar', 'pending_payment', 'menunggu_pembayaran', 'pending'])) {
+            return 'unpaid';
+        }
+        if (in_array($s, ['processing', 'diproses', 'paid', 'perlu_diproses'])) {
+            return 'processing';
+        }
+        if (in_array($s, ['shipped', 'dikirim', 'shipping', 'sent'])) {
+            return 'shipped';
+        }
+        if (in_array($s, ['done', 'completed', 'selesai', 'delivered'])) {
+            return 'done';
+        }
+        return 'processing';
+    };
+
+    $countUnpaid = 0;
+    $countProcessing = 0;
+    $countShipped = 0;
+    $countDone = 0;
+    foreach ($ordersList as $o) {
+        $k = $mapToBoard($o->status ?? '');
+        if ($k === 'unpaid') {
+            $countUnpaid++;
+        } elseif ($k === 'processing') {
+            $countProcessing++;
+        } elseif ($k === 'shipped') {
+            $countShipped++;
+        } elseif ($k === 'done') {
+            $countDone++;
+        }
+    }
+
+    $categoryOptions =
+        $categories ??
+        collect([
+            (object) ['name' => 'Roti & Bakery'],
+            (object) ['name' => 'Makanan Siap Saji'],
+            (object) ['name' => 'Minuman'],
+            (object) ['name' => 'Snack'],
+            (object) ['name' => 'Frozen'],
+            (object) ['name' => 'Sembako'],
+        ]);
+
+    $totalOrders = $ordersList->count();
+    $storeRating = number_format((float) ($storeData['rating'] ?? 4.5), 1);
+    $averageOrderValue = $ordersList->isNotEmpty() ? $ordersList->avg('total') ?? 0 : 0;
+
+    $hour = (int) now()->format('H');
+    $greet =
+        $hour < 11 ? 'Selamat pagi' : ($hour < 15 ? 'Selamat siang' : ($hour < 19 ? 'Selamat sore' : 'Selamat malam'));
+    $today = now()->translatedFormat('l, d F Y');
+
+    $sum = max(1, $countUnpaid + $countProcessing + $countShipped + $countDone);
+    $pUnpaid = round(($countUnpaid / $sum) * 100);
+    $pProcessing = round(($countProcessing / $sum) * 100);
+    $pShipped = round(($countShipped / $sum) * 100);
+    $pDone = max(0, 100 - ($pUnpaid + $pProcessing + $pShipped));
+@endphp
+
+@section('nav_orders_count', $ordersList->count())
+@section('nav_products_count', $productsList->count())
+
+@push('styles')
     <style>
-        /* ========== DASHBOARD LAYOUT (SAME APPROACH) ========== */
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
+        /* ======================================================
+           AIRY / SIMPLE (lebih dekat referensi 1)
+           - background soft + glass
+           - card lebih “clean”, shadow halus
+           - spacing lebih lega
+           - typography lebih rapi (bold/light kontras tapi calm)
+        ====================================================== */
+
+        :root {
+            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-accent: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+
+            --bg: #eef2f6;
+            --bg2: #f6f8fb;
+
+            --surface: rgba(255, 255, 255, .78);
+            --surface-2: rgba(255, 255, 255, .86);
+            --border: rgba(15, 23, 42, .10);
+
+            --text: rgba(15, 23, 42, .92);
+            --muted: rgba(51, 65, 85, .72);
+            --muted2: rgba(100, 116, 139, .78);
+
+            /* Accent “lime” ala referensi */
+            --accent: #D7FF1E;
+            --accent-2: #B8FF36;
+
+            --r-xl: 26px;
+            --r-lg: 22px;
+            --r-md: 18px;
+
+            --shadow-sm: 0 10px 24px rgba(15, 23, 42, .06);
+            --shadow-md: 0 18px 50px rgba(15, 23, 42, .08);
+            --shadow-lg: 0 26px 80px rgba(15, 23, 42, .10);
+
+            --gap-1: 10px;
+            --gap-2: 14px;
+            --gap-3: 18px;
+            --gap-4: 22px;
+            --gap-5: 30px;
+
+            --fs-2xs: 11px;
+            --fs-xs: 12px;
+            --fs-sm: 13px;
+            --fs-base: 14px;
+            --fs-md: 15px;
+            --fs-lg: 18px;
+            --fs-xl: 22px;
+            --fs-2xl: 28px;
+
+            --fw-light: 350;
+            --fw-regular: 400;
+            --fw-medium: 520;
+            --fw-semibold: 650;
+            --fw-bold: 750;
+            --fw-black: 850;
         }
 
-        .content-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .section-container {
-            margin-bottom: 60px;
-        }
-
-        /* Scroll padding for navbar */
-        #seller-store-info,
-        #seller-stats,
-        #seller-order-status,
-        #seller-recent-orders,
-        #seller-quick-actions {
-            scroll-margin-top: 120px;
-        }
-
-        /* ========== HERO BANNER (SAME STRUCTURE) ========== */
-        .hero-section {
-            margin: 30px auto 20px;
-            max-width: 1400px;
-            width: 100%;
-            padding: 0 40px;
-        }
-
-        .hero-banner {
+        /* Page background */
+        .pageWrap {
             position: relative;
-            width: 100%;
-            height: 450px;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: var(--shadow-medium);
+            padding-bottom: 8px;
         }
 
-        .hero-slide {
+        .pageBg {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-            background-size: cover;
-            background-position: center;
+            inset: -20px -20px auto -20px;
+            height: 460px;
+            border-radius: 42px;
+            background:
+                radial-gradient(900px 340px at 18% 18%, rgba(215, 255, 30, .55), transparent 58%),
+                radial-gradient(900px 340px at 82% 26%, rgba(56, 189, 248, .20), transparent 60%),
+                radial-gradient(900px 340px at 72% 92%, rgba(167, 139, 250, .16), transparent 62%),
+                linear-gradient(180deg, rgba(255, 255, 255, .70), transparent 70%);
+            filter: blur(0px);
+            pointer-events: none;
+            z-index: 0;
         }
 
-        .hero-slide.active {
-            opacity: 1;
-        }
-
-        .hero-slide::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(to right, rgba(63, 35, 5, 0.85), rgba(63, 35, 5, 0.6));
-        }
-
-        .hero-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: var(--white);
-            z-index: 2;
-            width: 90%;
-            max-width: 900px;
-        }
-
-        .hero-tagline {
-            font-size: 16px;
-            font-weight: 500;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 15px;
-            opacity: 0.9;
-            color: var(--accent-color);
-        }
-
-        .hero-title {
-            font-size: 48px;
-            font-weight: 800;
-            margin-bottom: 15px;
-            line-height: 1.1;
-            text-transform: uppercase;
-            letter-spacing: -0.5px;
-        }
-
-        .hero-subtitle {
-            font-size: 30px;
-            font-weight: 600;
-            color: var(--accent-color);
-            margin-bottom: 18px;
-        }
-
-        .hero-description {
-            font-size: 18px;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            opacity: 0.9;
-            font-weight: 400;
-        }
-
-        .hero-cta {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--accent-color);
-            color: var(--primary-color);
-            padding: 14px 35px;
-            border-radius: 30px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: var(--transition);
-            border: 2px solid transparent;
-            font-size: 16px;
-        }
-
-        .hero-cta:hover {
-            background: transparent;
-            color: var(--accent-color);
-            border-color: var(--accent-color);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 159, 28, 0.3);
-        }
-
-        .hero-dots {
+        .page {
             position: relative;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-            padding-bottom: 20px;
-        }
-
-        .hero-dot {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: rgba(63, 35, 5, 0.2);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .hero-dot.active {
-            background: var(--accent-color);
-            transform: scale(1.3);
-            box-shadow: 0 0 0 3px rgba(255, 159, 28, 0.2);
-        }
-
-        /* ========== SECTION HEADER (SAME) ========== */
-        .section-header-container {
-            max-width: 1200px;
-            margin: 0 auto 35px;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 15px;
-            border-bottom: 2px solid rgba(63, 35, 5, 0.1);
-        }
-
-        .section-title {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .section-title h2 {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin: 0;
-        }
-
-        .star-icon {
-            color: #FF9F1C;
-            font-size: 32px;
-        }
-
-        .flash-icon {
-            color: var(--danger-color);
-            font-size: 32px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .see-more-btn {
-            background: var(--white);
-            color: var(--primary-color);
-            border: 2px solid var(--primary-color);
-            padding: 12px 28px;
-            border-radius: 30px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 15px;
-            white-space: nowrap;
-        }
-
-        .see-more-btn:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(63, 35, 5, 0.2);
-        }
-
-        /* ========== MODERN CARD BASE (DERIVED FROM product-card) ========== */
-        .modern-card {
-            width: 100%;
-            background: var(--white);
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: var(--shadow-light);
-            transition: var(--transition);
-            position: relative;
+            z-index: 1;
+            min-width: 0;
             display: flex;
             flex-direction: column;
-            margin: 0 auto;
+            gap: var(--gap-5);
+            font-family: var(--font-primary);
         }
 
-        .modern-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-medium);
+        /* Universal card */
+        .card {
+            border-radius: var(--r-xl);
+            border: 1px solid var(--border);
+            background: var(--surface);
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            overflow: hidden;
+            min-width: 0;
         }
 
-        .card-body {
-            padding: 20px;
-        }
-
-        /* ========== BADGES (SAME FEEL AS flash-badge/recommended-badge) ========== */
-        .pill-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--white);
-            white-space: nowrap;
-        }
-
-        .badge-success { background: var(--success-color); }
-        .badge-danger { background: var(--danger-color); }
-        .badge-warning { background: var(--warning-color); }
-        .badge-primary { background: var(--primary-color); }
-        .badge-info { background: #17a2b8; }
-
-        .mini-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 16px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--white);
-        }
-
-        /* ========== STORE INFO CARD ========== */
-        .store-info-grid {
-            display: grid;
-            grid-template-columns: 1.4fr 1fr;
-            gap: 24px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .store-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
-        }
-
-        .store-title h3 {
-            margin: 0;
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--primary-color);
-        }
-
-        .store-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            margin-top: 10px;
-            color: var(--text-light);
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .store-meta .meta-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(63, 35, 5, 0.06);
-            color: var(--primary-color);
-            padding: 8px 12px;
-            border-radius: 12px;
-        }
-
-        .store-health {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .health-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 14px;
-            border-radius: 12px;
-            background: rgba(63, 35, 5, 0.06);
-        }
-
-        .health-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--primary-color);
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .health-desc {
-            font-size: 13px;
-            color: var(--text-light);
-            font-weight: 600;
-            margin-top: 6px;
-        }
-
-        .health-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            flex-shrink: 0;
-        }
-
-        .health-good { background: var(--success-color); }
-        .health-warning { background: var(--warning-color); }
-        .health-danger { background: var(--danger-color); }
-
-        /* ========== STATS CARDS (AC#1) ========== */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .stats-card {
-            cursor: default;
-        }
-
-        .stats-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 14px;
-        }
-
-        .stats-title {
-            font-size: 14px;
-            font-weight: 800;
-            color: var(--primary-color);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 0;
-        }
-
-        .stats-number {
-            font-size: 38px;
-            font-weight: 900;
-            color: var(--text-dark);
-            line-height: 1;
-            margin: 8px 0 6px;
-        }
-
-        .stats-subtitle {
-            font-size: 13px;
-            color: var(--text-light);
-            font-weight: 600;
-            margin: 0;
-        }
-
-        .stats-icon {
-            width: 46px;
-            height: 46px;
-            border-radius: 50%;
-            background: rgba(255, 159, 28, 0.18);
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-
-        /* ========== ORDER STATUS (AC#2) ========== */
-        .status-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 22px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .status-card {
-            cursor: pointer;
-        }
-
-        .status-row {
+        /* ======================================================
+           HERO (lebih airy)
+        ====================================================== */
+        .hero {
+            padding: 22px 24px;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            gap: 10px;
+            gap: var(--gap-4);
+            flex-wrap: wrap;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, .72), rgba(255, 255, 255, .60)),
+                radial-gradient(860px 300px at 26% 18%, rgba(215, 255, 30, .34), transparent 60%),
+                radial-gradient(860px 300px at 86% 28%, rgba(56, 189, 248, .14), transparent 62%);
         }
 
-        .status-name {
-            font-size: 16px;
-            font-weight: 800;
-            color: var(--primary-color);
-            margin: 0 0 10px;
-        }
-
-        .status-count {
-            font-size: 28px;
-            font-weight: 900;
-            color: var(--text-dark);
+        .hTitle {
             margin: 0;
-            line-height: 1.1;
+            font-family: var(--font-accent);
+            font-size: var(--fs-2xl);
+            line-height: 1.12;
+            letter-spacing: -.02em;
+            color: var(--text);
+            font-weight: var(--fw-black);
         }
 
-        .status-cta {
-            margin-top: 14px;
-            display: inline-flex;
+        .hTitle span {
+            font-weight: var(--fw-bold);
+            opacity: .98;
+        }
+
+        .hSub {
+            margin: 10px 0 0;
+            font-size: var(--fs-base);
+            line-height: 1.65;
+            color: var(--muted);
+            font-weight: var(--fw-regular);
+            max-width: 900px;
+        }
+
+        .hMetaRow {
+            margin-top: 16px;
+            display: flex;
+            gap: var(--gap-2);
+            flex-wrap: wrap;
             align-items: center;
-            gap: 8px;
-            background: var(--white);
-            color: var(--primary-color);
-            border: 2px solid rgba(63, 35, 5, 0.2);
-            padding: 9px 14px;
-            border-radius: 22px;
-            font-weight: 700;
-            text-decoration: none;
-            transition: var(--transition);
-            font-size: 13px;
-            white-space: nowrap;
         }
 
-        .status-cta:hover {
-            background: var(--primary-color);
-            color: var(--white);
-            border-color: var(--primary-color);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(63, 35, 5, 0.18);
-        }
-
-        .filter-indicator {
+        .pillMini {
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            background: rgba(63, 35, 5, 0.06);
-            border: 2px dashed rgba(63, 35, 5, 0.18);
-            padding: 10px 14px;
-            border-radius: 14px;
-            color: var(--primary-color);
-            font-weight: 800;
-            font-size: 13px;
-            margin-top: 15px;
+            padding: 10px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(15, 23, 42, .10);
+            background: rgba(255, 255, 255, .82);
+            box-shadow: 0 10px 18px rgba(15, 23, 42, .05);
+            color: rgba(15, 23, 42, .82);
+            font-size: var(--fs-sm);
+            font-weight: var(--fw-medium);
+            white-space: nowrap;
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
         }
 
-        /* ========== RECENT ORDERS TABLE (AC#2) ========== */
-        .recent-orders-card {
-            max-width: 1200px;
-            margin: 0 auto;
+        .pillMini i {
+            opacity: .9;
         }
 
-        .table-wrap {
-            width: 100%;
-            overflow-x: auto;
+        .pillMini b {
+            font-family: var(--font-accent);
+            font-weight: var(--fw-black);
+            color: var(--text);
+            letter-spacing: -.01em;
         }
 
-        .orders-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            min-width: 780px;
+        .pillMini:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 28px rgba(15, 23, 42, .07);
+            border-color: rgba(15, 23, 42, .14);
         }
 
-        .orders-table th,
-        .orders-table td {
-            padding: 14px 16px;
-            text-align: left;
-            font-size: 14px;
-        }
-
-        .orders-table th {
-            background: rgba(63, 35, 5, 0.06);
-            color: var(--primary-color);
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 12px;
-            border-bottom: 2px solid rgba(63, 35, 5, 0.08);
-        }
-
-        .orders-table tr {
-            background: var(--white);
-            transition: var(--transition);
-            cursor: pointer;
-        }
-
-        .orders-table tr:hover {
-            background: rgba(255, 159, 28, 0.06);
-        }
-
-        .orders-table td {
-            color: var(--text-dark);
-            font-weight: 600;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-        }
-
-        .order-id {
-            color: var(--primary-color);
-            font-weight: 900;
-        }
-
-        .order-total {
-            font-weight: 900;
-        }
-
-        .order-date {
-            color: var(--text-light);
-            font-weight: 700;
-            font-size: 13px;
-        }
-
-        .row-action {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--primary-color);
-            color: var(--white);
-            border: none;
-            padding: 10px 14px;
-            border-radius: 22px;
-            font-weight: 800;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            font-size: 13px;
-        }
-
-        .row-action:hover {
-            background: var(--accent-color);
-            transform: scale(1.03);
-            box-shadow: 0 6px 15px rgba(63, 35, 5, 0.18);
-        }
-
-        /* ========== QUICK ACTIONS (AC#3) ========== */
-        .quick-actions-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 22px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .quick-action-card {
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .quick-action-top {
+        .heroActions {
             display: flex;
-            align-items: center;
             gap: 12px;
-            margin-bottom: 10px;
+            flex-wrap: wrap;
+            align-items: center;
         }
 
-        .quick-action-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 16px;
-            background: rgba(63, 35, 5, 0.06);
-            color: var(--primary-color);
+        .btn2 {
+            height: 44px;
+            padding: 0 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(15, 23, 42, .10);
+            background: rgba(255, 255, 255, .86);
+            color: rgba(15, 23, 42, .92);
+            font-weight: var(--fw-semibold);
+            cursor: pointer;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
-            transition: var(--transition);
-            border: 2px solid transparent;
+            gap: 10px;
+            text-decoration: none;
+            box-shadow: 0 12px 24px rgba(15, 23, 42, .06);
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+            font-family: var(--font-primary);
+            font-size: var(--fs-sm);
+            letter-spacing: -.01em;
+            user-select: none;
         }
 
-        .quick-action-card:hover .quick-action-icon {
-            background: var(--primary-color);
-            color: var(--white);
-            border-color: var(--accent-color);
+        .btn2:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 36px rgba(15, 23, 42, .09);
+            border-color: rgba(15, 23, 42, .14);
+            background: rgba(255, 255, 255, .94);
         }
 
-        .quick-action-title {
-            font-size: 16px;
-            font-weight: 900;
-            color: var(--text-dark);
+        .btn2:active {
+            transform: translateY(0);
+        }
+
+        /* primary ala “lime” */
+        .btn2.primary {
+            border: 0;
+            background:
+                radial-gradient(280px 120px at 30% 40%, rgba(255, 255, 255, .35), transparent 60%),
+                linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: rgba(15, 23, 42, .92);
+            box-shadow: 0 18px 44px rgba(215, 255, 30, .24);
+            font-weight: var(--fw-black);
+        }
+
+        .btn2.primary:hover {
+            box-shadow: 0 22px 60px rgba(215, 255, 30, .30);
+        }
+
+        .btnSm {
+            height: 36px;
+            padding: 0 12px;
+            font-size: var(--fs-xs);
+        }
+
+        /* ======================================================
+           KPI (lebih compact & airy)
+        ====================================================== */
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: var(--gap-4);
+            align-items: stretch;
+        }
+
+        .kpi {
+            grid-column: span 3;
+            padding: 16px 16px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 100%;
+            border-radius: var(--r-xl);
+            position: relative;
+            overflow: hidden;
+            background: var(--surface-2);
+            border: 1px solid rgba(15, 23, 42, .10);
+            box-shadow: var(--shadow-sm);
+            transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+        }
+
+        .kpi:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 46px rgba(15, 23, 42, .09);
+            border-color: rgba(15, 23, 42, .14);
+        }
+
+        /* top row (mini icon button ala referensi) */
+        .kTop {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .kIcoBtn {
+            width: 40px;
+            height: 40px;
+            border-radius: 999px;
+            border: 1px solid rgba(15, 23, 42, .10);
+            background: rgba(255, 255, 255, .88);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(15, 23, 42, .06);
+            color: rgba(15, 23, 42, .75);
+        }
+
+        .kVal {
             margin: 0;
+            font-family: var(--font-accent);
+            font-size: 30px;
+            line-height: 1.05;
+            letter-spacing: -.02em;
+            color: var(--text);
+            font-weight: var(--fw-black);
         }
 
-        .quick-action-desc {
-            font-size: 13px;
-            color: var(--text-light);
-            font-weight: 600;
-            margin: 0;
-            line-height: 1.45;
+        .kLbl {
+            margin-top: 4px;
+            font-size: var(--fs-sm);
+            color: var(--muted2);
+            font-weight: var(--fw-medium);
         }
 
-        .quick-action-cta {
-            margin-top: 14px;
+        .chip {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: var(--white);
-            color: var(--primary-color);
-            border: 2px solid var(--primary-color);
-            padding: 10px 18px;
-            border-radius: 24px;
-            font-weight: 800;
-            transition: var(--transition);
-            font-size: 13px;
+            padding: 8px 10px;
+            border-radius: 999px;
+            font-size: var(--fs-2xs);
+            font-weight: var(--fw-bold);
+            border: 1px solid rgba(15, 23, 42, .10);
+            background: rgba(255, 255, 255, .82);
+            color: rgba(15, 23, 42, .78);
+            white-space: nowrap;
+            width: fit-content;
         }
 
-        .quick-action-card:hover .quick-action-cta {
-            background: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(63, 35, 5, 0.18);
+        .chip.success {
+            background: rgba(16, 185, 129, .14);
+            border-color: rgba(16, 185, 129, .22);
+            color: #0F766E;
         }
 
-        /* ========== NOTIFICATION (SAME PATTERN) ========== */
-        .notification {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: var(--primary-color);
-            color: var(--white);
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: var(--shadow-medium);
-            z-index: 9999;
-            transform: translateX(120%);
-            transition: transform 0.4s ease;
+        .chip.warn {
+            background: rgba(245, 158, 11, .14);
+            border-color: rgba(245, 158, 11, .22);
+            color: #92400E;
+        }
+
+        .chip.danger {
+            background: rgba(239, 68, 68, .14);
+            border-color: rgba(239, 68, 68, .22);
+            color: #991B1B;
+        }
+
+        .chip.neu {
+            background: rgba(100, 116, 139, .10);
+            border-color: rgba(100, 116, 139, .18);
+            color: rgba(15, 23, 42, .76);
+            font-weight: var(--fw-semibold);
+        }
+
+        /* Accent highlight only for one KPI (mirip referensi: 1 card “popping”) */
+        .kpi.kAccent {
+            background:
+                radial-gradient(520px 200px at 10% 0%, rgba(215, 255, 30, .55), transparent 58%),
+                rgba(255, 255, 255, .90);
+            border-color: rgba(215, 255, 30, .60);
+            box-shadow: 0 24px 70px rgba(215, 255, 30, .20);
+        }
+
+        /* ======================================================
+           SPLIT
+        ====================================================== */
+        .split {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: var(--gap-4);
+            align-items: stretch;
+        }
+
+        .colOrders {
+            grid-column: span 7;
+        }
+
+        .colChart {
+            grid-column: span 5;
+        }
+
+        .panel {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 18px;
+        }
+
+        .panelHead {
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            gap: var(--gap-3);
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .panelTitle {
+            display: flex;
             gap: 12px;
-            max-width: 350px;
+            align-items: flex-start;
+            min-width: 0;
         }
 
-        .notification.show { transform: translateX(0); }
-        .notification-success { background: #28a745; }
-        .notification-error { background: #dc3545; }
-        .notification-info { background: #17a2b8; }
-        .notification-warning { background: #ffc107; color: #3f2305; }
+        .bico {
+            width: 42px;
+            height: 42px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(15, 23, 42, .10);
+            background: rgba(255, 255, 255, .86);
+            box-shadow: 0 10px 20px rgba(15, 23, 42, .06);
+            flex: 0 0 auto;
+            color: rgba(15, 23, 42, .75);
+        }
 
-        /* ========== RESPONSIVE (SAME BREAKPOINTS) ========== */
+        .panelTitle h2 {
+            margin: 0;
+            font-family: var(--font-accent);
+            font-size: var(--fs-xl);
+            font-weight: var(--fw-black);
+            letter-spacing: -.01em;
+            color: var(--text);
+        }
+
+        .panelTitle p {
+            margin: 6px 0 0;
+            font-size: var(--fs-sm);
+            color: var(--muted);
+            font-weight: var(--fw-regular);
+            line-height: 1.5;
+        }
+
+        /* Orders list */
+        .orders {
+            display: grid;
+            gap: var(--gap-3);
+            flex: 1;
+            min-height: 0;
+        }
+
+        .order {
+            border-radius: var(--r-xl);
+            border: 1px solid rgba(15, 23, 42, .10);
+            background: rgba(255, 255, 255, .86);
+            box-shadow: 0 14px 34px rgba(15, 23, 42, .06);
+            padding: 16px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: var(--gap-3);
+            align-items: start;
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+        }
+
+        .order:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 44px rgba(15, 23, 42, .08);
+            border-color: rgba(15, 23, 42, .14);
+        }
+
+        .oMain {
+            display: flex;
+            gap: 14px;
+            min-width: 0;
+            align-items: flex-start;
+        }
+
+        .avatar {
+            width: 46px;
+            height: 46px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .92);
+            border: 1px solid rgba(15, 23, 42, .10);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-accent);
+            font-weight: var(--fw-black);
+            color: rgba(15, 23, 42, .80);
+            flex: 0 0 auto;
+            font-size: var(--fs-md);
+            box-shadow: 0 10px 20px rgba(15, 23, 42, .05);
+        }
+
+        .oName {
+            margin: 0;
+            font-weight: var(--fw-black);
+            font-family: var(--font-accent);
+            font-size: var(--fs-base);
+            line-height: 1.3;
+            color: var(--text);
+            letter-spacing: -.01em;
+        }
+
+        .oMeta {
+            margin-top: 6px;
+            color: rgba(100, 116, 139, .86);
+            font-size: var(--fs-xs);
+            font-weight: var(--fw-medium);
+        }
+
+        .pillRow {
+            display: flex;
+            gap: var(--gap-2);
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .pill {
+            padding: 10px 12px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, .90);
+            border: 1px solid rgba(15, 23, 42, .10);
+            min-width: 152px;
+        }
+
+        .pill small {
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: .10em;
+            font-weight: var(--fw-bold);
+            font-size: 10px;
+            color: rgba(100, 116, 139, .84);
+        }
+
+        .pill b {
+            display: block;
+            margin-top: 4px;
+            font-family: var(--font-accent);
+            font-weight: var(--fw-black);
+            color: var(--text);
+            font-size: var(--fs-sm);
+        }
+
+        .oSide {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+            min-width: 180px;
+        }
+
+        .status {
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: var(--fw-black);
+            letter-spacing: .10em;
+            text-transform: uppercase;
+            border: 1px solid rgba(15, 23, 42, .10);
+            background: rgba(255, 255, 255, .86);
+            color: rgba(15, 23, 42, .78);
+            white-space: nowrap;
+            font-family: var(--font-accent);
+        }
+
+        .status.unpaid {
+            background: rgba(239, 68, 68, .12);
+            border-color: rgba(239, 68, 68, .20);
+            color: #991B1B;
+        }
+
+        .status.processing {
+            background: rgba(245, 158, 11, .12);
+            border-color: rgba(245, 158, 11, .20);
+            color: #92400E;
+        }
+
+        .status.shipped {
+            background: rgba(59, 130, 246, .12);
+            border-color: rgba(59, 130, 246, .20);
+            color: #1D4ED8;
+        }
+
+        .status.done {
+            background: rgba(16, 185, 129, .12);
+            border-color: rgba(16, 185, 129, .20);
+            color: #0F766E;
+        }
+
+        .oActs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        /* ======================================================
+           Chart panel (lebih clean)
+        ====================================================== */
+        .chartWrap {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            padding: 16px;
+            border-radius: var(--r-xl);
+            border: 1px solid rgba(15, 23, 42, .10);
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, .86), rgba(255, 255, 255, .74));
+            box-shadow: 0 14px 34px rgba(15, 23, 42, .06);
+        }
+
+        .chartTop {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: var(--gap-3);
+        }
+
+        .chartTitle {
+            margin: 0;
+            font-family: var(--font-accent);
+            font-weight: var(--fw-black);
+            font-size: var(--fs-lg);
+            letter-spacing: -.01em;
+            color: var(--text);
+        }
+
+        .chartSub {
+            margin: 7px 0 0;
+            font-size: var(--fs-sm);
+            color: var(--muted);
+            font-weight: var(--fw-regular);
+            line-height: 1.55;
+        }
+
+        .chartBody {
+            display: grid;
+            grid-template-columns: 170px 1fr;
+            gap: var(--gap-3);
+            align-items: center;
+        }
+
+        .donut {
+            width: 170px;
+            height: 170px;
+            border-radius: 999px;
+            background:
+                conic-gradient(rgba(239, 68, 68, .82) 0 calc(var(--pUnpaid) * 1%),
+                    rgba(245, 158, 11, .82) 0 calc((var(--pUnpaid) + var(--pProcessing)) * 1%),
+                    rgba(59, 130, 246, .80) 0 calc((var(--pUnpaid) + var(--pProcessing) + var(--pShipped)) * 1%),
+                    rgba(16, 185, 129, .82) 0 100%);
+            position: relative;
+            border: 1px solid rgba(15, 23, 42, .10);
+            box-shadow: 0 18px 46px rgba(15, 23, 42, .08);
+            flex: 0 0 auto;
+        }
+
+        .donut::after {
+            content: "";
+            position: absolute;
+            inset: 18px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .92);
+            border: 1px solid rgba(15, 23, 42, .10);
+        }
+
+        .donutCenter {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 1;
+            text-align: center;
+            padding: 22px;
+        }
+
+        .donutCenter b {
+            font-family: var(--font-accent);
+            font-size: 26px;
+            font-weight: var(--fw-black);
+            line-height: 1.05;
+            color: var(--text);
+            letter-spacing: -.02em;
+        }
+
+        .donutCenter span {
+            margin-top: 8px;
+            font-size: var(--fs-xs);
+            font-weight: var(--fw-bold);
+            color: rgba(100, 116, 139, .88);
+            letter-spacing: .06em;
+            text-transform: uppercase;
+        }
+
+        .legend {
+            display: grid;
+            gap: 10px;
+        }
+
+        .lg {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, .86);
+            border: 1px solid rgba(15, 23, 42, .10);
+            box-shadow: 0 10px 20px rgba(15, 23, 42, .05);
+        }
+
+        .dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 999px;
+            flex: 0 0 auto;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, .10);
+        }
+
+        .lg strong {
+            font-size: var(--fs-sm);
+            font-weight: var(--fw-bold);
+            color: rgba(15, 23, 42, .88);
+        }
+
+        .lg small {
+            margin-left: auto;
+            font-size: var(--fs-sm);
+            font-weight: var(--fw-black);
+            color: rgba(15, 23, 42, .78);
+        }
+
+        .chartHint {
+            padding: 12px 12px;
+            border-radius: 16px;
+            border: 1px solid rgba(15, 23, 42, .10);
+            background: rgba(255, 255, 255, .80);
+            color: rgba(51, 65, 85, .78);
+            font-size: var(--fs-sm);
+            font-weight: var(--fw-regular);
+            line-height: 1.55;
+        }
+
+        .chartHint b {
+            font-weight: var(--fw-black);
+            color: var(--text);
+        }
+
+        .chartActions {
+            margin-top: auto;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* ======================================================
+           Help (lebih clean)
+        ====================================================== */
+        .helpWrap {
+            padding: 18px;
+        }
+
+        .helpGrid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: var(--gap-4);
+            margin-top: 16px;
+        }
+
+        .helpBox {
+            grid-column: span 6;
+            padding: 16px;
+            border-radius: var(--r-xl);
+            border: 1px solid rgba(15, 23, 42, .10);
+            background: rgba(255, 255, 255, .84);
+            box-shadow: var(--shadow-sm);
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+        }
+
+        .helpBox:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 46px rgba(15, 23, 42, .08);
+            border-color: rgba(15, 23, 42, .14);
+        }
+
+        .helpBox h3 {
+            margin: 0;
+            font-family: var(--font-accent);
+            font-size: var(--fs-lg);
+            font-weight: var(--fw-black);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+        }
+
+        .helpList {
+            margin-top: 12px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .helpItem {
+            padding: 12px 12px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, .90);
+            border: 1px solid rgba(15, 23, 42, .10);
+            cursor: pointer;
+            font-weight: var(--fw-semibold);
+            color: rgba(15, 23, 42, .86);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: var(--fs-sm);
+            box-shadow: 0 10px 20px rgba(15, 23, 42, .05);
+            transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+        }
+
+        .helpItem:hover {
+            transform: translateX(3px);
+            box-shadow: 0 14px 28px rgba(15, 23, 42, .07);
+            border-color: rgba(15, 23, 42, .14);
+        }
+
+        /* ======================================================
+           Modal + Toast (clean)
+        ====================================================== */
+        .ov {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, .42);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 9999;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        .ov.show {
+            display: flex;
+        }
+
+        .modal {
+            width: min(560px, 100%);
+            background: rgba(255, 255, 255, .92);
+            border-radius: var(--r-xl);
+            border: 1px solid rgba(15, 23, 42, .12);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .mHead {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 16px 18px;
+            background: rgba(255, 255, 255, .86);
+            border-bottom: 1px solid rgba(15, 23, 42, .10);
+        }
+
+        .mHead h4 {
+            margin: 0;
+            font-family: var(--font-accent);
+            font-weight: var(--fw-black);
+            font-size: var(--fs-lg);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+        }
+
+        .x {
+            width: 40px;
+            height: 40px;
+            border-radius: 999px;
+            border: 1px solid rgba(15, 23, 42, .12);
+            background: rgba(255, 255, 255, .92);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+            box-shadow: 0 10px 20px rgba(15, 23, 42, .06);
+        }
+
+        .x:hover {
+            transform: rotate(90deg);
+            border-color: rgba(15, 23, 42, .18);
+            box-shadow: 0 14px 28px rgba(15, 23, 42, .09);
+        }
+
+        .mBody {
+            padding: 18px;
+        }
+
+        .fg {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .fg label {
+            font-size: var(--fs-xs);
+            font-weight: var(--fw-bold);
+            color: rgba(100, 116, 139, .92);
+            letter-spacing: .05em;
+            text-transform: uppercase;
+        }
+
+        .ctl {
+            height: 44px;
+            border-radius: 16px;
+            border: 1px solid rgba(15, 23, 42, .12);
+            padding: 0 14px;
+            background: rgba(255, 255, 255, .96);
+            outline: none;
+            font-family: var(--font-primary);
+            font-size: var(--fs-sm);
+            font-weight: var(--fw-regular);
+            transition: box-shadow .18s ease, border-color .18s ease;
+        }
+
+        .ctl:focus {
+            border-color: rgba(215, 255, 30, .70);
+            box-shadow: 0 0 0 4px rgba(215, 255, 30, .18);
+        }
+
+        textarea.ctl {
+            height: auto;
+            padding: 12px 14px;
+            line-height: 1.55;
+        }
+
+        .mActs {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 16px;
+        }
+
+        .toast {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: min(420px, calc(100vw - 40px));
+            background: rgba(255, 255, 255, .94);
+            border: 1px solid rgba(15, 23, 42, .12);
+            border-radius: var(--r-xl);
+            box-shadow: var(--shadow-lg);
+            padding: 14px;
+            display: flex;
+            gap: 12px;
+            z-index: 10000;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .tIco {
+            width: 44px;
+            height: 44px;
+            border-radius: 16px;
+            background:
+                radial-gradient(120px 50px at 30% 30%, rgba(215, 255, 30, .50), transparent 60%),
+                rgba(15, 23, 42, .04);
+            border: 1px solid rgba(15, 23, 42, .10);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            color: rgba(15, 23, 42, .78);
+        }
+
+        .tTitle {
+            margin: 0;
+            font-family: var(--font-accent);
+            font-weight: var(--fw-black);
+            font-size: var(--fs-base);
+            color: var(--text);
+            letter-spacing: -.01em;
+        }
+
+        .tMsg {
+            margin: 6px 0 0;
+            color: rgba(100, 116, 139, .86);
+            font-size: var(--fs-sm);
+            line-height: 1.45;
+            font-weight: var(--fw-regular);
+        }
+
+        .tX {
+            margin-left: auto;
+            width: 38px;
+            height: 38px;
+            border-radius: 999px;
+            border: 1px solid rgba(15, 23, 42, .12);
+            background: rgba(255, 255, 255, .92);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform .18s ease, box-shadow .18s ease;
+            box-shadow: 0 10px 20px rgba(15, 23, 42, .06);
+        }
+
+        .tX:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 28px rgba(15, 23, 42, .09);
+        }
+
+        /* ======================================================
+           Responsive
+        ====================================================== */
         @media (max-width: 1200px) {
-            .hero-title { font-size: 42px; }
-            .hero-subtitle { font-size: 26px; }
-            .hero-banner { height: 400px; }
+            .kpi {
+                grid-column: span 6;
+            }
 
-            .status-grid { grid-template-columns: repeat(4, 1fr); }
-            .quick-actions-grid { grid-template-columns: repeat(4, 1fr); }
-        }
+            .colOrders {
+                grid-column: span 12;
+            }
 
-        @media (max-width: 1024px) {
-            .hero-title { font-size: 36px; }
-            .hero-subtitle { font-size: 24px; }
-            .hero-banner { height: 350px; }
+            .colChart {
+                grid-column: span 12;
+            }
 
-            .store-info-grid { grid-template-columns: 1fr; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .status-grid { grid-template-columns: repeat(2, 1fr); }
-            .quick-actions-grid { grid-template-columns: repeat(2, 1fr); }
+            .helpBox {
+                grid-column: span 12;
+            }
+
+            .chartBody {
+                grid-template-columns: 170px 1fr;
+            }
         }
 
         @media (max-width: 768px) {
-            .hero-section { padding: 0 15px; }
-            .section-header-container { padding: 0 15px; }
-            .hero-title { font-size: 32px; }
-            .hero-subtitle { font-size: 22px; }
-            .hero-banner { height: 300px; }
-            .hero-cta { padding: 12px 28px; font-size: 15px; }
-
-            .section-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
+            .kpi {
+                grid-column: span 12;
             }
 
-            .stats-grid { grid-template-columns: 1fr; }
-            .status-grid { grid-template-columns: 1fr; }
-            .quick-actions-grid { grid-template-columns: 1fr; }
-        }
+            .order {
+                grid-template-columns: 1fr;
+            }
 
-        @media (max-width: 576px) {
-            .hero-section { padding: 0 10px; }
-            .hero-title { font-size: 28px; }
-            .hero-subtitle { font-size: 20px; }
-            .hero-banner { height: 250px; }
-            .hero-cta { padding: 10px 24px; font-size: 14px; }
+            .oSide {
+                align-items: flex-start;
+                min-width: 0;
+                margin-top: 14px;
+                padding-top: 14px;
+                border-top: 1px solid rgba(15, 23, 42, .10);
+            }
 
-            .stats-number { font-size: 34px; }
-            .status-count { font-size: 26px; }
+            .oActs {
+                justify-content: flex-start;
+            }
+
+            .heroActions .btn2 {
+                width: 100%;
+            }
+
+            .chartBody {
+                grid-template-columns: 1fr;
+                gap: var(--gap-4);
+            }
+
+            .donut {
+                margin: 0 auto;
+            }
         }
     </style>
+@endpush
 
-    <!-- ========== HERO BANNER ========== -->
-    <section class="hero-section">
-        <div class="hero-banner" id="heroBanner">
-            <!-- Slides will be added by JavaScript -->
-        </div>
-        <div class="hero-dots" id="heroDots">
-            <!-- Dots will be added by JavaScript -->
-        </div>
-    </section>
+@section('content')
+    <div class="pageWrap">
+        <div class="pageBg"></div>
 
-    <!-- ========== STORE INFORMATION (WAJIB) ========== -->
-    <section class="section-container" id="seller-store-info">
-        <div class="section-header-container">
-            <div class="section-header">
-                <div class="section-title">
-                    <i class="fas fa-store star-icon"></i>
-                    <h2>Informasi Toko</h2>
-                </div>
-                <a href="{{ route('seller.store.profile') }}" class="see-more-btn">
-                    Edit Profil Toko
-                    <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
-        </div>
+        <div class="page">
 
-        <div class="content-container">
-            <div class="store-info-grid">
-                <!-- Main Store Card -->
-                <div class="modern-card">
-                    <div class="card-body">
-                        <div class="store-title">
-                            <i class="fas fa-shop"></i>
-                            <h3>{{ $storeData['name'] ?? 'Toko Saya' }}</h3>
+            {{-- HERO --}}
+            <div class="card hero">
+                <div style="min-width:0">
+                    <h1 class="hTitle">{{ $greet }}, <span>{{ $storeName }}</span></h1>
+                    <p class="hSub">
+                        {{ $today }} • Monitor performa toko, kelola pesanan, dan optimalkan penjualan dari satu
+                        dashboard yang terintegrasi.
+                    </p>
 
-                            @php
-                                $isOpen = (bool) ($storeData['is_open'] ?? false);
-                            @endphp
-
-                            <span class="pill-badge {{ $isOpen ? 'badge-success' : 'badge-danger' }}">
-                                <i class="fas {{ $isOpen ? 'fa-door-open' : 'fa-door-closed' }}"></i>
-                                {{ $isOpen ? 'Open' : 'Closed' }}
-                            </span>
+                    <div class="hMetaRow">
+                        <div class="pillMini">
+                            <i class="fa-solid fa-bag-shopping"></i>
+                            Pesanan hari ini <b>{{ $countProcessing + $countUnpaid }}</b>
                         </div>
-
-                        <div style="margin-top: 10px;">
-                            <span class="mini-badge badge-info">
-                                <i class="fas fa-star"></i>
-                                Rating {{ number_format((float) ($storeData['rating'] ?? 0), 1) }}
-                            </span>
+                        <div class="pillMini">
+                            <i class="fa-solid fa-box"></i>
+                            Produk aktif <b>{{ $productsList->count() }}</b>
                         </div>
-
-                        <div class="store-meta">
-                            <div class="meta-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>{{ $storeData['address'] ?? 'Alamat belum diatur' }}</span>
-                            </div>
-                            <div class="meta-item">
-                                <i class="fas fa-clock"></i>
-                                <span>Jam hari ini: {{ $storeData
-                                ['today_hours'] ?? '-' }}</span>
-                            </div>
-                        </div>
-
-                        <div style="margin-top: 16px;">
-                            <a href="#seller-quick-actions" class="hero-cta" style="padding: 12px 26px; font-size: 14px;">
-                                <i class="fas fa-bolt"></i>
-                                Aksi Cepat Penjual
-                            </a>
+                        <div class="pillMini">
+                            <i class="fa-solid fa-coins"></i>
+                            Nilai rata-rata <b>Rp{{ number_format($averageOrderValue, 0, ',', '.') }}</b>
                         </div>
                     </div>
                 </div>
 
-                <!-- Store Health Card -->
-                @php
-                    $healthLevel = $storeHealth['level'] ?? 'good';
-                    $healthLabel = $storeHealth['label'] ?? 'No issues';
-
-                    $healthClass = $healthLevel === 'danger' ? 'health-danger' : ($healthLevel === 'warning' ? 'health-warning' : 'health-good');
-                    $healthBadge = $healthLevel === 'danger' ? 'badge-danger' : ($healthLevel === 'warning' ? 'badge-warning' : 'badge-success');
-                    $healthIcon = $healthLevel === 'danger' ? 'fa-triangle-exclamation' : ($healthLevel === 'warning' ? 'fa-chart-line' : 'fa-circle-check');
-                @endphp
-
-                <div class="modern-card">
-                    <div class="card-body store-health">
-                        <div class="health-row">
-                            <div class="health-label">
-                                <span class="health-icon {{ $healthClass }}">
-                                    <i class="fas {{ $healthIcon }}"></i>
-                                </span>
-                                Kondisi Toko Hari Ini
-                            </div>
-
-                            <span class="pill-badge {{ $healthBadge }}">
-                                <i class="fas fa-heart-pulse"></i>
-                                {{ $healthLabel }}
-                            </span>
-                        </div>
-
-                        <div class="health-desc">
-                            Pantau performa toko kamu setiap hari. Klik status pesanan untuk filter cepat, dan cek pesanan terbaru agar tidak terlewat.
-                        </div>
-
-                        <div style="margin-top: 10px;">
-                            <a href="{{ route('seller.orders.index') }}" class="see-more-btn" style="padding: 10px 20px; font-size: 14px;">
-                                Lihat Semua Pesanan
-                                <i class="fas fa-arrow-right"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- ========== STATS (AC#1) ========== -->
-    <section class="section-container" id="seller-stats">
-        <div class="section-header-container">
-            <div class="section-header">
-                <div class="section-title">
-                    <i class="fas fa-chart-simple star-icon"></i>
-                    <h2>Ringkasan Pesanan</h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="content-container">
-            <div class="stats-grid">
-                <div class="modern-card stats-card">
-                    <div class="card-body">
-                        <div class="stats-top">
-                            <h3 class="stats-title">Total Orders Today</h3>
-                            <div class="stats-icon"><i class="fas fa-calendar-day"></i></div>
-                        </div>
-                        <div class="stats-number">{{ (int) ($stats['today'] ?? 0) }}</div>
-                        <p class="stats-subtitle">Pesanan yang masuk hari ini</p>
-                    </div>
-                </div>
-
-                <div class="modern-card stats-card">
-                    <div class="card-body">
-                        <div class="stats-top">
-                            <h3 class="stats-title">Total Orders This Week</h3>
-                            <div class="stats-icon"><i class="fas fa-calendar-week"></i></div>
-                        </div>
-                        <div class="stats-number">{{ (int) ($stats['week'] ?? 0) }}</div>
-                        <p class="stats-subtitle">Akumulasi pesanan minggu ini</p>
-                    </div>
-                </div>
-
-                <div class="modern-card stats-card">
-                    <div class="card-body">
-                        <div class="stats-top">
-                            <h3 class="stats-title">Total Orders This Month</h3>
-                            <div class="stats-icon"><i class="fas fa-calendar-alt"></i></div>
-                        </div>
-                        <div class="stats-number">{{ (int) ($stats['month'] ?? 0) }}</div>
-                        <p class="stats-subtitle">Akumulasi pesanan bulan ini</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ========== ORDER STATUS + RECENT ORDERS (AC#2) ========== -->
-    <section class="section-container" id="seller-order-status">
-        <div class="section-header-container">
-            <div class="section-header">
-                <div class="section-title">
-                    <i class="fas fa-clipboard-list flash-icon"></i>
-                    <h2>Status Pesanan</h2>
-                </div>
-                <a href="{{ route('seller.orders.index') }}" class="see-more-btn">
-                    Kelola Pesanan
-                    <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
-        </div>
-
-        <div class="content-container">
-            @php
-                $pendingCount = (int) ($orderStatusCounts['pending'] ?? 0);
-                $processingCount = (int) ($orderStatusCounts['processing'] ?? 0);
-                $completedCount = (int) ($orderStatusCounts['completed'] ?? 0);
-                $cancelledCount = (int) ($orderStatusCounts['cancelled'] ?? 0);
-            @endphp
-
-            <div class="status-grid">
-                <div class="modern-card status-card" onclick="setStatusFilter('pending')">
-                    <div class="card-body">
-                        <div class="status-row">
-                            <div>
-                                <div class="pill-badge badge-warning">
-                                    <i class="fas fa-hourglass-start"></i>
-                                    Pending
-                                </div>
-                            </div>
-                            <i class="fas fa-rotate-right" style="color: rgba(63,35,5,0.35); font-size: 18px;"></i>
-                        </div>
-                        <p class="status-name" style="margin-top: 14px;">Menunggu Konfirmasi</p>
-                        <p class="status-count">{{ $pendingCount }}</p>
-                        <a href="{{ route('seller.orders.index', ['status' => 'pending']) }}" class="status-cta"
-                            onclick="event.stopPropagation();">
-                            View
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="modern-card status-card" onclick="setStatusFilter('processing')">
-                    <div class="card-body">
-                        <div class="status-row">
-                            <div>
-                                <div class="pill-badge badge-primary">
-                                    <i class="fas fa-gears"></i>
-                                    Processing
-                                </div>
-                            </div>
-                            <i class="fas fa-box" style="color: rgba(63,35,5,0.35); font-size: 18px;"></i>
-                        </div>
-                        <p class="status-name" style="margin-top: 14px;">Sedang Diproses</p>
-                        <p class="status-count">{{ $processingCount }}</p>
-                        <a href="{{ route('seller.orders.index', ['status' => 'processing']) }}" class="status-cta"
-                            onclick="event.stopPropagation();">
-                            View
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="modern-card status-card" onclick="setStatusFilter('completed')">
-                    <div class="card-body">
-                        <div class="status-row">
-                            <div>
-                                <div class="pill-badge badge-success">
-                                    <i class="fas fa-circle-check"></i>
-                                    Completed
-                                </div>
-                            </div>
-                            <i class="fas fa-truck-fast" style="color: rgba(63,35,5,0.35); font-size: 18px;"></i>
-                        </div>
-                        <p class="status-name" style="margin-top: 14px;">Selesai / Terkirim</p>
-                        <p class="status-count">{{ $completedCount }}</p>
-                        <a href="{{ route('seller.orders.index', ['status' => 'completed']) }}" class="status-cta"
-                            onclick="event.stopPropagation();">
-                            View
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="modern-card status-card" onclick="setStatusFilter('cancelled')">
-                    <div class="card-body">
-                        <div class="status-row">
-                            <div>
-                                <div class="pill-badge badge-danger">
-                                    <i class="fas fa-ban"></i>
-                                    Cancelled
-                                </div>
-                            </div>
-                            <i class="fas fa-xmark" style="color: rgba(63,35,5,0.35); font-size: 20px;"></i>
-                        </div>
-                        <p class="status-name" style="margin-top: 14px;">Dibatalkan</p>
-                        <p class="status-count">{{ $cancelledCount }}</p>
-                        <a href="{{ route('seller.orders.index', ['status' => 'cancelled']) }}" class="status-cta"
-                            onclick="event.stopPropagation();">
-                            View
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div id="statusFilterIndicator" class="filter-indicator" style="display:none;">
-                <i class="fas fa-filter"></i>
-                Filter aktif: <span id="statusFilterLabel" style="font-weight: 900;"></span>
-                <button class="status-cta" style="padding: 8px 12px; font-size: 12px;"
-                    onclick="clearStatusFilter();">
-                    Reset
-                    <i class="fas fa-rotate-left"></i>
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- ========== RECENT ORDERS TABLE (5 newest) ========== -->
-    <section class="section-container" id="seller-recent-orders">
-        <div class="section-header-container">
-            <div class="section-header">
-                <div class="section-title">
-                    <i class="fas fa-clock-rotate-left star-icon"></i>
-                    <h2>Pesanan Terbaru</h2>
-                </div>
-                <a href="{{ route('seller.orders.index') }}" class="see-more-btn">
-                    Lihat Semua
-                    <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
-        </div>
-
-        <div class="content-container">
-            <div class="modern-card recent-orders-card" id="recentOrdersCard">
-                <div class="card-body">
-                    <div class="table-wrap">
-                        <table class="orders-table" id="recentOrdersTable">
-                            <thead>
-                                <tr>
-                                    <th>Order ID</th>
-                                    <th>Customer</th>
-                                    <th>Total</th>
-                                    <th>Status</th>
-                                    <th>Dibuat</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if(isset($recentOrders) && $recentOrders->count() > 0)
-                                    @foreach($recentOrders as $order)
-                                        @php
-                                            $status = strtolower($order->status ?? '');
-                                            $badgeClass = 'badge-info';
-                                            $statusLabel = $order->status ?? 'Unknown';
-
-                                            if ($status === 'pending') { $badgeClass = 'badge-warning'; }
-                                            elseif ($status === 'processing') { $badgeClass = 'badge-primary'; }
-                                            elseif ($status === 'completed' || $status === 'delivered' || $status === 'shipped') { $badgeClass = 'badge-success'; }
-                                            elseif ($status === 'cancelled' || $status === 'canceled') { $badgeClass = 'badge-danger'; }
-
-                                            $rowStatusKey = $status ?: 'unknown';
-                                        @endphp
-
-                                        <tr data-status="{{ $rowStatusKey }}"
-                                            onclick="window.location.href='{{ route('seller.orders.show', $order->id) }}'">
-                                            <td class="order-id">#{{ $order->id }}</td>
-                                            <td>{{ $order->customer_name ?? '-' }}</td>
-                                            <td class="order-total">
-                                                Rp{{ number_format((float) ($order->total ?? 0), 0, ',', '.') }}
-                                            </td>
-                                            <td>
-                                                <span class="pill-badge {{ $badgeClass }}" style="padding: 7px 14px; font-size: 11px;">
-                                                    <i class="fas fa-tag"></i>
-                                                    {{ ucfirst($statusLabel) }}
-                                                </span>
-                                            </td>
-                                            <td class="order-date">
-                                                {{ optional($order->created_at)->format('d M Y, H:i') ?? '-' }}
-                                            </td>
-                                            <td>
-                                                <a href="{{ route('seller.orders.show', $order->id) }}" class="row-action"
-                                                    onclick="event.stopPropagation();">
-                                                    Detail
-                                                    <i class="fas fa-arrow-right"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                @else
-                                    <tr onclick="event.preventDefault();">
-                                        <td colspan="6" style="padding: 18px 16px; color: var(--text-light); font-weight: 700;">
-                                            Belum ada pesanan terbaru. Coba cek lagi nanti.
-                                        </td>
-                                    </tr>
-                                @endif
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ========== SELLER QUICK ACTIONS (AC#3) ========== -->
-    <section class="section-container" id="seller-quick-actions">
-        <div class="section-header-container">
-            <div class="section-header">
-                <div class="section-title">
-                    <i class="fas fa-bolt flash-icon"></i>
-                    <h2>Seller Quick Actions</h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="content-container">
-            <div class="quick-actions-grid">
-                <a href="{{ route('seller.products.index') }}" class="modern-card quick-action-card">
-                    <div class="card-body">
-                        <div class="quick-action-top">
-                            <div class="quick-action-icon">
-                                <i class="fas fa-boxes-stacked"></i>
-                            </div>
-                            <h3 class="quick-action-title">Manage Products</h3>
-                        </div>
-                        <p class="quick-action-desc">
-                            Tambah, edit, dan atur stok produk. Pastikan listing kamu selalu up to date.
-                        </p>
-                        <span class="quick-action-cta">
-                            Buka
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                    </div>
-                </a>
-
-                <a href="{{ route('seller.orders.index') }}" class="modern-card quick-action-card">
-                    <div class="card-body">
-                        <div class="quick-action-top">
-                            <div class="quick-action-icon">
-                                <i class="fas fa-receipt"></i>
-                            </div>
-                            <h3 class="quick-action-title">Manage Orders</h3>
-                        </div>
-                        <p class="quick-action-desc">
-                            Proses pesanan lebih cepat, update status, dan cek detail customer.
-                        </p>
-                        <span class="quick-action-cta">
-                            Buka
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                    </div>
-                </a>
-
-                <a href="{{ route('seller.store.profile') }}" class="modern-card quick-action-card">
-                    <div class="card-body">
-                        <div class="quick-action-top">
-                            <div class="quick-action-icon">
-                                <i class="fas fa-store-alt"></i>
-                            </div>
-                            <h3 class="quick-action-title">Store Profile</h3>
-                        </div>
-                        <p class="quick-action-desc">
-                            Atur identitas toko, jam operasional, alamat, dan informasi penting lainnya.
-                        </p>
-                        <span class="quick-action-cta">
-                            Buka
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                    </div>
-                </a>
-
-                <a href="{{ route('seller.payouts.index') }}" class="modern-card quick-action-card">
-                    <div class="card-body">
-                        <div class="quick-action-top">
-                            <div class="quick-action-icon">
-                                <i class="fas fa-wallet"></i>
-                            </div>
-                            <h3 class="quick-action-title">Payouts</h3>
-                        </div>
-                        <p class="quick-action-desc">
-                            Lihat transaksi, histori payout, dan status penarikan dana secara ringkas.
-                        </p>
-                        <span class="quick-action-cta">
-                            Buka
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <script>
-        // ========== SELLER DASHBOARD JAVASCRIPT (LIGHT) ==========
-        // Hero slides dari controller (opsional), fallback default
-        const heroSlides = @json($heroSlides ?? []);
-
-        let currentSlide = 0;
-
-        function initializeHeroSlideshow() {
-            const heroBanner = document.getElementById('heroBanner');
-            const heroDots = document.getElementById('heroDots');
-
-            const slidesToUse = heroSlides.length > 0 ? heroSlides : [{
-                image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1920&q=80',
-                tagline: 'Dashboard Penjual',
-                title: 'Kelola Toko Lebih Cepat',
-                subtitle: 'Pesanan • Produk • Payout',
-                description: 'Pantau performa harian, cek pesanan terbaru, dan lakukan aksi cepat tanpa ribet.'
-            }];
-
-            // Create slides + dots
-            slidesToUse.forEach((slide, index) => {
-                const slideDiv = document.createElement('div');
-                slideDiv.className = `hero-slide ${index === 0 ? 'active' : ''}`;
-                slideDiv.style.backgroundImage = `url('${slide.image}')`;
-                heroBanner.appendChild(slideDiv);
-
-                const dot = document.createElement('div');
-                dot.className = `hero-dot ${index === 0 ? 'active' : ''}`;
-                dot.dataset.index = index;
-                dot.addEventListener('click', () => goToSlide(index));
-                heroDots.appendChild(dot);
-            });
-
-            // Hero content
-            const heroContent = document.createElement('div');
-            heroContent.className = 'hero-content';
-            heroBanner.appendChild(heroContent);
-
-            updateHeroContent(0);
-
-            setInterval(() => {
-                goToSlide((currentSlide + 1) % slidesToUse.length);
-            }, 5000);
-        }
-
-        function goToSlide(index) {
-            const slides = document.querySelectorAll('.hero-slide');
-            const dots = document.querySelectorAll('.hero-dot');
-
-            slides.forEach(slide => slide.classList.remove('active'));
-            dots.forEach(dot => dot.classList.remove('active'));
-
-            slides[index].classList.add('active');
-            dots[index].classList.add('active');
-
-            currentSlide = index;
-            updateHeroContent(index);
-        }
-
-        function updateHeroContent(index) {
-            const slidesToUse = heroSlides.length > 0 ? heroSlides : [{
-                image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1920&q=80',
-                tagline: 'Dashboard Penjual',
-                title: 'Kelola Toko Lebih Cepat',
-                subtitle: 'Pesanan • Produk • Payout',
-                description: 'Pantau performa harian, cek pesanan terbaru, dan lakukan aksi cepat tanpa ribet.'
-            }];
-
-            const slide = slidesToUse[index];
-            const heroContent = document.querySelector('.hero-content');
-
-            if (heroContent) {
-                heroContent.innerHTML = `
-                    <div class="hero-tagline">${slide.tagline}</div>
-                    <h1 class="hero-title">${slide.title}</h1>
-                    <div class="hero-subtitle">${slide.subtitle}</div>
-                    <p class="hero-description">${slide.description}</p>
-                    <a href="#seller-recent-orders" class="hero-cta">
-                        <i class="fas fa-receipt"></i>
-                        Lihat Pesanan Terbaru
+                <div class="heroActions">
+                    <button class="btn2 primary" type="button" onclick="LB.open('addProduct')">
+                        <i class="fa-solid fa-plus"></i> Tambah Produk
+                    </button>
+                    <a class="btn2" href="{{ route('seller.orders.index') }}">
+                        <i class="fa-solid fa-list-check"></i> Kelola Pesanan
                     </a>
-                `;
-            }
-        }
+                </div>
+            </div>
 
-        // Notification function (same pattern)
-        function showNotification(message, type = 'success') {
-            const existingNotification = document.querySelector('.notification');
-            if (existingNotification) existingNotification.remove();
+            {{-- KPI --}}
+            <div class="kpis">
+                <div class="card kpi">
+                    <div class="kTop">
+                        <div class="kIcoBtn" title="Ringkasan">
+                            <i class="fa-solid fa-leaf"></i>
+                        </div>
+                        <span class="chip success"><i class="fa-solid fa-arrow-up"></i> +12% MoM</span>
+                    </div>
+                    <div>
+                        <p class="kVal">{{ $rescuedItems }}</p>
+                        <div class="kLbl">Produk Terselamatkan</div>
+                    </div>
+                </div>
 
-            const notification = document.createElement('div');
-            notification.className = `notification notification-${type}`;
-            const icon =
-                type === 'success' ? 'check-circle' :
-                type === 'error' ? 'exclamation-circle' :
-                type === 'warning' ? 'triangle-exclamation' :
-                'info-circle';
+                <div class="card kpi kAccent">
+                    <div class="kTop">
+                        <div class="kIcoBtn" title="Flash">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        @php
+                            $c = $flashReadyPct > 70 ? 'success' : ($flashReadyPct < 30 ? 'danger' : 'neu');
+                            $t =
+                                $flashReadyPct > 70
+                                    ? 'Siap jual cepat'
+                                    : ($flashReadyPct < 30
+                                        ? 'Perlu perhatian'
+                                        : 'Normal');
+                            $i =
+                                $flashReadyPct > 70
+                                    ? 'fa-arrow-up'
+                                    : ($flashReadyPct < 30
+                                        ? 'fa-arrow-down'
+                                        : 'fa-minus');
+                        @endphp
+                        <span class="chip {{ $c }}"><i class="fa-solid {{ $i }}"></i>
+                            {{ $t }}</span>
+                    </div>
+                    <div>
+                        <p class="kVal">{{ $flashReadyPct }}%</p>
+                        <div class="kLbl">Flash Ready</div>
+                    </div>
+                </div>
 
-            notification.innerHTML = `
-                <i class="fas fa-${icon}"></i>
-                <span>${message}</span>
+                <div class="card kpi">
+                    <div class="kTop">
+                        <div class="kIcoBtn" title="Pesanan">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                        <span class="chip neu"><i class="fa-solid fa-minus"></i> Stabil</span>
+                    </div>
+                    <div>
+                        <p class="kVal">{{ $totalOrders }}</p>
+                        <div class="kLbl">Total Pesanan</div>
+                    </div>
+                </div>
+
+                <div class="card kpi">
+                    <div class="kTop">
+                        <div class="kIcoBtn" title="Rating">
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <span class="chip success"><i class="fa-solid fa-arrow-up"></i> Excellent</span>
+                    </div>
+                    <div>
+                        <p class="kVal">{{ $storeRating }}</p>
+                        <div class="kLbl">Rating Toko</div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- SPLIT --}}
+            <div class="split">
+                {{-- ORDERS --}}
+                <div class="card colOrders">
+                    <div class="panel">
+                        <div class="panelHead">
+                            <div class="panelTitle">
+                                <div class="bico">
+                                    <i class="fa-solid fa-truck-fast"></i>
+                                </div>
+                                <div>
+                                    <h2>Pesanan Terbaru</h2>
+                                    <p>{{ $ordersList->count() }} pesanan memerlukan perhatian Anda</p>
+                                </div>
+                            </div>
+
+                            <a class="btn2 btnSm" href="{{ route('seller.orders.index') }}">
+                                Lihat Semua <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+
+                        @if ($ordersList->count() > 0)
+                            <div class="orders">
+                                @foreach ($ordersList->take(3) as $order)
+                                    @php
+                                        $rawStatus = $order->status ?? '';
+                                        $boardStatus = $mapToBoard($rawStatus);
+                                        $total = (float) ($order->total ?? 0);
+                                        $created = $order->created_at
+                                            ? \Carbon\Carbon::parse($order->created_at)
+                                            : null;
+                                        $customerName = $order->customer_name ?? 'Pelanggan';
+                                        $customerInitial = strtoupper(substr($customerName, 0, 1));
+                                        $itemsCount = $order->items_count ?? 1;
+                                    @endphp
+
+                                    <div class="order" data-order="{{ $order->id }}">
+                                        <div class="oMain">
+                                            <div class="avatar">{{ $customerInitial }}</div>
+                                            <div style="min-width:0">
+                                                <p class="oName">{{ $customerName }}</p>
+                                                <div class="oMeta">
+                                                    <b style="color: rgba(15,23,42,.92)">#ORD{{ $order->id }}</b>
+                                                    • {{ $created ? $created->format('d M Y, H:i') : '-' }}
+                                                </div>
+
+                                                <div class="pillRow">
+                                                    <div class="pill">
+                                                        <small>Total</small>
+                                                        <b>Rp{{ number_format($total, 0, ',', '.') }}</b>
+                                                    </div>
+                                                    <div class="pill">
+                                                        <small>Items</small>
+                                                        <b>{{ $itemsCount }} produk</b>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="oSide">
+                                            <div class="status {{ $boardStatus }}">
+                                                @if ($boardStatus === 'unpaid')
+                                                    Belum Bayar
+                                                @elseif($boardStatus === 'processing')
+                                                    Diproses
+                                                @elseif($boardStatus === 'shipped')
+                                                    Dikirim
+                                                @elseif($boardStatus === 'done')
+                                                    Selesai
+                                                @endif
+                                            </div>
+
+                                            <div class="oActs">
+                                                <a class="btn2 btnSm" href="{{ route('seller.orders.show', $order->id) }}">
+                                                    <i class="fa-regular fa-eye"></i> Detail
+                                                </a>
+
+                                                @if ($boardStatus === 'processing')
+                                                    <button class="btn2 primary btnSm" type="button"
+                                                        onclick="LB.updateOrderStatus({{ $order->id }}, 'shipped')">
+                                                        <i class="fa-solid fa-truck"></i> Kirim
+                                                    </button>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="chartHint" style="margin-top: 8px;">
+                                <b>Belum ada pesanan.</b>
+                                Pesanan dari pelanggan akan muncul di sini.
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- CHART --}}
+                <div class="card colChart">
+                    <div class="panel">
+                        <div class="chartWrap">
+                            <div class="chartTop">
+                                <div>
+                                    <p class="chartTitle">Ringkasan Status Pesanan</p>
+                                    <p class="chartSub">Distribusi status untuk membantu memprioritaskan proses hari ini.
+                                    </p>
+                                </div>
+                                <span class="chip neu" style="margin-top:2px;">
+                                    <i class="fa-solid fa-signal"></i> Live
+                                </span>
+                            </div>
+
+                            <div class="chartBody">
+                                <div class="donut"
+                                    style="--pUnpaid:{{ $pUnpaid }}; --pProcessing:{{ $pProcessing }}; --pShipped:{{ $pShipped }};">
+                                    <div class="donutCenter">
+                                        <b>{{ $totalOrders }}</b>
+                                        <span>Total Pesanan</span>
+                                    </div>
+                                </div>
+
+                                <div class="legend">
+                                    <div class="lg">
+                                        <span class="dot" style="background: rgba(239,68,68,.82)"></span>
+                                        <strong>Belum Bayar</strong>
+                                        <small>{{ $countUnpaid }}</small>
+                                    </div>
+                                    <div class="lg">
+                                        <span class="dot" style="background: rgba(245,158,11,.82)"></span>
+                                        <strong>Diproses</strong>
+                                        <small>{{ $countProcessing }}</small>
+                                    </div>
+                                    <div class="lg">
+                                        <span class="dot" style="background: rgba(59,130,246,.80)"></span>
+                                        <strong>Dikirim</strong>
+                                        <small>{{ $countShipped }}</small>
+                                    </div>
+                                    <div class="lg">
+                                        <span class="dot" style="background: rgba(16,185,129,.82)"></span>
+                                        <strong>Selesai</strong>
+                                        <small>{{ $countDone }}</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="chartHint">
+                                <b>Saran cepat:</b>
+                                Fokuskan dulu pesanan <b>Diproses</b>, lalu cek <b>Belum Bayar</b> untuk follow-up
+                                pembayaran.
+                            </div>
+
+                            <div class="chartActions">
+                                <a class="btn2 btnSm" href="{{ route('seller.orders.index') }}">
+                                    <i class="fa-solid fa-filter"></i> Filter Pesanan
+                                </a>
+                                <button class="btn2 btnSm" type="button"
+                                    onclick="LB.toast('Insight', 'Distribusi status membantu prioritas kerja hari ini.', 'fa-wand-magic-sparkles')">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Insight
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- HELP --}}
+            <div class="card helpWrap" id="help">
+                <div class="panelHead" style="padding:0; margin-bottom:0;">
+                    <div class="panelTitle">
+                        <div class="bico">
+                            <i class="fa-solid fa-circle-question"></i>
+                        </div>
+                        <div>
+                            <h2>Pusat Bantuan</h2>
+                            <p>Dukungan cepat untuk operasional toko</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="helpGrid">
+                    <div class="helpBox">
+                        <h3><i class="fa-solid fa-lightbulb"></i> FAQ Cepat</h3>
+                        <div class="helpList">
+                            <div class="helpItem" onclick="LB.faq(1)"><i class="fa-solid fa-chevron-right"></i> Cara
+                                produk dapat label Flash?</div>
+                            <div class="helpItem" onclick="LB.faq(2)"><i class="fa-solid fa-chevron-right"></i> Kenapa
+                                status pesanan harus diupdate?</div>
+                            <div class="helpItem" onclick="LB.faq(3)"><i class="fa-solid fa-chevron-right"></i> Di mana
+                                ubah kategori produk?</div>
+                        </div>
+                    </div>
+
+                    <div class="helpBox">
+                        <h3><i class="fa-solid fa-phone-volume"></i> Hubungi Kami</h3>
+                        <div class="helpList">
+                            <div class="helpItem" style="cursor: default;"><i class="fa-solid fa-envelope"></i>
+                                support@lastbite.id</div>
+                            <div class="helpItem" style="cursor: default;"><i class="fa-brands fa-whatsapp"></i> +62
+                                812-3456-7890</div>
+                            <button class="btn2 primary" type="button" onclick="LB.open('complaint')"
+                                style="width:100%;">
+                                <i class="fa-solid fa-headset"></i> Kirim Keluhan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- MODAL: ADD PRODUCT --}}
+            <div class="ov" id="addProduct" role="dialog" aria-modal="true">
+                <div class="modal">
+                    <div class="mHead">
+                        <h4><i class="fa-solid fa-plus"></i> Tambah Produk Baru</h4>
+                        <button class="x" type="button" onclick="LB.close('addProduct')" aria-label="Tutup">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="mBody">
+                        <form action="{{ route('seller.products.store') }}" method="POST" enctype="multipart/form-data"
+                            id="addProductForm">
+                            @csrf
+
+                            <div class="fg">
+                                <label>Nama Produk</label>
+                                <input class="ctl" name="name" type="text"
+                                    placeholder="Contoh: Roti Tawar Gandum" required>
+                            </div>
+
+                            <div class="fg">
+                                <label>Kategori</label>
+                                <select class="ctl" name="category" required>
+                                    <option value="">Pilih Kategori</option>
+                                    @foreach ($categoryOptions as $category)
+                                        <option
+                                            value="{{ is_object($category) ? $category->name ?? '' : (string) $category }}">
+                                            {{ is_object($category) ? $category->name ?? '' : (string) $category }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="fg">
+                                <label>Harga (Rp)</label>
+                                <input class="ctl" name="price" type="number" min="1000" step="1000"
+                                    placeholder="15000" required>
+                            </div>
+
+                            <div class="fg">
+                                <label>Tanggal Kadaluarsa</label>
+                                <input class="ctl" name="expired_at" type="date" required>
+                            </div>
+
+                            <div class="fg">
+                                <label>Foto Produk</label>
+                                <input class="ctl" name="photo" type="file" accept="image/*" required>
+                            </div>
+
+                            <div class="fg">
+                                <label>Deskripsi (Opsional)</label>
+                                <textarea class="ctl" name="description" rows="3" placeholder="Deskripsikan produk..."></textarea>
+                            </div>
+
+                            <div class="mActs">
+                                <button type="button" class="btn2" onclick="LB.close('addProduct')">Batal</button>
+                                <button type="submit" class="btn2 primary"><i class="fa-solid fa-floppy-disk"></i>
+                                    Simpan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {{-- MODAL: COMPLAINT --}}
+            <div class="ov" id="complaint" role="dialog" aria-modal="true">
+                <div class="modal">
+                    <div class="mHead">
+                        <h4><i class="fa-solid fa-headset"></i> Form Keluhan</h4>
+                        <button class="x" type="button" onclick="LB.close('complaint')" aria-label="Tutup">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="mBody">
+                        <form onsubmit="LB.submitComplaint(event)">
+                            <div class="fg">
+                                <label>Subjek</label>
+                                <input class="ctl" type="text" placeholder="Contoh: Masalah pesanan #123" required>
+                            </div>
+                            <div class="fg">
+                                <label>Detail Keluhan</label>
+                                <textarea class="ctl" rows="4" placeholder="Jelaskan masalah Anda..." required></textarea>
+                            </div>
+                            <div class="mActs">
+                                <button type="button" class="btn2" onclick="LB.close('complaint')">Batal</button>
+                                <button type="submit" class="btn2 primary"><i class="fa-solid fa-paper-plane"></i>
+                                    Kirim</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+@endsection
+
+@push('scripts')
+    <script>
+        window.LB = {
+            open(id) {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            },
+            close(id) {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.classList.remove('show');
+                document.body.style.overflow = '';
+                if (id === 'addProduct') {
+                    const f = document.getElementById('addProductForm');
+                    if (f) f.reset();
+                }
+            },
+            toast(title, msg, icon = 'fa-circle-info') {
+                const old = document.querySelector('.toast');
+                if (old) old.remove();
+                const t = document.createElement('div');
+                t.className = 'toast';
+                t.innerHTML = `
+                <div class="tIco"><i class="fa-solid ${icon}"></i></div>
+                <div style="min-width:0">
+                    <p class="tTitle">${title}</p>
+                    <p class="tMsg">${msg}</p>
+                </div>
+                <button class="tX" type="button" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>
             `;
-
-            document.body.appendChild(notification);
-
-            setTimeout(() => notification.classList.add('show'), 100);
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => notification.remove(), 400);
-            }, 3000);
-        }
-
-        // Optional status filter (no API)
-        const statusLabelMap = {
-            pending: 'Pending',
-            processing: 'Processing',
-            completed: 'Completed',
-            cancelled: 'Cancelled'
+                t.querySelector('.tX').onclick = () => t.remove();
+                document.body.appendChild(t);
+                setTimeout(() => {
+                    if (t && t.parentNode) t.remove();
+                }, 4500);
+            },
+            faq(i) {
+                const faqs = [
+                    "Produk mendapat label <b>FLASH</b> jika kadaluarsa <b>0–3 hari</b>.",
+                    "Update status penting untuk kejelasan pelanggan dan tracking.",
+                    "Ubah kategori dari form Edit / Tambah Produk."
+                ];
+                this.toast('FAQ', faqs[i - 1] || 'FAQ tidak ditemukan', 'fa-circle-question');
+            },
+            updateOrderStatus(orderId, status) {
+                const map = {
+                    unpaid: 'Belum Bayar',
+                    processing: 'Diproses',
+                    shipped: 'Dikirim',
+                    done: 'Selesai'
+                };
+                this.toast('Berhasil', `Pesanan <b>#${orderId}</b> diupdate ke <b>${map[status]||status}</b>.`,
+                    'fa-circle-check');
+            },
+            submitComplaint(e) {
+                e.preventDefault();
+                this.toast('Terkirim', 'Keluhan berhasil dikirim. Tim support akan menghubungi Anda.',
+                    'fa-circle-check');
+                this.close('complaint');
+                e.target.reset();
+            }
         };
 
-        function setStatusFilter(statusKey) {
-            const indicator = document.getElementById('statusFilterIndicator');
-            const labelEl = document.getElementById('statusFilterLabel');
-            const table = document.getElementById('recentOrdersTable');
-
-            if (!table) return;
-
-            // show indicator
-            labelEl.textContent = statusLabelMap[statusKey] || statusKey;
-            indicator.style.display = 'inline-flex';
-
-            // filter rows
-            const rows = table.querySelectorAll('tbody tr');
-            rows.forEach(row => {
-                const rowStatus = (row.getAttribute('data-status') || '').toLowerCase();
-                // allow unknown row / empty placeholder row
-                if (!rowStatus || row.querySelector('td[colspan]')) return;
-
-                row.style.display = (rowStatus === statusKey) ? '' : 'none';
+        document.addEventListener('click', (e) => {
+            document.querySelectorAll('.ov.show').forEach(ov => {
+                if (e.target === ov) LB.close(ov.id);
             });
+        });
 
-            // scroll to table
-            const target = document.getElementById('seller-recent-orders');
-            if (target) target.scrollIntoView({ behavior: 'smooth' });
-
-            // small toast
-            showNotification(`Filter status: ${statusLabelMap[statusKey] || statusKey}`, 'info');
-        }
-
-        function clearStatusFilter() {
-            const indicator = document.getElementById('statusFilterIndicator');
-            const table = document.getElementById('recentOrdersTable');
-            if (!table) return;
-
-            indicator.style.display = 'none';
-
-            const rows = table.querySelectorAll('tbody tr');
-            rows.forEach(row => row.style.display = '');
-
-            showNotification('Filter direset', 'success');
-        }
-
-        // Init
-        function initializeSellerDashboard() {
-            initializeHeroSlideshow();
-            console.log('Seller dashboard initialized');
-        }
-
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeSellerDashboard);
-        } else {
-            initializeSellerDashboard();
-        }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.ov.show').forEach(ov => LB.close(ov.id));
+            }
+        });
     </script>
-@endsection
+@endpush

@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - LastBite</title>
 
-    <!-- Poppins Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -49,7 +48,6 @@
             box-shadow: 0 10px 40px rgba(63, 35, 5, 0.08);
         }
 
-        /* Left Panel - Illustration/Brand */
         .left-panel {
             flex: 1;
             background: linear-gradient(135deg, var(--primary-color) 0%, #5a3510 100%);
@@ -87,7 +85,6 @@
             opacity: 0.9;
         }
 
-        /* Right Panel - Login Form */
         .right-panel {
             flex: 1;
             padding: 60px 50px;
@@ -97,7 +94,7 @@
         }
 
         .form-header {
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         .form-title {
@@ -113,7 +110,7 @@
         }
 
         .form-group {
-            margin-bottom: 24px;
+            margin-bottom: 18px;
         }
 
         .form-label {
@@ -161,7 +158,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin: 14px 0 22px;
         }
 
         .remember-me {
@@ -215,7 +212,7 @@
         .divider {
             display: flex;
             align-items: center;
-            margin: 30px 0;
+            margin: 26px 0;
             color: var(--text-secondary);
         }
 
@@ -234,7 +231,7 @@
 
         .register-link {
             text-align: center;
-            margin-top: 25px;
+            margin-top: 18px;
             color: var(--text-secondary);
             font-size: 0.95rem;
         }
@@ -254,7 +251,7 @@
             color: var(--error-color);
             padding: 12px;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 14px;
             font-size: 0.9rem;
             text-align: center;
             border-left: 4px solid var(--error-color);
@@ -265,17 +262,45 @@
             color: var(--success-color);
             padding: 12px;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 14px;
             font-size: 0.9rem;
             text-align: center;
             border-left: 4px solid var(--success-color);
         }
 
-        /* Responsive */
+        .role-toggle {
+            display: flex;
+            gap: 12px;
+            margin-top: 6px;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border-color);
+            background: white;
+            color: var(--text-primary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .role-btn:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(63, 35, 5, 0.08);
+        }
+
+        .role-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
         @media (max-width: 900px) {
             .login-container {
                 flex-direction: column;
-                max-width: 500px;
+                max-width: 520px;
             }
 
             .left-panel {
@@ -284,49 +309,31 @@
 
             .right-panel {
                 padding: 40px 30px;
-            }
-
-            .brand-name {
-                font-size: 1.8rem;
-            }
-
-            .form-title {
-                font-size: 1.7rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .left-panel {
-                padding: 30px 20px;
-            }
-
-            .right-panel {
-                padding: 30px 20px;
-            }
-
-            .remember-forgot {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
             }
         }
     </style>
 </head>
 
 <body>
+    @php
+        // default role dari controller (showLoginForm), fallback dari query
+        $selectedRole = $selectedRole ?? request()->query('role', 'buyer');
+        if (!in_array($selectedRole, ['buyer', 'seller'])) {
+            $selectedRole = 'buyer';
+        }
+        $currentRole = old('role', $selectedRole);
+    @endphp
+
     <div class="login-container">
-        <!-- Left Panel - Brand Area -->
         <div class="left-panel">
             <div class="brand-logo">🍽️</div>
             <h1 class="brand-name">LastBite</h1>
             <p class="brand-tagline">Reduce Food Waste, Save Our Planet</p>
             <div class="illustration">
-                <!-- Placeholder untuk ilustrasi -->
                 <div style="font-size: 5rem; opacity: 0.7;">🌱</div>
             </div>
         </div>
 
-        <!-- Right Panel - Login Form -->
         <div class="right-panel">
             <div class="form-header">
                 <h2 class="form-title">Welcome Back</h2>
@@ -334,9 +341,7 @@
             </div>
 
             @if (session('success'))
-                <div class="success-message">
-                    {{ session('success') }}
-                </div>
+                <div class="success-message">{{ session('success') }}</div>
             @endif
 
             @if ($errors->any())
@@ -350,10 +355,35 @@
             <form action="{{ route('login.submit') }}" method="POST">
                 @csrf
 
+                <!-- WAJIB: hidden role ADA DI DALAM FORM -->
+                <input type="hidden" name="role" id="role" value="{{ $currentRole }}">
+
+                <div class="form-group">
+                    <label class="form-label">Login sebagai</label>
+
+                    <div class="role-toggle">
+                        <button type="button"
+                            class="role-btn {{ $currentRole === 'buyer' ? 'active' : '' }}"
+                            onclick="setRole('buyer')">
+                            Buyer
+                        </button>
+
+                        <button type="button"
+                            class="role-btn {{ $currentRole === 'seller' ? 'active' : '' }}"
+                            onclick="setRole('seller')">
+                            Seller
+                        </button>
+                    </div>
+
+                    @error('role')
+                        <div class="error-message" style="margin-top: 10px;">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 <div class="form-group">
                     <label for="email" class="form-label">Email Address</label>
-                    <input type="email" id="email" name="email" class="form-input" value="{{ old('email') }}"
-                        placeholder="Enter your email" required>
+                    <input type="email" id="email" name="email" class="form-input"
+                        value="{{ old('email') }}" placeholder="Enter your email" required>
                 </div>
 
                 <div class="form-group">
@@ -369,12 +399,10 @@
 
                 <div class="remember-forgot">
                     <div class="remember-me">
-                        <input type="checkbox" id="remember" name="remember">
+                        <input type="checkbox" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
                         <label for="remember">Remember me</label>
                     </div>
-                    <a href="{{ route('password.request') }}" class="forgot-link">
-                        Forgot Password?
-                    </a>
+                    <a href="{{ route('password.request') }}" class="forgot-link">Forgot Password?</a>
                 </div>
 
                 <button type="submit" class="btn btn-primary">Sign In</button>
@@ -384,19 +412,16 @@
                 </div>
 
                 @php
-                    // Ambil role dari query parameter atau default ke 'buyer'
-                    $selectedRole = request()->query('role', 'buyer');
+                    $regRole = $currentRole; // kirim role yang lagi dipilih
                 @endphp
 
-                <a href="{{ route('register', ['role' => $selectedRole]) }}" class="btn btn-primary">
+                <a href="{{ route('register', ['role' => $regRole]) }}" class="btn btn-primary">
                     Create New Account
                 </a>
 
                 <div class="register-link">
                     Don't have an account?
-                    <a href="{{ route('register', ['role' => $selectedRole]) }}">
-                        Sign up here
-                    </a>
+                    <a href="{{ route('register', ['role' => $regRole]) }}">Sign up here</a>
                 </div>
             </form>
         </div>
@@ -416,14 +441,26 @@
             }
         }
 
-        // Auto-focus pada email field
+        function setRole(role) {
+            const input = document.getElementById('role');
+            input.value = role;
+
+            document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('active'));
+
+            const buttons = document.querySelectorAll('.role-btn');
+            if (role === 'buyer') buttons[0].classList.add('active');
+            if (role === 'seller') buttons[1].classList.add('active');
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
+            const currentRole = document.getElementById('role')?.value || 'buyer';
+            setRole(currentRole);
+
             const emailField = document.getElementById('email');
-            if (emailField && !emailField.value) {
-                emailField.focus();
-            }
+            if (emailField && !emailField.value) emailField.focus();
         });
     </script>
+
 </body>
 
 </html>

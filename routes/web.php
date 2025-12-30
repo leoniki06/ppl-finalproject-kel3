@@ -16,61 +16,42 @@ use App\Http\Controllers\Seller\SellerOrderController;
 use App\Http\Controllers\Seller\SellerStoreController;
 use App\Http\Controllers\Seller\SellerPayoutController;
 
-// ==================== PUBLIC ROUTES (BISA DIAKSES TANPA LOGIN) ====================
+// ==================== PUBLIC ROUTES ====================
+Route::get('/', fn() => view('splash'))->name('splash');
+Route::get('/about', fn() => view('about'))->name('about');
+Route::get('/edukasi', fn() => view('edukasi'))->name('edukasi');
+Route::get('/fitur', fn() => view('fitur'))->name('fitur');
 
-// 1. SPLASH PAGE (Halaman pertama yang diakses)
-Route::get('/', function () {
-    return view('splash');
-})->name('splash');
-
-// 2. ABOUT PAGE
-Route::get('/about', function () {
-    return view('about');
-})->name('about');
-
-// 3. EDUKASI PAGE
-Route::get('/edukasi', function () {
-    return view('edukasi');
-})->name('edukasi');
-
-// 4. FITUR PAGE
-Route::get('/fitur', function () {
-    return view('fitur');
-})->name('fitur');
-
-// 5. ROLE PAGE
 Route::get('/role', [AuthController::class, 'showRoleSelection'])->name('role');
 Route::post('/role/select', [AuthController::class, 'selectRole'])->name('role.select');
 
-// ==================== AUTHENTICATION ROUTES ====================
+// ==================== AUTH ROUTES (GUEST ONLY - optional tapi bagus) ====================
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
-// Login Routes
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+    Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
 
-// Register Routes
-Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
-Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'showForm'])->name('password.request');
+    Route::post('/forgot-password/check-email', [ForgotPasswordController::class, 'checkEmail'])->name('password.check');
+    Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'resetPassword'])->name('password.reset');
+});
 
-// ==================== PASSWORD RESET ROUTES ====================
-Route::get('/forgot-password', [ForgotPasswordController::class, 'showForm'])->name('password.request');
-Route::post('/forgot-password/check-email', [ForgotPasswordController::class, 'checkEmail'])->name('password.check');
-Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'resetPassword'])->name('password.reset');
-
-// ==================== PUBLIC PRODUCT ROUTES ====================
+// ==================== PUBLIC PRODUCT ====================
 Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.show');
 
-// ==================== PROTECTED ROUTES (HANYA UNTUK USER YANG LOGIN) ====================
-Route::middleware(['checkauth'])->group(function () {
+// ==================== AUTHENTICATED ROUTES ====================
+Route::middleware('auth')->group(function () {
 
-    // ==================== DASHBOARD ROUTES ====================
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // ==================== SELLER DASHBOARD ROUTES ====================
-    Route::prefix('seller')->name('seller.')->group(function () {
+    // ==================== SELLER ROUTES (WAJIB SELLER) ====================
+    Route::prefix('seller')->name('seller.')->middleware('seller')->group(function () {
+
         Route::get('/dashboard', [SellerDashboardController::class, 'index'])->name('dashboard');
 
-        // PROUDCTS
+        // PRODUCTS
         Route::get('/products', [SellerProductController::class, 'index'])->name('products.index');
         Route::get('/products/create', [SellerProductController::class, 'create'])->name('products.create');
         Route::post('/products', [SellerProductController::class, 'store'])->name('products.store');
@@ -84,27 +65,24 @@ Route::middleware(['checkauth'])->group(function () {
         Route::get('/orders/{id}', [SellerOrderController::class, 'show'])->name('orders.show');
         Route::patch('/orders/{id}/status', [SellerOrderController::class, 'updateStatus'])->name('orders.updateStatus');
 
-        //STORE
+        // STORE
         Route::get('/store/profile', [SellerStoreController::class, 'edit'])->name('store.profile');
         Route::put('/store/profile', [SellerStoreController::class, 'update'])->name('store.profile.update');
 
         // PAYOUTS
         Route::get('/payouts', [SellerPayoutController::class, 'index'])->name('payouts.index');
         Route::post('/payouts/withdraw', [SellerPayoutController::class, 'withdraw'])->name('payouts.withdraw');
-
     });
 
-    // ==================== PROFILE ROUTES ====================
+    // PROFILE
     Route::prefix('profile')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('profile');
         Route::post('/update', [ProfileController::class, 'update'])->name('profile.update');
         Route::post('/delete-photo', [ProfileController::class, 'deletePhoto'])->name('profile.delete-photo');
-        Route::get('/orders', function () {
-            return redirect()->route('orders.index');
-        })->name('profile.orders');
+        Route::get('/orders', fn() => redirect()->route('orders.index'))->name('profile.orders');
     });
 
-    // ==================== CART ROUTES ====================
+    // CART
     Route::prefix('cart')->group(function () {
         Route::get('/', [CartController::class, 'index'])->name('cart.index');
         Route::post('/add', [CartController::class, 'add'])->name('cart.add');
@@ -112,20 +90,20 @@ Route::middleware(['checkauth'])->group(function () {
         Route::post('/update', [CartController::class, 'update'])->name('cart.update');
     });
 
-    // ==================== CHECKOUT ROUTES ====================
+    // CHECKOUT
     Route::prefix('checkout')->group(function () {
         Route::get('/', [CheckoutController::class, 'index'])->name('checkout.index');
         Route::post('/process', [CheckoutController::class, 'process'])->name('checkout.process');
         Route::post('/confirm', [CheckoutController::class, 'confirm'])->name('checkout.confirm');
     });
 
-    // ==================== ORDER ROUTES ====================
+    // ORDERS
     Route::prefix('orders')->group(function () {
         Route::get('/', [OrderController::class, 'index'])->name('orders.index');
         Route::post('/store', [OrderController::class, 'store'])->name('orders.store');
     });
 
-    // ==================== FAVORITES ROUTES ====================
+    // FAVORITES
     Route::prefix('favorites')->group(function () {
         Route::get('/', [FavoritesController::class, 'index'])->name('favorites');
         Route::post('/toggle', [FavoritesController::class, 'toggle'])->name('favorites.toggle');
@@ -136,17 +114,7 @@ Route::middleware(['checkauth'])->group(function () {
         Route::get('/list', [FavoritesController::class, 'list'])->name('favorites.list');
     });
 
-    // ==================== LOGOUT ROUTE ====================
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // ==================== REDIRECT ROUTES ====================
-    Route::get('/cart/checkout', function () {
-        return redirect()->route('checkout.index');
-    })->name('cart.checkout');
-
-    // ==================== ORDER HISTORY ROUTES ====================
-    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-
-    Route::post('/orders/store', [OrderController::class, 'store'])->name('orders.store');
-
+    Route::get('/cart/checkout', fn() => redirect()->route('checkout.index'))->name('cart.checkout');
 });

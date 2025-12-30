@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - LastBite</title>
 
-    <!-- Poppins Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -53,6 +52,7 @@
             padding: 40px;
             text-align: center;
             color: white;
+            position: relative;
         }
 
         .back-link {
@@ -186,7 +186,7 @@
         .role-selection {
             display: flex;
             gap: 20px;
-            margin-bottom: 10px;
+            margin-bottom: 18px;
         }
 
         .role-option {
@@ -206,6 +206,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 500;
+            user-select: none;
         }
 
         .role-input:checked+.role-label {
@@ -303,18 +304,6 @@
             border-left: 4px solid var(--error-color);
         }
 
-        .success-message {
-            background: rgba(76, 175, 80, 0.1);
-            color: var(--success-color);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            text-align: center;
-            border-left: 4px solid var(--success-color);
-        }
-
-        /* Responsive */
         @media (max-width: 900px) {
             .form-grid {
                 grid-template-columns: 1fr;
@@ -367,19 +356,23 @@
 </head>
 
 <body>
+    @php
+        // pastikan nilai konsisten: customer/seller
+        $selectedRole = $selectedRole ?? request()->query('role', 'buyer');
+        if (!in_array($selectedRole, ['buyer', 'seller'])) {
+            $selectedRole = 'buyer';
+        }
+    @endphp
+
     <div class="register-container">
-        <!-- Header -->
         <div class="register-header">
-            <a href="{{ route('login', ['role' => $selectedRole ?? 'buyer']) }}" class="back-link">
-                ← Back to Login
-            </a>
+            <a href="{{ route('login', ['role' => $selectedRole]) }}" class="back-link">← Back to Login</a>
 
             <div class="brand-logo">🍽️</div>
             <h1 class="brand-name">LastBite</h1>
             <p class="page-title">Join us in reducing food waste</p>
         </div>
 
-        <!-- Form Content -->
         <div class="register-content">
             <div class="form-header">
                 <h2 class="form-title">Create an account</h2>
@@ -397,68 +390,78 @@
             <form action="{{ route('register.submit') }}" method="POST">
                 @csrf
 
-                <!-- Hidden Role Field -->
-                <input type="hidden" name="role" id="selected-role"
-                    value="{{ old('role', $selectedRole ?? 'buyer') }}">
+                <!-- nilai yang benar-benar dikirim ke backend -->
+                <input type="hidden" name="role" id="selected-role" value="{{ old('role', $selectedRole) }}">
 
                 <!-- Role Selection -->
-                <div class="role-selection">
-                    <div class="role-option">
-                        <input type="radio" name="role_selector" id="role-buyer" value="buyer" class="role-input"
-                            {{ old('role', $selectedRole ?? 'buyer') == 'buyer' ? 'checked' : '' }}>
-                        <label for="role-buyer" class="role-label" onclick="setRole('buyer')">
-                            <span class="role-icon">🛒</span>
-                            <span>buyer</span>
-                        </label>
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Register as <span class="required">*</span></label>
 
-                    <div class="role-option">
-                        <input type="radio" name="role_selector" id="role-seller" value="seller" class="role-input"
-                            {{ old('role', $selectedRole ?? 'seller') == 'seller' ? 'checked' : '' }}>
-                        <label for="role-seller" class="role-seller" onclick="setRole('seller')">
-                            <span class="role-icon">🏪</span>
-                            <span>seller</span>
-                        </label>
+                    <div class="role-selection">
+                        <div class="role-option">
+                            <input type="radio" name="role_selector" id="role-customer" value="customer"
+                                class="role-input" {{ old('role', $selectedRole) === 'customer' ? 'checked' : '' }}>
+                            <label for="role-customer" class="role-label" onclick="setRole('customer')">
+                                <span class="role-icon">🛒</span>
+                                <span>Customer</span>
+                            </label>
+                        </div>
+
+                        <div class="role-option">
+                            <input type="radio" name="role_selector" id="role-seller" value="seller"
+                                class="role-input" {{ old('role', $selectedRole) === 'seller' ? 'checked' : '' }}>
+                            <!-- FIX: class harus role-label -->
+                            <label for="role-seller" class="role-label" onclick="setRole('seller')">
+                                <span class="role-icon">🏪</span>
+                                <span>Seller</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Form Grid -->
                 <div class="form-grid">
-                    <!-- Full Name -->
                     <div class="form-group">
-                        <label for="name" class="form-label">
-                            Full Name <span class="required">*</span>
-                        </label>
+                        <label for="name" class="form-label">Full Name <span class="required">*</span></label>
                         <input type="text" id="name" name="name" class="form-input"
                             value="{{ old('name') }}" placeholder="Enter your full name" required>
                     </div>
 
-                    <!-- Email -->
                     <div class="form-group">
-                        <label for="email" class="form-label">
-                            Email Address <span class="required">*</span>
-                        </label>
+                        <label for="email" class="form-label">Email Address <span class="required">*</span></label>
                         <input type="email" id="email" name="email" class="form-input"
                             value="{{ old('email') }}" placeholder="Enter your email" required>
                     </div>
 
-                    <!-- Company Based (only for penjual) -->
-                    <div class="form-group" id="company-based-group" style="display: none;">
-                        <label for="company_based" class="form-label">
-                            Company Location
-                        </label>
+                    <!-- Only for seller -->
+                    <div class="form-group" id="company-based-group" style="display:none;">
+                        <label for="company_based" class="form-label">Company Location</label>
                         <input type="text" id="company_based" name="company_based" class="form-input"
                             value="{{ old('company_based') }}" placeholder="Where is your company based?">
                     </div>
 
-                    <!-- Industry (only for penjual) -->
-                    <div class="form-group" id="industry-group" style="display: none;">
-                        <label for="industry" class="form-label">
-                            Industry
-                        </label>
+                    <div class="form-group" id="industry-group" style="display:none;">
+                        <label for="industry" class="form-label">Industry</label>
+
+                        @php
+                            $industryOptions =
+                                $industries ??
+                                (config('lastbite.industries', null) ?? [
+                                    'Restaurant / Warung',
+                                    'Bakery / Pastry',
+                                    'Cafe / Coffee Shop',
+                                    'Catering',
+                                    'Supermarket / Minimarket',
+                                    'Hotel',
+                                    'UMKM Makanan & Minuman',
+                                    'Produk Olahan / Frozen Food',
+                                    'Other',
+                                ]);
+                        @endphp
+
                         <select id="industry" name="industry" class="form-select">
                             <option value="">Please select an industry</option>
-                            @foreach ($industries ?? config('lastbite.industries', []) as $industry)
+
+                            @foreach ($industryOptions as $industry)
                                 <option value="{{ $industry }}"
                                     {{ old('industry') == $industry ? 'selected' : '' }}>
                                     {{ $industry }}
@@ -467,102 +470,77 @@
                         </select>
                     </div>
 
-                    <!-- Phone Number -->
+
                     <div class="form-group">
-                        <label for="phone" class="form-label">
-                            Phone Number
-                        </label>
+                        <label for="phone" class="form-label">Phone Number</label>
                         <input type="tel" id="phone" name="phone" class="form-input"
                             value="{{ old('phone') }}" placeholder="Enter your phone number">
                     </div>
 
-                    <!-- Password -->
                     <div class="form-group">
-                        <label for="password" class="form-label">
-                            Password <span class="required">*</span>
-                        </label>
+                        <label for="password" class="form-label">Password <span class="required">*</span></label>
                         <div class="password-container">
                             <input type="password" id="password" name="password" class="form-input"
                                 placeholder="Create a strong password" minlength="8" required>
                             <button type="button" class="toggle-password"
-                                onclick="togglePasswordVisibility('password')">
-                                Show
-                            </button>
+                                onclick="togglePasswordVisibility('password')">Show</button>
                         </div>
                     </div>
 
-                    <!-- Confirm Password -->
                     <div class="form-group">
-                        <label for="password_confirmation" class="form-label">
-                            Confirm Password <span class="required">*</span>
-                        </label>
+                        <label for="password_confirmation" class="form-label">Confirm Password <span
+                                class="required">*</span></label>
                         <div class="password-container">
                             <input type="password" id="password_confirmation" name="password_confirmation"
                                 class="form-input" placeholder="Confirm your password" required>
                             <button type="button" class="toggle-password"
-                                onclick="togglePasswordVisibility('password_confirmation')">
-                                Show
-                            </button>
+                                onclick="togglePasswordVisibility('password_confirmation')">Show</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Privacy Policy -->
                 <div class="checkbox-group">
                     <input type="checkbox" id="privacy_policy" name="privacy_policy" value="1"
                         {{ old('privacy_policy') ? 'checked' : '' }} required>
                     <label for="privacy_policy">
-                        I accept the <a href="#">Privacy Policy</a> and
-                        <a href="#">Terms & Conditions</a> <span class="required">*</span>
+                        I accept the <a href="#">Privacy Policy</a> and <a href="#">Terms & Conditions</a>
+                        <span class="required">*</span>
                     </label>
                 </div>
 
-                <!-- Submit Button -->
                 <button type="submit" class="btn btn-primary">Create an Account</button>
 
-                <!-- Login Link -->
                 <div class="login-link">
                     Already have an account?
-                    <a href="{{ route('login', ['role' => $selectedRole ?? 'pembeli']) }}">
-                        Sign in here
-                    </a>
+                    <a href="{{ route('login', ['role' => $selectedRole]) }}">Sign in here</a>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        // Set role saat option diklik
         function setRole(role) {
-            const selectedRoleInput = document.getElementById('selected-role');
-            selectedRoleInput.value = role;
+            document.getElementById('selected-role').value = role;
 
-            // Tampilkan/sembunyikan field khusus penjual
+            // sync radio UI
+            const radio = document.querySelector(`input[name="role_selector"][value="${role}"]`);
+            if (radio) radio.checked = true;
+
             const companyGroup = document.getElementById('company-based-group');
             const industryGroup = document.getElementById('industry-group');
 
-            if (role === 'seller') {
-                if (companyGroup) companyGroup.style.display = 'block';
-                if (industryGroup) industryGroup.style.display = 'block';
+            const companyInput = document.getElementById('company_based');
+            const industrySelect = document.getElementById('industry');
 
-                // Buat required jika penjual
-                const companyInput = document.getElementById('company_based');
-                const industrySelect = document.getElementById('industry');
-                if (companyInput) companyInput.required = true;
-                if (industrySelect) industrySelect.required = true;
-            } else {
-                if (companyGroup) companyGroup.style.display = 'none';
-                if (industryGroup) industryGroup.style.display = 'none';
+            const isSeller = role === 'seller';
 
-                // Hapus required jika pembeli
-                const companyInput = document.getElementById('company_based');
-                const industrySelect = document.getElementById('industry');
-                if (companyInput) companyInput.required = false;
-                if (industrySelect) industrySelect.required = false;
-            }
+            if (companyGroup) companyGroup.style.display = isSeller ? 'block' : 'none';
+            if (industryGroup) industryGroup.style.display = isSeller ? 'block' : 'none';
+
+            if (companyInput) companyInput.required = isSeller;
+            if (industrySelect) industrySelect.required = isSeller;
         }
 
-        // Toggle password visibility
         function togglePasswordVisibility(fieldId) {
             const passwordInput = document.getElementById(fieldId);
             const toggleButton = passwordInput.parentElement.querySelector('.toggle-password');
@@ -576,53 +554,15 @@
             }
         }
 
-        // Auto-select role dari URL parameter
         document.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const roleFromUrl = urlParams.get('role');
-            const selectedRole = "{{ $selectedRole ?? 'buyer' }}";
-
-            // Set role awal
+            const selectedRole = document.getElementById('selected-role')?.value || 'customer';
             setRole(selectedRole);
 
-            // Auto-focus pada nama field
             const nameField = document.getElementById('name');
-            if (nameField && !nameField.value) {
-                nameField.focus();
-            }
-
-            // Setup initial state berdasarkan role yang dipilih
-            const initialRole = roleFromUrl || selectedRole;
-            const radioButton = document.querySelector(`input[value="${initialRole}"]`);
-            if (radioButton) {
-                radioButton.checked = true;
-            }
+            if (nameField && !nameField.value) nameField.focus();
         });
-        @push('scripts')
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Ambil role dari URL parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        const roleFromUrl = urlParams.get('role');
-
-        // Ambil role dari sessionStorage (cadangan)
-        const roleFromStorage = sessionStorage.getItem('selectedRole');
-
-        // Pilih role yang ada (prioritas dari URL)
-        const role = roleFromUrl || roleFromStorage || 'buyer';
-
-        // Set value di select role
-        const roleSelect = document.querySelector('select[name="role"]');
-        if (roleSelect && role) {
-            roleSelect.value = role;
-        }
-
-        // Cleanup setelah digunakan
-        sessionStorage.removeItem('selectedRole');
-    });
     </script>
-    @endpush
-    </script>
+
 </body>
 
 </html>

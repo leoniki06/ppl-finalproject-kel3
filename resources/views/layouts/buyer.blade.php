@@ -2024,10 +2024,6 @@
         @yield('content')
     </main>
 
-    <!-- ========== FOOTER SECTION ========== -->
-    <!-- Footer styles are included but HTML is excluded for brevity -->
-    <!-- The original footer HTML remains exactly as provided -->
-
     <!-- ========== NOTIFICATION ========== -->
     <div class="notification" id="notification">
         <i class="fas fa-check-circle"></i>

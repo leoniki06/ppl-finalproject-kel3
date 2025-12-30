@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.seller')
 
 @section('content')
 <div class="container" style="padding:24px; max-width:1100px">
@@ -34,31 +34,18 @@
     </div>
   </div>
 
-  <form method="GET" style="margin-top:16px; display:flex; gap:10px; align-items:center;">
-    <input
-      name="q"
-      type="text"
-      value="{{ request('q') }}"
-      placeholder="Search product..."
-      style="flex:1; padding:10px 12px; border:1px solid #ddd; border-radius:10px;"
-    />
-    <select
-      name="sort"
-      style="padding:10px 12px; border:1px solid #ddd; border-radius:10px;"
-      onchange="this.form.submit()"
-    >
-      <option value="name_asc"  {{ request('sort','name_asc')==='name_asc' ? 'selected' : '' }}>Name A-Z</option>
-      <option value="name_desc" {{ request('sort')==='name_desc' ? 'selected' : '' }}>Name Z-A</option>
-      <option value="price_asc" {{ request('sort')==='price_asc' ? 'selected' : '' }}>Price Low</option>
-      <option value="price_desc" {{ request('sort')==='price_desc' ? 'selected' : '' }}>Price High</option>
-      <option value="stock_asc" {{ request('sort')==='stock_asc' ? 'selected' : '' }}>Stock Low</option>
-      <option value="stock_desc" {{ request('sort')==='stock_desc' ? 'selected' : '' }}>Stock High</option>
+  <<form method="GET" action="{{ route('seller.products.index') }}" style="display:flex; gap:12px;">
+    <input type="text" name="q" value="{{ request('q') }}" placeholder="Search product..." class="ctl" style="flex:1;">
+    <select name="sort" class="ctl" style="width:160px;">
+        <option value="latest" @selected(request('sort')==='latest')>Latest</option>
+        <option value="name_asc" @selected(request('sort')==='name_asc')>Name A-Z</option>
+        <option value="name_desc" @selected(request('sort')==='name_desc')>Name Z-A</option>
+        <option value="price_asc" @selected(request('sort')==='price_asc')>Price Low-High</option>
+        <option value="price_desc" @selected(request('sort')==='price_desc')>Price High-Low</option>
     </select>
+    <button class="btn2 btnSm" type="submit">Apply</button>
+</form>
 
-    <button type="submit" style="padding:10px 14px; border:1px solid #ddd; background:#fff; border-radius:10px; cursor:pointer;">
-      Apply
-    </button>
-  </form>
 
   <div style="margin-top:18px; overflow:auto; border:1px solid #eee; border-radius:14px;">
     <table style="width:100%; border-collapse:collapse;">
@@ -78,7 +65,10 @@
               <div style="display:flex; align-items:center; gap:10px;">
                 <div style="width:42px; height:42px; border-radius:10px; background:#f2f2f2; display:flex; align-items:center; justify-content:center; overflow:hidden;">
                   @if($p->image_url)
-                    <img src="{{ $p->image_url }}" alt="" style="width:42px; height:42px; object-fit:cover;">
+                  <img src="{{ asset('storage/'.$p->image_url) }}"
+                  alt="{{ $p->name }}"
+                  style="width:42px; height:42px; object-fit:cover;">
+
                   @else
                     🍽️
                   @endif
@@ -112,30 +102,29 @@
             </td>
 
             <td style="padding:12px;">
-              <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <a href="{{ route('seller.products.edit', $p->id) }}"
-                   style="padding:8px 10px; border:1px solid #ddd; border-radius:10px; text-decoration:none;">
-                  Edit
-                </a>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <a class="btn2 btnSm" href="{{ route('seller.products.edit', $p->id) }}">
+                        Edit
+                    </a>
 
-                <form method="POST" action="{{ route('seller.products.destroy', $p->id) }}"
-                      onsubmit="return confirm('Hapus product ini?')">
-                  @csrf
-                  @method('DELETE')
-                  <button type="submit"
-                          style="padding:8px 10px; border:1px solid #f5c2c7; background:#fff; color:#a00; border-radius:10px; cursor:pointer;">
-                    Delete
-                  </button>
-                </form>
+                    <form method="POST" action="{{ route('seller.products.destroy', $p->id) }}"
+                          onsubmit="return confirm('Yakin mau hapus produk ini?')">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn2 btnSm" type="submit" style="border-color: rgba(239,68,68,.22); color:#991B1B;">
+                            Delete
+                        </button>
+                    </form>
 
-                <form method="POST" action="{{ route('seller.products.toggleStatus', $p->id) }}">
-                  @csrf
-                  <button type="submit"
-                          style="padding:8px 10px; border:1px solid #ddd; background:#fff; border-radius:10px; cursor:pointer;">
-                    Toggle Status
-                  </button>
-                </form>
-              </div>
+                    <form method="POST" action="{{ route('seller.products.toggleStatus', $p->id) }}">
+                        @csrf
+                        @method('PATCH')
+                        <button class="btn2 btnSm" type="submit">
+                            Toggle Status
+                        </button>
+                    </form>
+                </div>
+
             </td>
           </tr>
         @empty
@@ -148,7 +137,7 @@
   </div>
 
   <div style="margin-top:14px;">
-    
+
   </div>
 </div>
 @endsection

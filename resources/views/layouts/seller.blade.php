@@ -339,12 +339,12 @@
                 <span class="badge">@yield('nav_products_count', 0)</span>
             </a>
 
-            <a href="#help">
+            <a href="{{ route('seller.finance.index') }}">
                 <div class="left">
-                    <div class="ico"><i class="fa-solid fa-circle-question"></i></div>
-                    Help
+                    <div class="ico"><i class="fa-solid fa-chart-line"></i></div>
+                    Finance
                 </div>
-                <span class="badge">FAQ</span>
+                <span class="badge">@yield('nav_finance_badge','Balance')</span>
             </a>
         </div>
 

@@ -69,6 +69,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/store/profile', [SellerStoreController::class, 'edit'])->name('store.profile');
         Route::put('/store/profile', [SellerStoreController::class, 'update'])->name('store.profile.update');
 
+        // FINANCE
+        Route::get('/finance', [SellerPayoutController::class, 'index'])->name('finance.index');
+
         // PAYOUTS
         Route::get('/payouts', [SellerPayoutController::class, 'index'])->name('payouts.index');
         Route::post('/payouts/withdraw', [SellerPayoutController::class, 'withdraw'])->name('payouts.withdraw');

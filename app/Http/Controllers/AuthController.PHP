@@ -11,74 +11,121 @@ class AuthController extends Controller
 {
     public function showLoginForm(Request $request)
     {
-        $selectedRole = $request->query('role', 'buyer');
-        if (!in_array($selectedRole, ['buyer', 'seller'])) {
-            $selectedRole = 'buyer';
-        }
+        // role dari URL boleh buyer/customer/pembeli -> customer
+        $role = $request->query('role', 'customer');
+
+        $map = [
+            'buyer' => 'customer',
+            'customer' => 'customer',
+            'pembeli' => 'customer',
+            'seller' => 'seller',
+            'penjual' => 'seller',
+        ];
+
+        $selectedRole = $map[$role] ?? 'customer';
 
         return view('auth.login', compact('selectedRole'));
     }
 
+
     public function login(Request $request)
-    {
-        $data = $request->validate([
-            'role' => 'required|in:buyer,seller',
-            'email' => 'required|email',
-            'password' => 'required',
-            'remember' => 'nullable',
-        ]);
+{
+    // Ambil role dari form (hidden input)
+    $role = $request->input('role', 'customer');
 
-        $remember = $request->boolean('remember');
+    // normalisasi role supaya selalu customer/seller
+    $map = [
+        'buyer' => 'customer',
+        'customer' => 'customer',
+        'pembeli' => 'customer',
+        'seller' => 'seller',
+        'penjual' => 'seller',
+    ];
 
-        if (Auth::attempt(['email' => $data['email'], 'password' => $data['password']], $remember)) {
-            $request->session()->regenerate();
+    $role = $map[$role] ?? 'customer';
+    $request->merge(['role' => $role]);
 
-            $user = Auth::user();
+    $data = $request->validate([
+        'role' => 'required|in:customer,seller',
+        'email' => 'required|email',
+        'password' => 'required',
+        'remember' => 'nullable',
+    ]);
 
-            // Validasi: user harus login sesuai role yang dipilih
-            if ($user->role !== $data['role']) {
-                Auth::logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
+    $remember = $request->boolean('remember');
 
-                return back()
-                    ->withErrors(['role' => 'Role tidak sesuai. Pilih role yang benar.'])
-                    ->onlyInput('email');
-            }
+    if (Auth::attempt(['email' => $data['email'], 'password' => $data['password']], $remember)) {
+        $request->session()->regenerate();
 
-            if ($user->role === 'seller') {
-                return redirect()->route('seller.dashboard')->with('success', 'Login seller berhasil!');
-            }
+        $user = Auth::user();
 
-            return redirect()->route('dashboard')->with('success', 'Login buyer berhasil!');
+        // Validasi: user harus login sesuai role yang dipilih
+        if ($user->role !== $data['role']) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return back()
+                ->withErrors(['role' => 'Role tidak sesuai. Pilih role yang benar.'])
+                ->onlyInput('email');
         }
 
-        return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ])->onlyInput('email');
-    }
-
-
-    public function showRegisterForm(Request $request)
-    {
-        $selectedRole = $request->query('role', 'buyer');
-        if (!in_array($selectedRole, ['buyer', 'seller'])) {
-            $selectedRole = 'buyer';
+        if ($user->role === 'seller') {
+            return redirect()->route('seller.dashboard')->with('success', 'Login seller berhasil!');
         }
 
-
-        return view('auth.register', [
-            'selectedRole' => $selectedRole
-        ]);
+        return redirect()->route('dashboard')->with('success', 'Login customer berhasil!');
     }
+
+    return back()->withErrors([
+        'email' => 'Email atau password salah.',
+    ])->onlyInput('email');
+}
+
+
+public function showRegisterForm(Request $request)
+{
+    $role = $request->query('role', 'customer');
+
+    $map = [
+        'buyer' => 'customer',
+        'customer' => 'customer',
+        'pembeli' => 'customer',
+        'seller' => 'seller',
+        'penjual' => 'seller',
+    ];
+
+    $selectedRole = $map[$role] ?? 'customer';
+
+    return view('auth.register', [
+        'selectedRole' => $selectedRole
+    ]);
+}
+
 
     public function register(Request $request)
     {
+        $role = $request->input('role', $request->query('role', 'customer'));
+
+        $map = [
+            'buyer' => 'customer',
+            'customer' => 'customer',
+            'pembeli' => 'customer',
+
+            'seller' => 'seller',
+            'penjual' => 'seller',
+        ];
+
+        $request->merge([
+            'role' => $map[$role] ?? $role
+        ]);
+
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:buyer,seller',
+            'role' => 'required|in:customer,seller',
         ]);
 
         $user = User::create([

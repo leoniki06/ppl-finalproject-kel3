@@ -357,12 +357,21 @@
 
 <body>
     @php
-        // pastikan nilai konsisten: customer/seller
-        $selectedRole = $selectedRole ?? request()->query('role', 'buyer');
-        if (!in_array($selectedRole, ['buyer', 'seller'])) {
-            $selectedRole = 'buyer';
-        }
-    @endphp
+    // Normalisasi role dari URL ke role yang backend ngerti (pembeli / penjual)
+    $roleFromUrl = request()->query('role', 'pembeli');
+
+    $map = [
+        'buyer' => 'pembeli',
+        'customer' => 'pembeli',
+        'pembeli' => 'pembeli',
+
+        'seller' => 'penjual',
+        'penjual' => 'penjual',
+    ];
+
+    $selectedRole = $map[$roleFromUrl] ?? 'pembeli';
+@endphp
+
 
     <div class="register-container">
         <div class="register-header">
@@ -399,19 +408,19 @@
 
                     <div class="role-selection">
                         <div class="role-option">
-                            <input type="radio" name="role_selector" id="role-customer" value="customer"
-                                class="role-input" {{ old('role', $selectedRole) === 'customer' ? 'checked' : '' }}>
-                            <label for="role-customer" class="role-label" onclick="setRole('customer')">
+                            <input type="radio" name="role_selector" id="role-customer" value="pembeli"
+                                class="role-input" {{ old('role', $selectedRole) === 'pembeli' ? 'checked' : '' }}>
+                            <label for="role-customer" class="role-label" onclick="setRole('pembeli')">
                                 <span class="role-icon">🛒</span>
                                 <span>Customer</span>
                             </label>
                         </div>
 
                         <div class="role-option">
-                            <input type="radio" name="role_selector" id="role-seller" value="seller"
-                                class="role-input" {{ old('role', $selectedRole) === 'seller' ? 'checked' : '' }}>
+                            <input type="radio" name="role_selector" id="role-seller" value="penjual"
+                                class="role-input" {{ old('role', $selectedRole) === 'penjual' ? 'checked' : '' }}>
                             <!-- FIX: class harus role-label -->
-                            <label for="role-seller" class="role-label" onclick="setRole('seller')">
+                            <label for="role-seller" class="role-label" onclick="setRole('penjual')">
                                 <span class="role-icon">🏪</span>
                                 <span>Seller</span>
                             </label>
@@ -532,7 +541,7 @@
             const companyInput = document.getElementById('company_based');
             const industrySelect = document.getElementById('industry');
 
-            const isSeller = role === 'seller';
+            const isSeller = role === 'penjual';
 
             if (companyGroup) companyGroup.style.display = isSeller ? 'block' : 'none';
             if (industryGroup) industryGroup.style.display = isSeller ? 'block' : 'none';
@@ -555,7 +564,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            const selectedRole = document.getElementById('selected-role')?.value || 'customer';
+            const selectedRole = document.getElementById('selected-role')?.value || 'pembeli';
             setRole(selectedRole);
 
             const nameField = document.getElementById('name');

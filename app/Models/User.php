@@ -19,6 +19,9 @@ class User extends Authenticatable
         'phone',
         'address',        // aktifkan kalau kolomnya sudah ada di DB
         'profile_photo',  // aktifkan kalau kolomnya sudah ada di DB
+        'company_based',
+        'industry',
+
     ];
 
     protected $hidden = [
@@ -33,12 +36,12 @@ class User extends Authenticatable
 
     public function isCustomer(): bool
     {
-        return $this->role === 'customer';
+        return $this->role === 'pembeli';
     }
 
     public function isSeller(): bool
     {
-        return $this->role === 'seller';
+        return $this->role === 'penjual';
     }
 
     public function isAdmin(): bool

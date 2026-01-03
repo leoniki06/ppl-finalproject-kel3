@@ -31,6 +31,20 @@ class RegisterController extends Controller
         // Role yang dipilih dari parameter URL
         $selectedRole = $request->query('role', 'pembeli');
 
+        // mapping role english ke role indonesia
+        $map = [
+            'buyer' => 'pembeli',
+            'customer' => 'pembeli',
+            'seller' => 'penjual',
+        ];
+
+        $selectedRole = $map[$selectedRole] ?? $selectedRole;
+
+        // validasi
+        if (!in_array($selectedRole, ['pembeli', 'penjual'])) {
+            $selectedRole = 'pembeli';
+        }
+
         // Validasi role
         if (!in_array($selectedRole, ['pembeli', 'penjual'])) {
             $selectedRole = 'pembeli';
@@ -44,6 +58,24 @@ class RegisterController extends Controller
 
     public function register(Request $request)
     {
+        dd($request->all());
+       // ✅ Normalisasi role dari form (support buyer/seller/customer)
+    $role = $request->input('role', 'pembeli');
+
+    $map = [
+        'buyer' => 'pembeli',
+        'customer' => 'pembeli',
+        'pembeli' => 'pembeli',
+
+        'seller' => 'penjual',
+        'penjual' => 'penjual',
+    ];
+
+    $request->merge([
+        'role' => $map[$role] ?? $role
+    ]);
+
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -85,6 +117,6 @@ class RegisterController extends Controller
             return redirect()->route('seller.dashboard')->with('success', 'Registration successful!');
         }
 
-        return redirect()->route('buyer.dashboard')->with('success', 'Registration successful!');
+        return redirect()->route('dashboard')->with('success', 'Registration successful!');
     }
 }

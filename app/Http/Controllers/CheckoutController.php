@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
+
 
 class CheckoutController extends Controller
 {
@@ -21,6 +23,8 @@ class CheckoutController extends Controller
 
     public function process(Request $request)
     {
+        dd('PROCESS KE PANGGIL', $request->all());
+
         $request->validate([
             'items' => 'required|array',
             'payment_method' => 'required|string',
@@ -46,14 +50,30 @@ class CheckoutController extends Controller
             ]);
         }
 
+        $firstProduct = Product::findOrFail($request->items[0]['id']);
+        $sellerId = $firstProduct->seller_id;
+
+        // Validasi: semua item harus dari seller yang sama
+        foreach ($request->items as $it) {
+            $p = Product::findOrFail($it['id']);
+            if ($p->seller_id != $sellerId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cart must contain products from one seller only.'
+                ], 422);
+            }
+        }
+
+
         // Create order untuk user yang login
         $order = Order::create([
             'user_id' => Auth::id(),
+            'seller_id' => $sellerId,
             'order_number' => 'LB-' . time() . '-' . rand(1000, 9999),
             'total_amount' => $request->total_amount,
             'payment_method' => $request->payment_method,
             'status' => 'pending',
-            'delivery_address' => Auth::user()->address,
+            'shipping_address' => Auth::user()->address,
             'notes' => $request->notes
         ]);
 

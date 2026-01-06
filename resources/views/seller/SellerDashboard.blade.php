@@ -57,7 +57,9 @@
 
     $totalOrders = $ordersList->count();
     $storeRating = number_format((float) ($storeData['rating'] ?? 4.5), 1);
-    $averageOrderValue = $ordersList->isNotEmpty() ? $ordersList->avg('total') ?? 0 : 0;
+    $averageOrderValue = $ordersList->isNotEmpty()
+    ? $ordersList->avg(fn($o) => ($o->total_amount ?? $o->total ?? 0))
+    : 0;
 
     $hour = (int) now()->format('H');
     $greet =
@@ -1285,13 +1287,13 @@
                                     @php
                                         $rawStatus = $order->status ?? '';
                                         $boardStatus = $mapToBoard($rawStatus);
-                                        $total = (float) ($order->total ?? 0);
+                                        $total = (float) ($order->total_amount ?? $order->total ?? 0);
                                         $created = $order->created_at
                                             ? \Carbon\Carbon::parse($order->created_at)
                                             : null;
                                         $customerName = $order->customer_name ?? 'Pelanggan';
                                         $customerInitial = strtoupper(substr($customerName, 0, 1));
-                                        $itemsCount = $order->items_count ?? 1;
+                                        $itemsCount = $order->items_count ?? (method_exists($order, 'items') ? ($order->items?->count() ?? 1) : 1);
                                     @endphp
 
                                     <div class="order" data-order="{{ $order->id }}">

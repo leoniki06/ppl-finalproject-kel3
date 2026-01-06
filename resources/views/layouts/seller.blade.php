@@ -6,7 +6,7 @@
 
     <title>@yield('title','Seller • LastBite')</title>
 
-    {{-- FontAwesome (kalau kamu pakai icon) --}}
+    {{-- FontAwesome --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
     <style>
@@ -29,6 +29,7 @@
             font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
             background: linear-gradient(120deg,#f7efe6,#eaf7f0,#f4f6ff);
             color: var(--text);
+            overflow-x:hidden;
         }
 
         /* ====== Layout wrapper ====== */
@@ -216,7 +217,7 @@
             box-shadow: 0 0 0 4px rgba(215,255,30,.18);
         }
 
-        /* ====== MODAL (OV + MODAL) ====== */
+        /* ====== MODAL ====== */
         .ov{
             position:fixed;
             inset:0;
@@ -287,6 +288,44 @@
             padding:10px 12px;
             min-height: 110px;
             line-height:1.5;
+        }
+
+        /* ===== Pagination FIX (INI YANG NGATASI PANAH GEDE) ===== */
+        nav[role="navigation"] svg{
+            width: 18px !important;
+            height: 18px !important;
+            max-width: 18px !important;
+            max-height: 18px !important;
+        }
+
+        nav[role="navigation"]{
+            display:flex !important;
+            justify-content:center !important;
+            margin-top:20px !important;
+        }
+
+        nav[role="navigation"] a,
+        nav[role="navigation"] span{
+            display:inline-flex !important;
+            align-items:center !important;
+            justify-content:center !important;
+            padding:8px 12px !important;
+            margin:0 4px !important;
+            border-radius:10px !important;
+            border:1px solid rgba(15,23,42,.12) !important;
+            background: rgba(255,255,255,.85) !important;
+            color: rgba(15,23,42,.9) !important;
+            font-weight:800 !important;
+            text-decoration:none !important;
+        }
+
+        nav[role="navigation"] span[aria-current="page"] span{
+            background:#d7ff1e !important;
+            color:#000 !important;
+        }
+
+        nav[role="navigation"] span[aria-disabled="true"]{
+            opacity:.5 !important;
         }
 
         /* responsive */
@@ -379,21 +418,17 @@
                 <p class="pageSub">@yield('page_subtitle','')</p>
             </div>
             <div>
-                {{-- optional slot action di kanan --}}
                 @yield('page_actions')
             </div>
         </div>
 
-        {{-- content --}}
         @yield('content')
 
     </main>
 </div>
 
-{{-- scripts dari page --}}
 @stack('scripts')
 
-{{-- ===== Global Modal Helper (LB) ===== --}}
 <script>
     window.LB = {
       open(id){
@@ -423,8 +458,7 @@
         document.querySelectorAll('.ov.show').forEach(ov => LB.close(ov.id));
       }
     });
-    </script>
-
+</script>
 
 </body>
 </html>

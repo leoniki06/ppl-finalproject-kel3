@@ -6,10 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Store;
 use App\Models\Order;
-use App\Models\User;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class SellerDashboardController extends Controller
 {
@@ -22,16 +19,13 @@ class SellerDashboardController extends Controller
                 ->with('error', 'Akses ditolak. Halaman ini khusus seller.');
         }
 
+        $sellerId = $seller->id;
 
-        // Get store information dengan fallback
-        $store = Store::where('user_id', $seller->id)->first();
-
-        // Jika store belum ada, buat store default
+        $store = Store::where('user_id', $sellerId)->first();
         if (!$store) {
             $store = $this->createDefaultStore($seller);
         }
 
-        // Store information dengan fallback data
         $storeData = [
             'name' => $store->name ?? 'Toko ' . $seller->name,
             'logo_url' => $store->logo_url ?? 'https://via.placeholder.com/150',
@@ -41,26 +35,17 @@ class SellerDashboardController extends Controller
             'today_hours' => $store->operational_hours ?? '08:00 - 22:00',
         ];
 
-        // Store health indicator dengan error handling
-        $storeHealth = $this->getStoreHealth($store);
+        $storeHealth       = $this->getStoreHealth($sellerId);
+        $stats             = $this->getOrderStatistics($sellerId);
+        $orderStatusCounts = $this->getOrderStatusCounts($sellerId);
+        $recentOrders      = $this->getRecentOrders($sellerId);
 
-        // Order statistics dengan fallback
-        $stats = $this->getOrderStatistics($store);
-
-        // Order status counts dengan fallback
-        $orderStatusCounts = $this->getOrderStatusCounts($store);
-
-        // Recent orders dengan fallback
-        $recentOrders = $this->getRecentOrders($store);
-
-        // Data tambahan untuk dashboard
         $additionalStats = [
-            'total_revenue' => $this->calculateTotalRevenue($store),
-            'average_order_value' => $this->calculateAverageOrderValue($store),
-            'customer_count' => $this->getCustomerCount($store),
+            'total_revenue' => $this->calculateTotalRevenue($sellerId),
+            'average_order_value' => $this->calculateAverageOrderValue($sellerId),
+            'customer_count' => $this->getCustomerCount($sellerId),
         ];
 
-        // Quick actions untuk seller
         $quickActions = [
             [
                 'title' => 'Tambah Produk',
@@ -100,11 +85,8 @@ class SellerDashboardController extends Controller
         ));
     }
 
-    // ========== HELPER METHODS ==========
-
     private function createDefaultStore($seller)
     {
-        // Buat store default
         return Store::create([
             'user_id' => $seller->id,
             'name' => 'Toko ' . $seller->name,
@@ -117,19 +99,19 @@ class SellerDashboardController extends Controller
         ]);
     }
 
-    private function getStoreHealth($store)
+    private function getStoreHealth($sellerId)
     {
-        if (!$store) {
-            return ['label' => 'Belum ada data toko', 'level' => 'warning'];
-        }
-
         try {
-            // Cek dengan error handling
-            $lowStockProducts = $store->products ? $store->products()->where('stock', '<', 5)->count() : 0;
-            $pendingOrders = Order::where('store_id', $store->id)->where('status', 'pending')->count();
+            $lowStockProducts = \App\Models\Product::where('seller_id', $sellerId)
+                ->where('stock', '<', 5)
+                ->count();
+
+            $pendingOrders = Order::where('seller_id', $sellerId)
+                ->where('status', 'pending')
+                ->count();
 
             if ($lowStockProducts > 10 || $pendingOrders > 20) {
-                return ['label' => 'Perlu Perhatian: Stok Rendah / Banyak Pending', 'level' => 'danger'];
+                return ['label' => 'Perlu Perhatian', 'level' => 'danger'];
             } elseif ($lowStockProducts > 5 || $pendingOrders > 10) {
                 return ['label' => 'Perlu Monitor', 'level' => 'warning'];
             } else {
@@ -140,186 +122,130 @@ class SellerDashboardController extends Controller
         }
     }
 
-    private function getOrderStatistics($store)
+    private function getOrderStatistics($sellerId)
     {
-        // Default data untuk testing
-        $defaultStats = [
-            'today' => rand(5, 15),
-            'week' => rand(30, 60),
-            'month' => rand(100, 200),
-            'today_change' => rand(-10, 30),
-            'week_change' => rand(5, 50),
-            'month_change' => rand(10, 100),
-        ];
-
-        if (!$store || !$store->id) {
-            return $defaultStats;
-        }
-
         try {
-            $stats = [
-                'today' => Order::where('store_id', $store->id)
+            return [
+                'today' => Order::where('seller_id', $sellerId)
                     ->whereDate('created_at', Carbon::today())
                     ->count(),
-                'week' => Order::where('store_id', $store->id)
-                    ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+
+                'week' => Order::where('seller_id', $sellerId)
+                    ->whereBetween('created_at', [
+                        Carbon::now()->startOfWeek(),
+                        Carbon::now()->endOfWeek()
+                    ])
                     ->count(),
-                'month' => Order::where('store_id', $store->id)
+
+                'month' => Order::where('seller_id', $sellerId)
                     ->whereMonth('created_at', Carbon::now()->month)
                     ->whereYear('created_at', Carbon::now()->year)
                     ->count(),
+
+                'today_change' => 0,
+                'week_change' => 0,
+                'month_change' => 0,
             ];
-
-            // Tambahkan persentase perubahan
-            $stats['today_change'] = rand(-10, 30);
-            $stats['week_change'] = rand(5, 50);
-            $stats['month_change'] = rand(10, 100);
-
-            return $stats;
         } catch (\Exception $e) {
-            return $defaultStats;
+            return [
+                'today' => 0,
+                'week' => 0,
+                'month' => 0,
+                'today_change' => 0,
+                'week_change' => 0,
+                'month_change' => 0,
+            ];
         }
     }
 
-    private function getOrderStatusCounts($store)
+    private function getOrderStatusCounts($sellerId)
     {
-        // Default data
-        $defaultCounts = [
-            'pending' => rand(1, 5),
-            'processing' => rand(1, 3),
-            'completed' => rand(20, 50),
-            'cancelled' => rand(0, 2),
-        ];
-
-        if (!$store || !$store->id) {
-            return $defaultCounts;
-        }
-
         try {
             return [
-                'pending' => Order::where('store_id', $store->id)
-                    ->where('status', 'pending')
-                    ->count(),
-                'processing' => Order::where('store_id', $store->id)
-                    ->where('status', 'processing')
-                    ->count(),
-                'completed' => Order::where('store_id', $store->id)
-                    ->where('status', 'completed')
-                    ->count(),
-                'cancelled' => Order::where('store_id', $store->id)
-                    ->where('status', 'cancelled')
-                    ->count(),
+                'pending' => Order::where('seller_id', $sellerId)->where('status', 'pending')->count(),
+                'processing' => Order::where('seller_id', $sellerId)->where('status', 'processing')->count(),
+                'completed' => Order::where('seller_id', $sellerId)->where('status', 'completed')->count(),
+                'cancelled' => Order::where('seller_id', $sellerId)->where('status', 'cancelled')->count(),
             ];
         } catch (\Exception $e) {
-            return $defaultCounts;
+            return [
+                'pending' => 0,
+                'processing' => 0,
+                'completed' => 0,
+                'cancelled' => 0,
+            ];
         }
     }
 
-    private function getRecentOrders($store)
+    private function getRecentOrders($sellerId)
     {
-        // Default recent orders untuk testing
-        $defaultOrders = collect([
-            (object) [
-                'id' => 1,
-                'order_number' => 'ORD-001',
-                'customer_name' => 'Budi Santoso',
-                'total_amount' => 125000,
-                'status' => 'completed',
-                'created_at' => now()->subHours(2),
-            ],
-            (object) [
-                'id' => 2,
-                'order_number' => 'ORD-002',
-                'customer_name' => 'Siti Aminah',
-                'total_amount' => 89000,
-                'status' => 'processing',
-                'created_at' => now()->subHours(5),
-            ],
-            (object) [
-                'id' => 3,
-                'order_number' => 'ORD-003',
-                'customer_name' => 'Andi Wijaya',
-                'total_amount' => 210000,
-                'status' => 'pending',
-                'created_at' => now()->subHours(8),
-            ],
-        ]);
-
-        if (!$store || !$store->id) {
-            return $defaultOrders;
-        }
-
         try {
-            $orders = Order::where('store_id', $store->id)
-                ->with('customer')
-                ->orderBy('created_at', 'desc')
+            $orders = Order::where('seller_id', $sellerId)
+                ->with(['user', 'items'])
+                ->withCount('items')
+                ->latest()
                 ->take(5)
                 ->get();
 
             return $orders->map(function ($order) {
+                $calculatedTotal = $order->items->sum(function ($item) {
+                    return ($item->price ?? 0) * ($item->quantity ?? 1);
+                });
+
+                $finalTotal = ($order->total_amount && $order->total_amount > 0)
+                    ? $order->total_amount
+                    : $calculatedTotal;
+
                 return (object) [
                     'id' => $order->id,
                     'order_number' => $order->order_number ?? 'ORD-' . $order->id,
-                    'customer_name' => $order->customer->name ?? 'Pelanggan',
-                    'total_amount' => $order->total_amount ?? 0,
+                    'customer_name' => $order->user->name ?? 'Pelanggan',
+                    'total_amount' => $finalTotal,
                     'status' => $order->status ?? 'pending',
+                    'items_count' => $order->items_count ?? 0,
                     'created_at' => $order->created_at ?? now(),
                 ];
             });
         } catch (\Exception $e) {
-            return $defaultOrders;
+            return collect([]);
         }
     }
 
-    private function calculateTotalRevenue($store)
+    private function calculateTotalRevenue($sellerId)
     {
-        if (!$store || !$store->id) {
-            return rand(5000000, 15000000);
-        }
-
         try {
-            return Order::where('store_id', $store->id)
+            return Order::where('seller_id', $sellerId)
                 ->where('status', 'completed')
-                ->sum('total_amount') ?? 0;
+                ->sum('total_amount');
         } catch (\Exception $e) {
-            return rand(5000000, 15000000);
+            return 0;
         }
     }
 
-    private function calculateAverageOrderValue($store)
+    private function calculateAverageOrderValue($sellerId)
     {
-        if (!$store || !$store->id) {
-            return rand(75000, 150000);
-        }
-
         try {
-            $completedCount = Order::where('store_id', $store->id)
+            $completedCount = Order::where('seller_id', $sellerId)
                 ->where('status', 'completed')
                 ->count();
 
-            if ($completedCount > 0) {
-                $totalRevenue = $this->calculateTotalRevenue($store);
-                return round($totalRevenue / $completedCount);
-            }
+            if ($completedCount === 0) return 0;
 
-            return rand(75000, 150000);
+            $totalRevenue = $this->calculateTotalRevenue($sellerId);
+            return round($totalRevenue / $completedCount);
         } catch (\Exception $e) {
-            return rand(75000, 150000);
+            return 0;
         }
     }
 
-    private function getCustomerCount($store)
+    private function getCustomerCount($sellerId)
     {
-        if (!$store || !$store->id) {
-            return rand(50, 150);
-        }
-
         try {
-            return Order::where('store_id', $store->id)
-                ->distinct('customer_id')
-                ->count('customer_id');
+            return Order::where('seller_id', $sellerId)
+                ->distinct('user_id')
+                ->count('user_id');
         } catch (\Exception $e) {
-            return rand(50, 150);
+            return 0;
         }
     }
 }

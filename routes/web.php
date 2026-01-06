@@ -64,6 +64,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/orders', [SellerOrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/{id}', [SellerOrderController::class, 'show'])->name('orders.show');
         Route::patch('/orders/{id}/status', [SellerOrderController::class, 'updateStatus'])->name('orders.updateStatus');
+        Route::post('/orders/{id}/mark-paid', [SellerOrderController::class, 'markPaid'])->name('orders.markPaid');
 
         // STORE
         Route::get('/store/profile', [SellerStoreController::class, 'edit'])->name('store.profile');

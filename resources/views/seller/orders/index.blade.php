@@ -7,7 +7,6 @@
 @section('content')
 <div class="card" style="padding:18px;">
 
-  {{-- ALERT --}}
   @if(session('success'))
     <div style="margin-bottom:14px; padding:12px 14px; background:#e7f7ee; border:1px solid #c9efd7; border-radius:12px;">
       ✅ {{ session('success') }}
@@ -25,7 +24,6 @@
     </div>
   @endif
 
-  {{-- SEARCH + FILTER --}}
   <form method="GET" action="{{ route('seller.orders.index') }}"
         style="display:flex; gap:12px; margin-top:4px; flex-wrap:wrap;">
 
@@ -37,6 +35,7 @@
       <option value="">All Status</option>
       <option value="pending" @selected(request('status')==='pending')>Pending</option>
       <option value="processing" @selected(request('status')==='processing')>Processing</option>
+      <option value="shipped" @selected(request('status')==='shipped')>Shipped</option>
       <option value="completed" @selected(request('status')==='completed')>Completed</option>
       <option value="cancelled" @selected(request('status')==='cancelled')>Cancelled</option>
     </select>
@@ -58,7 +57,6 @@
     <button class="btn2 btnSm" type="submit">Apply</button>
   </form>
 
-  {{-- TABLE --}}
   <div style="margin-top:18px; overflow:auto; border:1px solid #eee; border-radius:14px;">
     <table style="width:100%; border-collapse:collapse;">
       <thead>
@@ -74,6 +72,25 @@
 
       <tbody>
         @forelse($orders as $o)
+          @php
+            $s  = $o->status ?? 'pending';
+            $ps = $o->payment_status ?? 'unpaid';
+
+            $statusBadge = [
+              'pending' => ['#fff3cd','#8a6d3b','Pending'],
+              'processing' => ['#eaf4ff','#2457d6','Processing'],
+              'shipped' => ['#eef2ff','#4338ca','Shipped'],
+              'completed' => ['#e7f7ee','#1a7f37','Completed'],
+              'cancelled' => ['#fee','#a00','Cancelled'],
+            ][$s] ?? ['#eee','#444', ucfirst($s)];
+
+            $payBadge = [
+              'unpaid' => ['#fee','#a00','UNPAID'],
+              'paid' => ['#e7f7ee','#1a7f37','PAID'],
+              'refunded' => ['#eee','#444','REFUNDED'],
+            ][$ps] ?? ['#eee','#444', strtoupper($ps)];
+          @endphp
+
           <tr style="border-bottom:1px solid #f0f0f0">
             <td style="padding:12px;">
               <div style="font-weight:900;">#{{ $o->order_number }}</div>
@@ -92,49 +109,49 @@
             </td>
 
             <td style="padding:12px;">
-              @php
-                $s = $o->status ?? 'pending';
-                $badge = [
-                  'pending' => ['#fff3cd','#8a6d3b'],
-                  'processing' => ['#eaf4ff','#2457d6'],
-                  'completed' => ['#e7f7ee','#1a7f37'],
-                  'cancelled' => ['#fee','#a00'],
-                ][$s] ?? ['#eee','#444'];
-              @endphp
-              <span style="padding:4px 10px; border-radius:999px; background:{{ $badge[0] }}; color:{{ $badge[1] }}; font-size:12px; font-weight:800;">
-                {{ ucfirst($s) }}
+              <span style="padding:4px 10px; border-radius:999px; background:{{ $statusBadge[0] }}; color:{{ $statusBadge[1] }}; font-size:12px; font-weight:900;">
+                {{ $statusBadge[2] }}
               </span>
             </td>
 
             <td style="padding:12px;">
-              @php
-                $ps = $o->payment_status ?? 'unpaid';
-                $pbadge = [
-                  'unpaid' => ['#fee','#a00'],
-                  'paid' => ['#e7f7ee','#1a7f37'],
-                  'refunded' => ['#eee','#444'],
-                ][$ps] ?? ['#eee','#444'];
-              @endphp
-              <span style="padding:4px 10px; border-radius:999px; background:{{ $pbadge[0] }}; color:{{ $pbadge[1] }}; font-size:12px; font-weight:800;">
-                {{ strtoupper($ps) }}
+              <span style="padding:4px 10px; border-radius:999px; background:{{ $payBadge[0] }}; color:{{ $payBadge[1] }}; font-size:12px; font-weight:900;">
+                {{ $payBadge[2] }}
               </span>
             </td>
 
             <td style="padding:12px;">
               <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                {{-- kalau belum bikin route show / updateStatus, bagian ini aman karena dicek dulu --}}
+
                 @if(Route::has('seller.orders.show'))
                   <a class="btn2 btnSm" href="{{ route('seller.orders.show', $o->id) }}">Detail</a>
                 @endif
 
                 @if(Route::has('seller.orders.updateStatus'))
-                  <form method="POST" action="{{ route('seller.orders.updateStatus', $o->id) }}">
-                    @csrf
-                    @method('PATCH')
-                    <input type="hidden" name="status" value="processing">
-                    <button class="btn2 btnSm" type="submit">Set Processing</button>
-                  </form>
+                  @if($s === 'pending')
+                    <form method="POST" action="{{ route('seller.orders.updateStatus', $o->id) }}">
+                      @csrf
+                      @method('PATCH')
+                      <input type="hidden" name="status" value="processing">
+                      <button class="btn2 btnSm" type="submit">Set Processing</button>
+                    </form>
+                  @elseif($s === 'processing')
+                    <form method="POST" action="{{ route('seller.orders.updateStatus', $o->id) }}">
+                      @csrf
+                      @method('PATCH')
+                      <input type="hidden" name="status" value="shipped">
+                      <button class="btn2 btnSm" type="submit">Set Shipped</button>
+                    </form>
+                  @elseif($s === 'shipped')
+                    <form method="POST" action="{{ route('seller.orders.updateStatus', $o->id) }}">
+                      @csrf
+                      @method('PATCH')
+                      <input type="hidden" name="status" value="completed">
+                      <button class="btn2 btnSm" type="submit">Set Completed</button>
+                    </form>
+                  @endif
                 @endif
+
               </div>
             </td>
           </tr>

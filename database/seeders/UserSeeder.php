@@ -14,30 +14,22 @@ class UserSeeder extends Seeder
 
         $users = [
             [
-                'name' => 'Admin LastBite',
-                'email' => 'admin@lastbite.com',
-                'password' => Hash::make('password123'),
-                'role' => 'pembeli',
-                'email_verified_at' => now(),
-            ],
-            [
                 'name' => 'Seller Holland Bakery',
                 'email' => 'seller@lastbite.com',
                 'password' => Hash::make('password123'),
-                'role' => 'penjual',
+                'role' => 'seller',
                 'email_verified_at' => now(),
             ],
             [
                 'name' => 'Customer Test',
                 'email' => 'customer@lastbite.com',
                 'password' => Hash::make('password123'),
-                'role' => 'pembeli',
+                'role' => 'customer',
                 'email_verified_at' => now(),
             ]
         ];
 
         foreach ($users as $userData) {
-            // Cek apakah user sudah ada berdasarkan email
             $existingUser = User::where('email', $userData['email'])->first();
 
             if (!$existingUser) {

@@ -1514,7 +1514,7 @@
 
                             <div class="fg">
                                 <label>Foto Produk</label>
-                                <input class="ctl" name="photo" type="file" accept="image/*" required>
+                                <input class="ctl" name="image" type="file" accept="image/*" required>
                             </div>
 
                             <div class="fg">

@@ -1,0 +1,927 @@
+/* ==========================================================================
+   DASHBOARD BUYER — Clean / Airy / Premium (Layout fixed for few items)
+   File: resources/css/dashboard-buyer.css
+   Depends on: resources/css/buyer-layout.css (tokens)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   0) DASH TOKENS
+   -------------------------------------------------------------------------- */
+:root {
+    --dash-max: min(var(--container), calc(100% - (var(--gutter) * 2)));
+
+    --gap: clamp(14px, 1.8vw, 22px);
+    --gap-lg: clamp(18px, 2.4vw, 30px);
+
+    --card-bg: rgba(255, 255, 255, 0.96);
+    --card-border: rgba(78, 31, 0, 0.10);
+    --card-border-2: rgba(78, 31, 0, 0.14);
+
+    --sh-card: 0 14px 34px rgba(78, 31, 0, 0.08);
+    --sh-card-hover: 0 22px 54px rgba(78, 31, 0, 0.12);
+
+    --r-card: var(--r-22);
+    --r-card-sm: var(--r-16);
+
+    /* IMPORTANT: card width caps so items DON'T stretch full row */
+    --cat-min: 240px;
+    --cat-max: 320px;
+
+    --prod-min: 250px;
+    --prod-max: 300px;
+
+    /* shorter image so card isn't absurdly tall when image missing */
+    --img-h: 168px;
+    --img-h-lg: 186px;
+}
+
+/* --------------------------------------------------------------------------
+   1) WRAPPER + DECOR
+   -------------------------------------------------------------------------- */
+.dashboard-wrapper {
+    position: relative;
+    width: 100%;
+    padding: 8px 0 16px;
+    overflow: hidden;
+}
+
+.deco-shape {
+    position: absolute;
+    border-radius: 999px;
+    opacity: 0.55;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.deco-shape-1 {
+    width: 520px;
+    height: 520px;
+    top: -240px;
+    left: -220px;
+    background: radial-gradient(circle at 30% 30%,
+            rgba(254, 186, 23, 0.22),
+            rgba(254, 186, 23, 0) 60%);
+}
+
+.deco-shape-2 {
+    width: 560px;
+    height: 560px;
+    top: 420px;
+    right: -260px;
+    background: radial-gradient(circle at 40% 40%,
+            rgba(248, 244, 225, 0.70),
+            rgba(248, 244, 225, 0) 62%);
+}
+
+.deco-shape-3 {
+    width: 420px;
+    height: 420px;
+    bottom: -220px;
+    left: 14%;
+    background: radial-gradient(circle at 45% 45%,
+            rgba(78, 31, 0, 0.08),
+            rgba(78, 31, 0, 0) 65%);
+}
+
+/* keep content above deco */
+.dashboard-wrapper>section {
+    position: relative;
+    z-index: 1;
+}
+
+/* --------------------------------------------------------------------------
+   2) CONTAINERS + SECTION SPACING
+   -------------------------------------------------------------------------- */
+.hero-container,
+.section-container {
+    width: var(--dash-max);
+    margin: 0 auto;
+}
+
+.hero-container {
+    padding: clamp(12px, 1.6vw, 18px) 0 clamp(10px, 1.6vw, 14px);
+}
+
+.section-container {
+    padding: clamp(16px, 2.2vw, 24px) 0;
+}
+
+.content-container {
+    margin-top: clamp(10px, 1.4vw, 16px);
+}
+
+/* --------------------------------------------------------------------------
+   3) SECTION HEAD
+   -------------------------------------------------------------------------- */
+.section-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.section-head-left {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+}
+
+.section-head--row {
+    align-items: center;
+}
+
+.section-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.section-title h2,
+.categories-title,
+.section-head h2 {
+    margin: 0;
+    font-size: clamp(20px, 2.0vw, 28px);
+    line-height: 1.15;
+    font-weight: 900;
+    letter-spacing: 0.1px;
+    color: var(--ink);
+}
+
+.section-subtitle {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--muted);
+    max-width: 62ch;
+}
+
+.flash-icon,
+.star-icon {
+    color: rgba(254, 186, 23, 0.95);
+    filter: drop-shadow(0 8px 18px rgba(254, 186, 23, 0.14));
+}
+
+/* --------------------------------------------------------------------------
+   4) HERO (MATCH buildHero())
+   -------------------------------------------------------------------------- */
+.hero-banner {
+    position: relative;
+    border-radius: var(--r-card);
+    border: 1px solid var(--card-border);
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: var(--sh-card);
+    overflow: hidden;
+    min-height: clamp(220px, 24vw, 340px);
+}
+
+/* slides injected */
+.hero-slide {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    opacity: 0;
+    transform: scale(1.01);
+    transition: opacity 520ms var(--ease), transform 520ms var(--ease);
+}
+
+.hero-slide.active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* overlay for readability */
+.hero-slide::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(90deg,
+            rgba(255, 255, 255, 0.92) 0%,
+            rgba(255, 255, 255, 0.78) 44%,
+            rgba(255, 255, 255, 0.22) 80%,
+            rgba(255, 255, 255, 0) 100%);
+}
+
+.hero-content {
+    position: absolute;
+    left: clamp(14px, 2.0vw, 26px);
+    bottom: clamp(14px, 2.0vw, 26px);
+    max-width: min(540px, 74%);
+    padding: clamp(14px, 2vw, 18px);
+
+    border-radius: var(--r-card);
+    border: 1px solid rgba(78, 31, 0, 0.10);
+    background: rgba(255, 255, 255, 0.90);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 18px 44px rgba(78, 31, 0, 0.10);
+
+    display: grid;
+    gap: 8px;
+}
+
+.hero-tagline {
+    display: inline-flex;
+    width: fit-content;
+    padding: 7px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(254, 186, 23, 0.35);
+    background: rgba(254, 186, 23, 0.12);
+    color: rgba(78, 31, 0, 0.92);
+
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.hero-title {
+    font-size: clamp(26px, 3.0vw, 38px);
+    line-height: 1.05;
+    font-weight: 900;
+    color: var(--ink);
+}
+
+.hero-subtitle {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--ink-2);
+}
+
+.hero-description {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 60ch;
+}
+
+.hero-cta {
+    margin-top: 6px;
+    height: 44px;
+    padding: 0 16px;
+
+    border-radius: 999px;
+    border: 1px solid rgba(254, 186, 23, 0.55);
+    background: rgba(254, 186, 23, 0.92);
+    color: rgba(78, 31, 0, 0.96);
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    font-weight: 900;
+    transition: transform var(--t-1), box-shadow var(--t-1), filter var(--t-1);
+    box-shadow: 0 18px 40px rgba(254, 186, 23, 0.18);
+}
+
+.hero-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 24px 54px rgba(254, 186, 23, 0.24);
+    filter: saturate(1.03);
+}
+
+/* dots */
+.hero-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.hero-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    border: 1px solid rgba(78, 31, 0, 0.18);
+    background: rgba(78, 31, 0, 0.10);
+    padding: 0;
+    cursor: pointer;
+    transition: transform var(--t-1), background var(--t-1), border-color var(--t-1), width var(--t-1);
+}
+
+.hero-dot:hover {
+    transform: scale(1.08);
+    border-color: rgba(254, 186, 23, 0.50);
+    background: rgba(254, 186, 23, 0.22);
+}
+
+.hero-dot.active {
+    width: 22px;
+    background: rgba(254, 186, 23, 0.85);
+    border-color: rgba(254, 186, 23, 0.55);
+}
+
+.scroll-indicator {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted-2);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    user-select: none;
+}
+
+/* --------------------------------------------------------------------------
+   5) CATEGORIES (FIX: card width stays nice, no full-row stretch)
+   -------------------------------------------------------------------------- */
+.categories-grid {
+    display: grid;
+    gap: var(--gap);
+
+    /* IMPORTANT FIX:
+     - max kolom bukan 1fr -> mencegah card jadi “strip panjang”
+     - auto-fill bikin kolom sebanyak yang muat */
+    grid-template-columns: repeat(auto-fill, minmax(var(--cat-min), var(--cat-max)));
+    justify-content: start;
+    align-items: stretch;
+}
+
+.category-item {
+    width: 100%;
+    border-radius: var(--r-card-sm);
+    border: 1px solid var(--card-border);
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: var(--sh-inset);
+    padding: 14px 14px;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    transition: transform var(--t-1), box-shadow var(--t-1), border-color var(--t-1), background var(--t-1);
+}
+
+.category-item:hover {
+    transform: translateY(-2px);
+    border-color: var(--card-border-2);
+    box-shadow: var(--sh-card);
+    background: rgba(255, 255, 255, 0.99);
+}
+
+.category-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    border: 1px solid rgba(254, 186, 23, 0.35);
+    background: rgba(254, 186, 23, 0.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    box-shadow: 0 14px 28px rgba(254, 186, 23, 0.10);
+}
+
+.category-icon {
+    color: rgba(78, 31, 0, 0.92);
+    font-size: 16px;
+}
+
+.category-name {
+    font-weight: 900;
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+/* --------------------------------------------------------------------------
+   6) FLASH SALE: timer + CTA
+   -------------------------------------------------------------------------- */
+.countdown-timer {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 10px;
+
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(254, 186, 23, 0.35);
+    background: rgba(254, 186, 23, 0.10);
+    box-shadow: var(--sh-inset);
+}
+
+.timer-icon {
+    color: rgba(254, 186, 23, 0.95);
+}
+
+.timer-display {
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    font-size: 12px;
+    color: var(--ink);
+}
+
+.see-more-btn {
+    height: 42px;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: 1px solid var(--card-border);
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--ink);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: var(--sh-inset);
+    transition: transform var(--t-1), box-shadow var(--t-1), border-color var(--t-1), background var(--t-1);
+}
+
+.see-more-btn:hover {
+    transform: translateY(-1px);
+    border-color: var(--card-border-2);
+    box-shadow: var(--sh-card);
+    background: rgba(255, 255, 255, 0.98);
+}
+
+/* --------------------------------------------------------------------------
+   7) SWIPER POLISH + ensure slide cards are not weird
+   -------------------------------------------------------------------------- */
+.swiper-container {
+    position: relative;
+    padding: 6px 0 0;
+}
+
+.swiper {
+    padding: 6px 2px 26px;
+}
+
+.swiper-slide {
+    height: auto !important;
+}
+
+.swiper-slide .product-card {
+    height: 100%;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 999px !important;
+    border: 1px solid var(--card-border) !important;
+    background: rgba(255, 255, 255, 0.92) !important;
+    box-shadow: var(--sh-card) !important;
+    color: var(--ink) !important;
+    transition: transform var(--t-1), box-shadow var(--t-1), border-color var(--t-1), opacity var(--t-1);
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+    transform: translateY(-2px);
+    border-color: var(--card-border-2) !important;
+    box-shadow: var(--sh-card-hover) !important;
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+    font-size: 14px !important;
+    font-weight: 900 !important;
+}
+
+/* dots */
+.flash-sale-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.flash-sale-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    border: 1px solid rgba(78, 31, 0, 0.18);
+    background: rgba(78, 31, 0, 0.10);
+    padding: 0;
+    cursor: pointer;
+    transition: transform var(--t-1), background var(--t-1), border-color var(--t-1), width var(--t-1);
+}
+
+.flash-sale-dot:hover {
+    transform: scale(1.08);
+    border-color: rgba(254, 186, 23, 0.50);
+    background: rgba(254, 186, 23, 0.22);
+}
+
+.flash-sale-dot.active {
+    width: 22px;
+    background: rgba(254, 186, 23, 0.85);
+    border-color: rgba(254, 186, 23, 0.55);
+}
+
+/* --------------------------------------------------------------------------
+   8) PRODUCT CARD (Flash + Recommended)
+   -------------------------------------------------------------------------- */
+.product-card {
+    position: relative;
+    border-radius: var(--r-card);
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+    box-shadow: var(--sh-card);
+    overflow: hidden;
+
+    transition: transform var(--t-1), box-shadow var(--t-1), border-color var(--t-1);
+    cursor: pointer;
+}
+
+.product-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--card-border-2);
+    box-shadow: var(--sh-card-hover);
+}
+
+/* ensure buttons clickable inside clickable card */
+.product-card .favorite-btn,
+.product-card .add-to-cart-btn {
+    pointer-events: auto;
+}
+
+/* badges */
+.flash-badge,
+.recommended-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    z-index: 3;
+
+    padding: 8px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+
+    border: 1px solid rgba(78, 31, 0, 0.10);
+    box-shadow: 0 14px 28px rgba(78, 31, 0, 0.10);
+}
+
+.flash-badge {
+    background: rgba(254, 186, 23, 0.92);
+    color: rgba(78, 31, 0, 0.96);
+    border-color: rgba(254, 186, 23, 0.55);
+}
+
+.recommended-badge {
+    background: rgba(248, 244, 225, 0.95);
+    color: rgba(78, 31, 0, 0.92);
+    border-color: rgba(78, 31, 0, 0.12);
+}
+
+/* urgency badge */
+.food-urgency-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 3;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 8px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+
+    background: rgba(229, 72, 77, 0.10);
+    color: rgba(229, 72, 77, 0.95);
+    border: 1px solid rgba(229, 72, 77, 0.24);
+    box-shadow: 0 14px 28px rgba(229, 72, 77, 0.10);
+}
+
+/* image container: SHORTER + nice placeholder background (layout-focused) */
+.product-image-container {
+    position: relative;
+    width: 100%;
+    height: var(--img-h);
+    background:
+        radial-gradient(circle at 30% 30%, rgba(254, 186, 23, 0.12), rgba(254, 186, 23, 0) 55%),
+        linear-gradient(180deg, rgba(248, 244, 225, 0.38), rgba(255, 255, 255, 0.96));
+    overflow: hidden;
+}
+
+/* shimmer loading (JS: container.classList.add('loading')) */
+.product-image-container.loading::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg,
+            rgba(248, 244, 225, 0.35) 0%,
+            rgba(254, 186, 23, 0.18) 45%,
+            rgba(248, 244, 225, 0.35) 100%);
+    transform: translateX(-60%);
+    animation: dashShimmer 1.1s ease-in-out infinite;
+    z-index: 2;
+    opacity: 0.85;
+}
+
+.product-image-container.loading::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.35);
+    z-index: 1;
+}
+
+@keyframes dashShimmer {
+    to {
+        transform: translateX(60%);
+    }
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.02);
+    transition: transform 280ms var(--ease), filter 280ms var(--ease);
+    filter: saturate(1.02) contrast(1.02);
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.06);
+}
+
+/* actions */
+.product-actions {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 4;
+    display: flex;
+    gap: 10px;
+}
+
+.favorite-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    border: 1px solid rgba(78, 31, 0, 0.12);
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 14px 28px rgba(78, 31, 0, 0.10);
+    color: var(--ink);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform var(--t-1), box-shadow var(--t-1), border-color var(--t-1), background var(--t-1);
+}
+
+.favorite-btn:hover {
+    transform: translateY(-1px) scale(1.02);
+    border-color: rgba(254, 186, 23, 0.45);
+    box-shadow: 0 18px 36px rgba(78, 31, 0, 0.14);
+    background: rgba(255, 255, 255, 0.98);
+}
+
+.favorite-btn.active {
+    border-color: rgba(254, 186, 23, 0.55);
+    background: rgba(254, 186, 23, 0.16);
+}
+
+.favorite-btn.active i {
+    color: rgba(229, 72, 77, 0.95);
+}
+
+/* info */
+.product-info {
+    padding: 14px 14px 16px;
+    display: grid;
+    gap: 8px;
+}
+
+.product-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 700;
+}
+
+.product-name {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.35;
+    font-weight: 900;
+    color: var(--ink);
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: calc(1.35em * 2);
+}
+
+.product-category {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    padding: 7px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(78, 31, 0, 0.10);
+    background: rgba(248, 244, 225, 0.55);
+    color: var(--ink-2);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.expiry-info,
+.location-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+/* rating */
+.product-rating {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 2px;
+}
+
+.stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    color: rgba(254, 186, 23, 0.95);
+}
+
+.rating-count {
+    font-size: 12px;
+    color: var(--muted-2);
+}
+
+/* price row */
+.product-price {
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.price-container {
+    min-width: 0;
+    display: grid;
+    gap: 4px;
+}
+
+.current-price {
+    font-weight: 900;
+    font-size: 15px;
+    color: var(--ink);
+    letter-spacing: 0.1px;
+}
+
+.price-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.original-price {
+    font-size: 12px;
+    color: var(--muted-2);
+    text-decoration: line-through;
+}
+
+.discount-percent {
+    font-size: 12px;
+    font-weight: 900;
+    color: rgba(78, 31, 0, 0.92);
+    padding: 5px 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(254, 186, 23, 0.35);
+    background: rgba(254, 186, 23, 0.12);
+}
+
+/* add to cart */
+.add-to-cart-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    border: 1px solid rgba(254, 186, 23, 0.45);
+    background: rgba(254, 186, 23, 0.92);
+    color: rgba(78, 31, 0, 0.96);
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 16px 34px rgba(254, 186, 23, 0.18);
+    transition: transform var(--t-1), box-shadow var(--t-1), filter var(--t-1), background var(--t-1);
+    cursor: pointer;
+    position: relative;
+    z-index: 6;
+}
+
+.add-to-cart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 22px 44px rgba(254, 186, 23, 0.26);
+    filter: saturate(1.02);
+}
+
+.add-to-cart-btn:active {
+    transform: translateY(-1px) scale(0.98);
+}
+
+/* success micro-interaction (JS) */
+.js-add-to-cart.success {
+    background: rgba(34, 197, 94, 0.92) !important;
+    border-color: rgba(34, 197, 94, 0.45) !important;
+    box-shadow: 0 22px 44px rgba(34, 197, 94, 0.18) !important;
+    color: rgba(255, 255, 255, 0.96) !important;
+}
+
+.js-add-to-cart.success i {
+    color: rgba(255, 255, 255, 0.96) !important;
+}
+
+/* --------------------------------------------------------------------------
+   9) RECOMMENDED GRID (FIX: no more giant full-width cards)
+   -------------------------------------------------------------------------- */
+.recommended-grid {
+    display: grid;
+    gap: var(--gap-lg);
+
+    /* IMPORTANT FIX:
+     - cap card width so 1 item doesn't become 1 huge card
+     - with 5 items: will look like 3 + 2 (atau 4 + 1) depending width */
+    grid-template-columns: repeat(auto-fill, minmax(var(--prod-min), var(--prod-max)));
+    justify-content: start;
+    align-items: stretch;
+}
+
+/* --------------------------------------------------------------------------
+   10) NOTIFICATION STATE
+   -------------------------------------------------------------------------- */
+.notification-success {
+    border-color: rgba(34, 197, 94, 0.40) !important;
+}
+
+.notification-error {
+    border-color: rgba(229, 72, 77, 0.40) !important;
+}
+
+/* --------------------------------------------------------------------------
+   11) RESPONSIVE
+   -------------------------------------------------------------------------- */
+@media (min-width: 1100px) {
+    :root {
+        --img-h: var(--img-h-lg);
+    }
+}
+
+@media (max-width: 900px) {
+    .section-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hero-content {
+        max-width: 92%;
+    }
+
+    .swiper-button-next,
+    .swiper-button-prev {
+        display: none !important;
+    }
+
+    /* cards still nice on smaller screens */
+    :root {
+        --cat-max: 1fr;
+        --prod-max: 1fr;
+    }
+
+    .categories-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+
+    .recommended-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .hero-banner {
+        min-height: 240px;
+    }
+
+    .food-urgency-badge {
+        top: 58px;
+        right: 14px;
+    }
+
+    .product-info {
+        padding: 14px;
+    }
+}

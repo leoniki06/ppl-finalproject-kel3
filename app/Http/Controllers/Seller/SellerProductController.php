@@ -13,12 +13,18 @@ class SellerProductController extends Controller
     public function index(Request $request)
     {
         $sellerId = Auth::id();
-        $q = $request->query('q');
-        $sort = $request->query('sort', 'latest');
+
+        // kalau sellerId null, lebih baik jelas daripada hasil kosong
+        if (!$sellerId) {
+            return redirect()->route('login')->withErrors(['auth' => 'Silakan login terlebih dahulu.']);
+        }
+
+        $q    = trim((string) $request->query('q', ''));
+        $sort = (string) $request->query('sort', 'latest');
 
         $products = Product::query()
             ->where('seller_id', $sellerId)
-            ->when($q, function ($query) use ($q) {
+            ->when($q !== '', function ($query) use ($q) {
                 $query->where(function ($qq) use ($q) {
                     $qq->where('name', 'like', "%{$q}%")
                         ->orWhere('category', 'like', "%{$q}%")
@@ -26,33 +32,35 @@ class SellerProductController extends Controller
                         ->orWhere('description', 'like', "%{$q}%");
                 });
             })
-            ->when($sort, function ($query) use ($sort) {
+            ->when(true, function ($query) use ($sort) {
                 return match ($sort) {
-                    'name_asc' => $query->orderBy('name', 'asc'),
-                    'name_desc' => $query->orderBy('name', 'desc'),
-                    'price_asc' => $query->orderBy('price', 'asc'),
+                    'name_asc'   => $query->orderBy('name', 'asc'),
+                    'name_desc'  => $query->orderBy('name', 'desc'),
+                    'price_asc'  => $query->orderBy('price', 'asc'),
                     'price_desc' => $query->orderBy('price', 'desc'),
-                    default => $query->latest(),
+                    default      => $query->latest(),
                 };
             })
             ->paginate(10)
             ->withQueryString();
 
         return view('seller.products.index', compact('products', 'q', 'sort'));
-
-
     }
+
     public function create()
-{
-    return view('seller.products.create'); // ✅ ini harus sesuai lokasi file blade
-}
-
-
+    {
+        return view('seller.products.create');
+    }
 
     public function store(Request $request)
     {
+        // ✅ pastikan login
         $sellerId = Auth::id();
+        if (!$sellerId) {
+            return redirect()->route('login')->withErrors(['auth' => 'Silakan login sebagai seller terlebih dahulu.']);
+        }
 
+        // ✅ validasi: checkbox jangan boolean strict (biar tidak gagal karena format input)
         $validated = $request->validate([
             'name' => 'required|string|max:120',
             'brand' => 'required|string|max:120',
@@ -66,19 +74,25 @@ class SellerProductController extends Controller
             'expiry_date' => 'required|date',
             'stock' => 'required|integer|min:0',
 
-            'is_flash_sale' => 'nullable|boolean',
-            'is_recommended' => 'nullable|boolean',
+            'is_flash_sale' => 'nullable',
+            'is_recommended' => 'nullable',
 
-
-            // image_url kita isi dari upload file biar aman
             'image' => 'required|image|max:2048',
         ]);
 
+        // ✅ upload image
+        try {
+            $path = $request->file('image')->store('products', 'public');
+        } catch (\Throwable $e) {
+            return back()
+                ->withInput()
+                ->withErrors(['image' => 'Upload gambar gagal. Pastikan sudah menjalankan: php artisan storage:link dan folder storage writable.']);
+        }
 
-        $path = $request->file('image')->store('products', 'public');
-
+        // ✅ create product
         Product::create([
             'seller_id' => $sellerId,
+
             'name' => $validated['name'],
             'brand' => $validated['brand'],
             'category' => $validated['category'],
@@ -93,8 +107,8 @@ class SellerProductController extends Controller
             'expiry_date' => $validated['expiry_date'],
             'stock' => $validated['stock'],
 
-            'is_flash_sale' => (bool) ($request->input('is_flash_sale') ?? false),
-            'is_recommended' => (bool) ($request->input('is_recommended') ?? false),
+            'is_flash_sale' => $request->boolean('is_flash_sale'),
+            'is_recommended' => $request->boolean('is_recommended'),
 
             'is_active' => true,
         ]);
@@ -104,14 +118,23 @@ class SellerProductController extends Controller
 
     public function edit($id)
     {
-        $product = Product::where('seller_id', Auth::id())->findOrFail($id);
+        $sellerId = Auth::id();
+        if (!$sellerId) {
+            return redirect()->route('login')->withErrors(['auth' => 'Silakan login terlebih dahulu.']);
+        }
+
+        $product = Product::where('seller_id', $sellerId)->findOrFail($id);
         return view('seller.products.edit', compact('product'));
     }
 
-
     public function update(Request $request, $id)
     {
-        $product = Product::where('seller_id', Auth::id())->findOrFail($id);
+        $sellerId = Auth::id();
+        if (!$sellerId) {
+            return redirect()->route('login')->withErrors(['auth' => 'Silakan login terlebih dahulu.']);
+        }
+
+        $product = Product::where('seller_id', $sellerId)->findOrFail($id);
 
         $validated = $request->validate([
             'name' => 'required|string|max:120',
@@ -126,19 +149,24 @@ class SellerProductController extends Controller
             'expiry_date' => 'required|date',
             'stock' => 'required|integer|min:0',
 
-            'is_flash_sale' => 'nullable|boolean',
-            'is_recommended' => 'nullable|boolean',
+            'is_flash_sale' => 'nullable',
+            'is_recommended' => 'nullable',
 
-            // edit boleh tidak upload image
             'image' => 'nullable|image|max:2048',
         ]);
 
-        // ✅ kalau upload gambar baru, hapus yg lama lalu simpan yg baru
+        // ✅ kalau upload gambar baru
         if ($request->hasFile('image')) {
-            if ($product->image_url) {
-                Storage::disk('public')->delete($product->image_url);
+            try {
+                if ($product->image_url) {
+                    Storage::disk('public')->delete($product->image_url);
+                }
+                $product->image_url = $request->file('image')->store('products', 'public');
+            } catch (\Throwable $e) {
+                return back()
+                    ->withInput()
+                    ->withErrors(['image' => 'Upload gambar baru gagal. Pastikan storage sudah benar.']);
             }
-            $product->image_url = $request->file('image')->store('products', 'public');
         }
 
         $product->fill([
@@ -154,18 +182,27 @@ class SellerProductController extends Controller
             'expiry_date' => $validated['expiry_date'],
             'stock' => $validated['stock'],
 
-            'is_flash_sale' => (bool) $request->boolean('is_flash_sale'),
-            'is_recommended' => (bool) $request->boolean('is_recommended'),
-        ])->save();
+            'is_flash_sale' => $request->boolean('is_flash_sale'),
+            'is_recommended' => $request->boolean('is_recommended'),
+        ]);
+
+        $product->save();
 
         return redirect()->route('seller.products.index')->with('success', 'Produk berhasil diupdate.');
     }
 
     public function destroy($id)
     {
-        $product = Product::where('seller_id', Auth::id())->findOrFail($id);
+        $sellerId = Auth::id();
+        if (!$sellerId) {
+            return redirect()->route('login')->withErrors(['auth' => 'Silakan login terlebih dahulu.']);
+        }
 
-        if ($product->image_url) Storage::disk('public')->delete($product->image_url);
+        $product = Product::where('seller_id', $sellerId)->findOrFail($id);
+
+        if ($product->image_url) {
+            Storage::disk('public')->delete($product->image_url);
+        }
 
         $product->delete();
 
@@ -174,8 +211,14 @@ class SellerProductController extends Controller
 
     public function toggleStatus($id)
     {
-        $product = Product::where('seller_id', Auth::id())->findOrFail($id);
-        $product->is_active = ! $product->is_active;
+        $sellerId = Auth::id();
+        if (!$sellerId) {
+            return redirect()->route('login')->withErrors(['auth' => 'Silakan login terlebih dahulu.']);
+        }
+
+        $product = Product::where('seller_id', $sellerId)->findOrFail($id);
+
+        $product->is_active = ! (bool) $product->is_active;
         $product->save();
 
         return back()->with('success', 'Status produk diubah jadi ' . ($product->is_active ? 'Aktif' : 'Nonaktif') . '.');

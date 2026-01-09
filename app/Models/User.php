@@ -36,18 +36,14 @@ class User extends Authenticatable
 
     public function isCustomer(): bool
     {
-        return $this->role === 'pembeli';
+        return $this->role === 'customer';
     }
 
     public function isSeller(): bool
     {
-        return $this->role === 'penjual';
+        return $this->role === 'seller';
     }
 
-    public function isAdmin(): bool
-    {
-        return $this->role === 'admin';
-    }
 
     // Optional: biar tetap kompatibel kalau kamu udah terlanjur pakai nama isBuyer() di banyak tempat
     public function isBuyer(): bool
